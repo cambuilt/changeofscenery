@@ -1,0 +1,42 @@
+<area shape="rect"
+coords="{{coordinates[2].left.value}},{{coordinates[2].top.value}},{{coordinates[2].right.value}},{{coordinates[2].bottom.value}}"
+alt="{{coordinates[2].name}}"
+title="{{coordinates[2].name}}"
+(click)="displayPopup(coordinates[2].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[3].left.value}},{{coordinates[3].top.value}},{{coordinates[3].right.value}},{{coordinates[3].bottom.value}}"
+alt="{{coordinates[3].name}}"
+title="{{coordinates[3].name}}"
+(click)="displayPopup(coordinates[3].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[4].left.value}},{{coordinates[4].top.value}},{{coordinates[4].right.value}},{{coordinates[4].bottom.value}}"
+alt="{{coordinates[4].name}}"
+title="{{coordinates[4].name}}"
+(click)="displayPopup(coordinates[4].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[5].left.value}},{{coordinates[5].top.value}},{{coordinates[5].right.value}},{{coordinates[5].bottom.value}}"
+alt="{{coordinates[5].name}}"
+title="{{coordinates[5].name}}"
+(click)="displayPopup(coordinates[5].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[6].left.value}},{{coordinates[6].top.value}},{{coordinates[6].right.value}},{{coordinates[6].bottom.value}}"
+alt="{{coordinates[6].name}}"
+title="{{coordinates[6].name}}"
+(click)="displayPopup(coordinates[6].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[7].left.value}},{{coordinates[7].top.value}},{{coordinates[7].right.value}},{{coordinates[7].bottom.value}}"
+alt="{{coordinates[7].name}}"
+title="{{coordinates[7].name}}"
+(click)="displayPopup(coordinates[7].name);"
+/>
+<area shape="rect"
+coords="{{coordinates[8].left.value}},{{coordinates[8].top.value}},{{coordinates[8].right.value}},{{coordinates[8].bottom.value}}"
+alt="{{coordinates[8].name}}"
+title="{{coordinates[8].name}}"
+(click)="displayPopup(coordinates[8].name);"
+/>

@@ -1,0 +1,477 @@
+body, html {
+    overflow-x: scroll !important;
+}
+
+h1 {
+    position: relative;
+    top: 254px;
+    left: 12px;
+}
+
+h4 {
+    font-family: "Verdana", Arial, Helvetica, sans-serif;
+    font-size: 90%;
+    font-weight: 300;
+    position: relative;
+    top: 250px;
+    left: 12px;
+    height: 98px !important;
+    width: 92%;
+    /* word-wrap: break-word; */
+    overflow-y: auto;
+    padding-bottom: 10px;
+    padding-right: 8px;
+    white-space: pre-wrap !important;
+}
+
+.popupImage {
+    border-radius:8px;
+    position: absolute;
+    top:1vh;
+    left:7px;
+    width:94%;
+}
+
+.popupContent {
+    width: 250px;
+    height: 400px;
+    background: whitesmoke; 
+    color: black;
+    padding: 0px;
+    margin: 0px;
+    font-size: 13px;
+    text-align: left;
+    z-index: 10;
+    border-radius: 8px;
+    box-shadow: 0px 19px 38px 0px rgba(0, 0, 0, 0.6);
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+#panoramaContainer {
+    height: 100vh; 
+    line-height: 100vh;
+}
+
+.panoramaMarker {
+    background-color: pink;
+}
+
+.panoramaImage {
+    overflow-x: auto;
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+.swipe {
+    position:fixed;
+    left:-1000px;
+    top:35vh;
+    animation-delay: 3s;
+    animation-duration: 3s;
+    animation-name: moveSwipe;
+    opacity: 0;
+}
+
+@keyframes moveSwipe {
+    0% {left:35vw;}
+    33% {left:5vw;opacity:1;}
+    66% {left:35vw;}
+    100% {left:35vw;opacity:0;}
+}
+
+/* iPhone 6/7/8 portrait */
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (orientation:portrait) {
+    h1 {
+        top: 39.5vh !important;
+    }
+    h4 {
+        top: 39.5vh !important;
+        height: 86px !important;
+    }    
+}
+
+/* iPhone 6/7/8 landscape */
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (orientation:landscape) {
+    h1 {
+        bottom: 54vh;
+    }
+    h4 {
+        bottom: 54vh;
+    }    
+}
+
+/* iPhone 6/7/8 Plus portrait */
+@media only screen and (min-device-width : 414px) and (max-device-width : 736px) and (orientation : portrait) {
+    h1 {
+        top: 260px !important;
+    }
+    h4 {
+        top: 260px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone 6/7/8 Plus landscape */
+@media only screen and (min-device-width : 414px) and (max-device-width : 736px) and (orientation : landscape) {
+    h1 {
+        top: 260px !important;
+    }
+    h4 {
+        top: 260px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone X portrait */
+@media only screen and (min-device-width : 375px) and (max-device-width : 812px) and (-webkit-device-pixel-ratio : 3) and (orientation : portrait) {
+    h1 {
+        top: 252px !important;
+    }
+    h4 {
+        top: 250px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone X landscape */
+@media only screen and (min-device-width : 375px) and (max-device-width : 812px) and (-webkit-device-pixel-ratio : 3) and (orientation : landscape) {
+    .popupContent {
+        width: 180px;
+        height: 290px;        
+        position: relative !important;
+        top: -380px !important;
+    }
+    .popupImage {
+        top: 2vh;
+        width:92%;
+    }
+    h1 {
+        font-size: 13px;
+        top: 48.5vh;
+    }
+    h4 {
+        font-size: 10px;
+        top: 47vh;
+        height: 73px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:25vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPhone 11 Pro/XS portrait */
+@media only screen and (min-device-width : 375px) and (max-device-width : 812px) and (-webkit-device-pixel-ratio : 2) and (orientation : portrait) {
+    h1 {
+        top: 250px !important;
+    }
+    h4 {
+        top: 250px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone 11 Pro/XS landscape */
+@media only screen and (min-device-width : 375px) and (max-device-width : 812px) and (-webkit-device-pixel-ratio : 2) and (orientation : landscape) {
+    .popupContent {
+        width: 180px;
+        height: 290px;        
+        position: relative !important;
+        top: -380px !important;
+    }
+    .popupImage {
+        top: 2vh;
+        width:92%;
+    }
+    h1 {
+        font-size: 13px;
+        top: 48.5vh;
+    }
+    h4 {
+        font-size: 10px;
+        top: 47vh;
+        height: 73px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:25vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPhone 11/XR portrait */
+@media only screen and (min-device-width : 414px) and (max-device-width : 896px) and (-webkit-device-pixel-ratio : 2) and (orientation : portrait) {
+    h1 {
+        top: 250px !important;
+    }
+    h4 {
+        top: 250px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone 11/XR landscape */
+@media only screen and (min-device-width : 414px) and (max-device-width : 896px) and (-webkit-device-pixel-ratio : 2) and (orientation : landscape) {
+    .popupContent {
+        width: 180px;
+        height: 290px;        
+        position: relative !important;
+        top: -380px !important;
+    }
+    .popupImage {
+        top: 2vh;
+        width:92%;
+    }
+    h1 {
+        font-size: 13px;
+        top: 48.5vh;
+    }
+    h4 {
+        font-size: 10px;
+        top: 47vh;
+        height: 73px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:25vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPhone 11 Pro Max/XS Max portrait */
+@media only screen and (min-device-width : 414px) and (max-device-width : 896px) and (-webkit-device-pixel-ratio : 3) and (orientation : portrait) {
+    h1 {
+        top: 250px !important;
+    }
+    h4 {
+        top: 250px !important;
+        height: 100px !important;
+    }    
+}
+
+/* iPhone 11 Pro Max/XS Max landscape */
+@media only screen and (min-device-width : 414px) and (max-device-width : 896px) and (-webkit-device-pixel-ratio : 3) and (orientation : landscape) {
+    .popupContent {
+        width: 180px;
+        height: 290px;        
+        position: relative !important;
+        top: -380px !important;
+    }
+    .popupImage {
+        top: 2vh;
+        width:92%;
+    }
+    h1 {
+        font-size: 13px;
+        top: 48.5vh;
+    }
+    h4 {
+        font-size: 10px;
+        top: 47vh;
+        height: 73px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:25vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPad portrait */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    h1 {
+        top: 25vh;
+    }
+    h4 {
+        top: 25vh;
+    }
+    .swipe {
+        position:fixed;
+        top:35vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPad landscape */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+    .popupContent {
+        position: relative !important;
+        width: 280px !important;
+        height: 500px !important;        
+        top: -700px !important;
+    }
+    h1 {
+        top: 37vh !important;
+    }
+    h4 {
+        top: 37vh !important;
+        height: 180px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:34vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPad Pro 9.7 portrait */
+@media only screen and (min-width : 768px) and (orientation : portrait) {
+    .popupImage {
+        left:15px;
+    }
+    .popupContent {
+        width: 400px !important;
+        height: 610px !important;
+    }
+    h1 {
+        font-size: 24px;
+        top: 40vh !important;
+    }
+    h4 {
+        font-size: 14px;
+        top: 40vh !important;
+        height: 186px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:35vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPad Pro 9.7 landscape */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
+    .popupImage {
+        left:15px;
+
+    }
+    .popupContent {
+        width: 400px !important;
+        height: 610px !important;
+    }
+    h1 {
+        font-size: 24px !important;
+        top: 55vh !important;
+    }
+    h4 {
+        font-size: 14px;
+        top: 55vh !important;
+        height: 230px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:35vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+    .panoramaImage {
+        height: 100% !important;
+    }
+}
+
+/* iPad Pro portrait */
+@media only screen and (min-device-width : 1024px) and (max-device-width : 1366px) and (orientation : portrait) {
+    .popupImage {
+        left:14px;
+    }
+    .popupContent {
+        width: 500px !important;
+        height: 764px;
+        font-size: 24px;
+    }
+    h1 {
+        font-size: 32px;
+        top: 37vh;
+    }
+    h4 {
+        top: 37vh;
+        height: 186px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:35vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+/* iPad Pro landscape */
+@media only screen and (min-device-width : 1024px) and (max-device-width : 1366px) and (orientation : landscape) {
+    .popupImage {
+        left:14px;
+    }
+    .popupContent {
+        width: 500px !important;
+        height: 764px;
+        font-size: 24px;
+    }
+    h1 {
+        font-size: 32px;
+        top: 48vh;
+    }
+    h4 {
+        top: 48vh;
+        height: 186px !important;
+    }
+    .swipe {
+        position:fixed;
+        top:35vh;
+    }
+    @keyframes moveSwipe {
+        0% {left:50vw;}
+        33% {left:15vw; opacity: 1;}
+        66% {left:65vw;}
+        100% {left:65vw;opacity: 0}
+    }
+}
+
+

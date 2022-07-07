@@ -1,0 +1,20 @@
+<div id="panoramaContainer" (click)="clickPanoImg($event)">
+  <img id="panoramaImg" src="{{backgroundImage}}" alt="4701 Willard Panorama" class="panoramaImage" usemap="#Map4701Willard" (click)="clickPanoImg($event)" (load)="panoImgLoaded($event)">
+  <map name="Map4701Willard">
+    <area shape="rect"
+      coords="{{coordinate.left.value}},{{coordinate.top.value}},{{coordinate.right.value}},{{coordinate.bottom.value}}"
+      alt="{{coordinate.name}}"
+      title="{{coordinate.name}}"
+      (click)="displayPopup(coordinate.name);"
+      *ngFor="let coordinate of coordinates;"
+    />
+  </map>
+  <div class="popupContent" [ngClass]="{'show':currentPopup === popup.name}" [style]="popup.style" *ngFor="let popup of popups;">
+    <img [src]="popup.imageUrl" class="popupImage">
+    <h1><a [href]="popup.website">{{popup.name}}</a></h1>
+    <h4 [innerHTML]="popup.description + popup.address + '.'"></h4>
+  </div>
+  <img src="assets/icons/swipe.png" class="swipe" *ngIf="panoImgIsLoaded === true">
+</div>
+<!-- href="javascript:void(0);" -->
+<!-- (click)="displayPopup(coordinate.name);" -->

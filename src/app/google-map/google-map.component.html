@@ -1,0 +1,59 @@
+<div id="splash">
+    <table id="splashTable" cellPadding="0px">
+        <tr>
+            <td class="splashCell" style="padding-bottom: 30px; padding-left: 15px;"><img width='200px' name="coslogo"/></td>
+        </tr>        
+        <tr class="menuRow">
+            <td name="boston" class="splashCell show" id="cityCell" (click)="selectCity('boston');" style="cursor:pointer;"></td>
+        </tr>
+        <tr class="menuRow">
+            <td name="charleston" class="splashCell show" id="cityCell" (click)="selectCity('charleston');" style="cursor:pointer;"></td>
+        </tr>
+        <tr class="menuRow">
+            <td name="washingtondc" class="splashCell show" id="cityCell" (click)="selectCity('washingtondc');" style="cursor:pointer;"></td>
+        </tr>
+        <tr class="menuRow" style="padding-bottom:50px;"></tr>
+        <tr>
+            <td class="instagram"><img name="instalogo" style="vertical-align:middle;margin-left:40px;text-indent:20px;" width="40px" /><span name="instaNames1" style="position:relative;top:2px;"></span></td>
+        </tr>
+        <tr>
+            <td class="instagram"><span name="instaNames2" style="position:relative;left:105px;"></span></td>
+        </tr>
+        <tr class="menuRow">
+            <td id="copyright" style="text-align: center;"><span style="position:relative;top:40px;">© CamBuilt LLC</span></td>
+        </tr>
+    </table>
+</div>
+<div id="google_map"></div>
+<img src="assets/ellipsis-circle.svg" class="appMenuIcon" (click)="openAppMenu()"/>
+<i class="fas fa-location-arrow panToUserLocation" (click)="panToUserLocation()"></i>
+<img class="backButton" src="assets/back.svg" style="width:30px;" (click)="toggleLanding('on')"/>
+<div id="hcf">Research made possible by<br/><u><a href="https://www.historiccharleston.org">The Historic Charleston Foundation</a></u></div>
+<div id="alert"></div>
+<div class="appMenu">
+    <ul>
+        <li class="appMenuItem" (click)="showAbout()">About</li>
+        <li class="appMenuItem" (click)="sendContactEmail()">Contact</li>
+        <li class="appMenuItem" (click)="goToMarketing()">Marketing</li>
+        <li class="appMenuItem" (click)="goToBoston()">Boston</li>
+        <li class="appMenuItem" (click)="goToCharleston()">Charleston</li>
+        <li class="appMenuItem" (click)="goToWashingtonDC()">Washington DC</li>
+        <li class="appMenuItem">&nbsp;</li>
+        <li class="appMenuItem">&nbsp;</li>
+    </ul>
+</div>
+<div id="loading">Loading...</div>
+<script>
+    $('#splash').show();
+</script>
+<div id="about">
+    <strong>About Change of Scenery</strong><img src="assets/close.svg" style="position:relative;right:-80px;top:0px;" (click)="closeAbout()" /><br/><br/>
+    Change of Scenery (CoS) is a digital map that is designed for browsing downtown 
+    main streets, emphasizing the places with store fronts and big signs right on the map.
+    At CoS, we believe that it is the store front and the sign or logo that will most 
+    immediately reveal what a place is about.<br/><br/>
+    The map may look cluttered and messy until you zoom in, but that's because that's 
+    what the real world looks like. If you see the corner of something that looks 
+    interesting, you move in closer. Standard digital maps hide what's there <i>until</i>
+    you move in closer. We believe this is a mistake.     
+</div>

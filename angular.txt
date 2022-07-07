@@ -1,0 +1,20 @@
+
+npm install angular && 
+npm install @angular-devkit/architect && 
+npm install @angular-devkit/build-optimizer && 
+npm install @angular-devkit/core && 
+npm install @angular/animations && 
+npm install @angular/cdk && 
+npm install @angular/common && 
+npm install @angular/compiler && 
+npm install @angular/core && 
+npm install @angular/forms && 
+npm install @angular/localize && 
+npm install @angular/platform-browser && 
+npm install @angular/platform-browser-dynamic && 
+npm install @angular/router && 
+npm install @angular/service-worker && 
+npm install @angular-devkit/build-angular && 
+npm install @angular/cli && 
+npm install @angular/compiler-cli && 
+npm install @angular/language-service npm uninstall -g @angular/cli
