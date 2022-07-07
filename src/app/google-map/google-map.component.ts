@@ -216,7 +216,7 @@ export class GoogleMapComponent implements OnInit {
     } else if (city == 'washingtondc') {
       icon = {url: 'assets/washingtondc/CityCenter.svg',scaledSize: new google.maps.Size(67, 22)};   
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02600}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[0].addListener('click', () => { gmc.movePerspective('City Center', 38.90056, -77.02513, 20, 360, 40); });
+      gmc.streetMarkers[0].addListener('click', () => { gmc.movePerspective('City Center', 38.90056, -77.02513, 17, 360, 40); });
       icon = {url: 'assets/washingtondc/Chinatown.svg',scaledSize: new google.maps.Size(67, 22)};   
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
       gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('Chinatown', 38.90056, -77.02, 17, 360, 40); });
