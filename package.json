@@ -39,6 +39,7 @@
     "firebase-admin": "^11.0.0",
     "firestore-export-import": "^0.2.9",
     "fs": "0.0.1-security",
+    "google-maps": "^4.3.3",
     "html-webpack-plugin": "^5.0.0-beta.1",
     "jquery": "^3.6.0",
     "karma": "^6.4.0",
