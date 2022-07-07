@@ -54,8 +54,8 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@types/google.maps": "^3.45.6",
-    "@types/jquery": "^3.5.5"
+    "@types/google.maps": "^3.49.2",
+    "@types/jquery": "^3.5.14"
   },
   "browser": {
     "crypto": false
