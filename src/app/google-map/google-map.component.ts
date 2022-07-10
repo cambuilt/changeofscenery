@@ -65,9 +65,11 @@ export class GoogleMapComponent implements OnInit {
   public static personWaitingMoveIndex = 0;
   public static personCatchingUp = undefined;
   public static personCatchingUpMoveIndex = 0;
-  public static personRollsRoycePhantom = undefined;
+  public static personUber = undefined;
   public static personRestart = false;
   public static waitUntil = 0;
+  public static resumingMovement = false;
+  public static lastMoveIndex = -1;
 
   constructor(private route: ActivatedRoute, private ngZone: NgZone) {    
   }
@@ -461,22 +463,26 @@ export class GoogleMapComponent implements OnInit {
         });
 
         person['MovementCounter'] = 0;
-        if (person.Name == 'Rolls Royce Phantom') {
-          GoogleMapComponent.personRollsRoycePhantom = person;
+        if (person.Name == 'Uber') {
+          GoogleMapComponent.personUber = person;
         } else {
           GoogleMapComponent.moveMarker(person, 0);
         }
       }
 
-      img.src = this.cloudinaryPath + this.sanitizeName(person.Name) + '.png';
+      if (person.Name == 'Uber') {
+        const seconds = new Date().getSeconds();
+        const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
+        img.src = this.cloudinaryPath + carName + '.png';
+      } else {
+        img.src = this.cloudinaryPath + this.sanitizeName(person.Name) + '.png';
+      }
     });
-
   }
   
   public static async moveMarker(person, moveIndex) {
     const movements = JSON.parse(person.Route);
     const move = movements[moveIndex];
-
     if (move.cmd == 'go') {
       if (person.Marker.getZIndex() != 100) { person.Marker.setZIndex(100); }
       if (person.MovementCounter == 0) {        
@@ -494,6 +500,7 @@ export class GoogleMapComponent implements OnInit {
       } else if (moveIndex < movements.length - 1) {
         moveIndex++;
         person.MovementCounter = 0;
+        console.log(person.Name, moveIndex, movements[moveIndex]);
         this.moveMarker(person, moveIndex);
       }
     } else if (move.cmd == 'wait') {
@@ -520,8 +527,7 @@ export class GoogleMapComponent implements OnInit {
                  GoogleMapComponent.personWaitingMoveIndex++;
                  GoogleMapComponent.personCatchingUpMoveIndex++;
                  GoogleMapComponent.moveMarker(GoogleMapComponent.personWaiting, GoogleMapComponent.personWaitingMoveIndex);
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.personCatchingUp, GoogleMapComponent.personCatchingUpMoveIndex);
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.personRollsRoycePhantom, 0);
+                 GoogleMapComponent.moveMarker(GoogleMapComponent.personCatchingUp, GoogleMapComponent.personCatchingUpMoveIndex);                 
                }, move.dur * 1000);
             }, timeToWait);
           }
@@ -532,7 +538,15 @@ export class GoogleMapComponent implements OnInit {
         } else if (move.att == 'ManSwapBags') {
           url = `${GoogleMapComponent.cloudinaryPath}WellDressedMan.png`;
           url = url.replace('/upload/', `/upload/l_boss_bag/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
-        } else if (move.att == 'restart') {          
+        } else if (move.att == 'CallUber') {
+          GoogleMapComponent.moveMarker(GoogleMapComponent.personUber, 0);
+        } else if (move.att == 'CarArrived') { 
+          GoogleMapComponent.resumingMovement = true;
+          GoogleMapComponent.personWaitingMoveIndex += 6;
+          GoogleMapComponent.personCatchingUpMoveIndex += 6;
+          GoogleMapComponent.moveMarker(GoogleMapComponent.personWaiting, GoogleMapComponent.personWaitingMoveIndex);
+          GoogleMapComponent.moveMarker(GoogleMapComponent.personCatchingUp, GoogleMapComponent.personCatchingUpMoveIndex);
+        } else if (move.att == 'Restart') {          
           this.personRestart = true;
         } else {
           url = url.replace('/upload/', `/upload/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
@@ -546,14 +560,16 @@ export class GoogleMapComponent implements OnInit {
       if (move.att != "Man" && move.att != "Woman") {
         setTimeout(function() { 
           if (GoogleMapComponent.personRestart == true) {
+            console.log('Restarting...');
             GoogleMapComponent.personWaiting = undefined;
             GoogleMapComponent.personCatchingUp = undefined;
+            GoogleMapComponent.personWaitingMoveIndex = 0;
+            GoogleMapComponent.personCatchingUpMoveIndex = 0;
             GoogleMapComponent.personRestart = false;
             const zoomFactor = GoogleMapComponent.getZoomFactor(null);
             GoogleMapComponent.people.forEach(person => {
               var img = new Image();
               img.onload = function() {
-                const iconId = GoogleMapComponent.sanitizeName(person.Name);
                 person['imgWidth'] = img.width/4;
                 person['imgHeight'] = img.height/4;  
                 var scaledSize = new google.maps.Size(person.imgWidth * zoomFactor, person.imgHeight * zoomFactor);        
@@ -563,21 +579,31 @@ export class GoogleMapComponent implements OnInit {
                 };
                 person.Marker.setIcon(icon);
                 person['MovementCounter'] = 0;
-                if (person.Name == 'Rolls Royce Phantom') {
-                  GoogleMapComponent.personRollsRoycePhantom = person;
+                if (person.Name == 'Uber') {
+                  GoogleMapComponent.personUber = person;
                 } else {
                   GoogleMapComponent.moveMarker(person, 0);
                 }  
               };        
-              img.src = this.cloudinaryPath + this.sanitizeName(person.Name) + '.png';
+              if (person.Name == 'Uber') {
+                const seconds = new Date().getSeconds();
+                const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
+                img.src = GoogleMapComponent.cloudinaryPath + carName + '.png';
+              } else {
+                img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(person.Name) + '.png';
+              }
             });
           } else {
-            moveIndex++; 
+            moveIndex++;
             person.Marker.setVisible(true); 
             GoogleMapComponent.moveMarker(person, moveIndex);
           }  
         }, move.dur * 1000);
       }
+    } else if (move.cmd == 'break') {
+      // GoogleMapComponent.personWaitingMoveIndex++;
+      // GoogleMapComponent.personCatchingUpMoveIndex++;
+      console.log('break');
     }
   }
 
