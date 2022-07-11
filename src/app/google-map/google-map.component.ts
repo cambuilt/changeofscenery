@@ -500,7 +500,6 @@ export class GoogleMapComponent implements OnInit {
       } else if (moveIndex < movements.length - 1) {
         moveIndex++;
         person.MovementCounter = 0;
-        console.log(person.Name, moveIndex, movements[moveIndex]);
         this.moveMarker(person, moveIndex);
       }
     } else if (move.cmd == 'wait') {
@@ -577,6 +576,7 @@ export class GoogleMapComponent implements OnInit {
                   url: img.src,
                   scaledSize: scaledSize,        
                 };
+                person.Marker.setPosition(new google.maps.LatLng(person.Location.latitude, person.Location.longitude));
                 person.Marker.setIcon(icon);
                 person['MovementCounter'] = 0;
                 if (person.Name == 'Uber') {
@@ -603,7 +603,6 @@ export class GoogleMapComponent implements OnInit {
     } else if (move.cmd == 'break') {
       // GoogleMapComponent.personWaitingMoveIndex++;
       // GoogleMapComponent.personCatchingUpMoveIndex++;
-      console.log('break');
     }
   }
 
@@ -739,13 +738,15 @@ export class GoogleMapComponent implements OnInit {
         zIndex: zIndex
       });
 
+      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
+
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
       var width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
       var bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
       var contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
       `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
       `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${GoogleMapComponent.sanitizeName(place.Name)}",${place.ImageCount})'/></td>` + 
-      `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3><a href='${place.Website}' target='_blank'>${place.Name}</a></h3></td><td></td></tr>` + 
+      `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
       `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + GoogleMapComponent.currentMarker, '')}</span></td><td></td></tr>` + 
       `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
       `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
