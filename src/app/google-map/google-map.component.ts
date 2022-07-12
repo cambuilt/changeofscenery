@@ -21,7 +21,7 @@ export class GoogleMapComponent implements OnInit {
   public static lastHeading;  
   userLocationMarker: google.maps.Marker;
   public static places: any = [];
-  public static people: any = [];
+  public static animated: any = [];
   public static likedPlaces: any = [];
   public static markers: google.maps.Marker[] = [];
   public static placeTotal = 0;
@@ -51,9 +51,9 @@ export class GoogleMapComponent implements OnInit {
   public static onLanding = true;
   public static zooming = false;
   public static sizeMultiple = 76;
-  public static cities = [{name:'charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
-                          {name:'boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
-                          {name:'washingtondc', center:{lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0}]; 
+  public static cities = [{name:'charleston', displayName: 'Charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
+                          {name:'boston', displayName: 'Boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
+                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0}]; 
   public static lastZoom = 0;
   public static updateHouseMarkerCounter = -1;
   public static intervalFunction;
@@ -61,12 +61,12 @@ export class GoogleMapComponent implements OnInit {
   public static maxIconSize = 10;
   public static suspendUpdate = false;
   public static delay = 1; //milliseconds
-  public static personWaiting = undefined;
-  public static personWaitingMoveIndex = 0;
-  public static personCatchingUp = undefined;
-  public static personCatchingUpMoveIndex = 0;
-  public static personUber = undefined;
-  public static personRestart = false;
+  public static animateWaiting = undefined;
+  public static animateWaitingMoveIndex = 0;
+  public static animateCatchingUp = undefined;
+  public static animateCatchingUpMoveIndex = 0;
+  public static animateUber = undefined;
+  public static animateRestart = false;
   public static waitUntil = 0;
   public static resumingMovement = false;
   public static lastMoveIndex = -1;
@@ -154,12 +154,10 @@ export class GoogleMapComponent implements OnInit {
     gmc.map.setTilt(gmc.cities.find(x => x.name == city).tilt);
     gmc.map.setHeading(gmc.cities.find(x => x.name == city).heading);
     gmc.map.setZoom(gmc.cities.find(x => x.name == city).zoom);
-    var landingCity = city.substring(0, 1).toUpperCase() + city.substring(1);
-    landingCity = landingCity.replace('southshore', '');
-    landingCity = landingCity.replace('dc', ' DC');
-    gmc.collectionCity = landingCity.replace(' ', '');
+    const displayName = gmc.cities.find(x => x.name == city).displayName;
+    gmc.collectionCity = displayName.replace(' ', '');
     gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/';
-    gmc.cloudinaryPath += landingCity.replace(' ', '%20') + '/';
+    gmc.cloudinaryPath += displayName.replace(' ', '%20') + '/';
 
     if (city == 'boston') {
       icon = {url: 'assets/boston/Cadillac.png',scaledSize: new google.maps.Size(80, 22)};
@@ -296,8 +294,8 @@ export class GoogleMapComponent implements OnInit {
       }      
     });
 
-    this.people.forEach(person => {
-      GoogleMapComponent.updatePersonIcon(person);      
+    this.animated.forEach(animate => {
+      GoogleMapComponent.updateAnimateIcon(animate);      
     });
   }
 
@@ -380,42 +378,42 @@ export class GoogleMapComponent implements OnInit {
         // }, 5000);
       } else if (markerName = 'City Center' || markerName == 'Hingham') {
         setTimeout(function() {
-          GoogleMapComponent.startPeople();
+          GoogleMapComponent.startAnimated();
         }, 2000);
       }
     }
   }
 
-  public static async startPeople() {
+  public static async startAnimated() {
     const zoomFactor = this.getZoomFactor(null);
     const app = initializeApp(this.firebaseConfig);
     const db = getFirestore(app);
-    const querySnapshot = await getDocs(collection(db, this.currentMarker.replace(' ', '') + 'People'));
+    const querySnapshot = await getDocs(collection(db, this.collectionCity + 'Animated'));
     const city = GoogleMapComponent.currentCity; 
     
     querySnapshot.forEach((doc) => {
-      this.people.push(doc.data());
-      this.people[this.people.length - 1]['id'] = doc.id;      
+      this.animated.push(doc.data());
+      this.animated[this.animated.length - 1]['id'] = doc.id;      
     });
 
-    this.people.forEach(person => {
+    this.animated.forEach(animate => {
       var img = new Image();
 
       img.onload = function() {
-        const iconId = GoogleMapComponent.sanitizeName(person.Name);
-        person['imgWidth'] = img.width/4;
-        person['imgHeight'] = img.height/4;  
-        var scaledSize = new google.maps.Size(person.imgWidth * zoomFactor, person.imgHeight * zoomFactor);
+        const iconId = GoogleMapComponent.sanitizeName(animate.Name);
+        animate['imgWidth'] = img.width/4;
+        animate['imgHeight'] = img.height/4;  
+        var scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);
 
         var icon: google.maps.Icon = {
           url: img.src,
           scaledSize: scaledSize,        
         };
 
-        const latlng = new google.maps.LatLng(person.Location.latitude, person.Location.longitude);
-        var zIndex = person.ZIndex == undefined ? 0 : person.ZIndex;
+        const latlng = new google.maps.LatLng(animate.Location.latitude, animate.Location.longitude);
+        var zIndex = animate.ZIndex == undefined ? 0 : animate.ZIndex;
 
-        person['Marker'] = new google.maps.Marker({
+        animate['Marker'] = new google.maps.Marker({
           position: latlng,
           icon: icon,
           optimized: true,
@@ -427,11 +425,11 @@ export class GoogleMapComponent implements OnInit {
         var contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
         `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
         `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",1)'/></td>` + 
-        `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${person.Name}</a></h3></td><td></td></tr>` + 
+        `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${animate.Name}</a></h3></td><td></td></tr>` + 
         `<tr><td><span style='font-weight:700;font-size:12px;'></td><td></td></tr>` + 
-        `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/heart_empty.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${person.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">0 likes</span><br style="margin-bottom:32px;"/>${person.Description}</td></tr>` + 
+        `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/heart_empty.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${animate.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">0 likes</span><br style="margin-bottom:32px;"/>${animate.Description}</td></tr>` + 
         `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
-        `<tr colspan="2" style="height:80%;"><td class="notes">${person.Notes}</td></tr></table>` + 
+        `<tr colspan="2" style="height:80%;"><td class="notes">${animate.Notes}</td></tr></table>` + 
         `</td></tr><tr><td></td></tr></table></div>`;
   
         const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
@@ -441,7 +439,7 @@ export class GoogleMapComponent implements OnInit {
         });
         let map = GoogleMapComponent.map;
     
-        person.Marker.addListener('click', () => {              
+        animate.Marker.addListener('click', () => {              
           GoogleMapComponent.lastCenter = GoogleMapComponent.map.getCenter();
           GoogleMapComponent.lastZoomLevel = GoogleMapComponent.map.getZoom();
           GoogleMapComponent.lastTilt = GoogleMapComponent.map.getTilt();
@@ -456,77 +454,80 @@ export class GoogleMapComponent implements OnInit {
           var anchor: google.maps.MVCObject = new google.maps.MVCObject(); 
           let latDelta = city == 'boston' ? 0.000 : 0.004;
           let lngDelta = city == 'boston' ? 0.000 : -0.003;
-          anchor.set('position', {lat: person.Marker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: person.Marker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
+          anchor.set('position', {lat: animate.Marker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: animate.Marker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
           GoogleMapComponent.updateHouseMarkers(false);
           GoogleMapComponent.suspendUpdate = true;
           markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
         });
 
-        person['MovementCounter'] = 0;
-        if (person.Name == 'Uber') {
-          GoogleMapComponent.personUber = person;
+        animate['MovementCounter'] = 0;
+        if (animate.Name == 'Uber') {
+          GoogleMapComponent.animateUber = animate;
         } else {
-          GoogleMapComponent.moveMarker(person, 0);
+          GoogleMapComponent.moveMarker(animate, 0);
         }
       }
 
-      if (person.Name == 'Uber') {
+      if (animate.Name == 'Uber') {
         const seconds = new Date().getSeconds();
         const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
         img.src = this.cloudinaryPath + carName + '.png';
       } else {
-        img.src = this.cloudinaryPath + this.sanitizeName(person.Name) + '.png';
+        if (animate.Name.indexOf('Uber') > -1) {
+          console.log('this one', animate.Name);
+        }
+        img.src = this.cloudinaryPath + this.sanitizeName(animate.Name) + '.png';
       }
     });
   }
   
-  public static async moveMarker(person, moveIndex) {
-    const movements = JSON.parse(person.Route);
+  public static async moveMarker(animate, moveIndex) {
+    const movements = JSON.parse(animate.Route);
     const move = movements[moveIndex];
     if (move.cmd == 'go') {
-      if (person.Marker.getZIndex() != 100) { person.Marker.setZIndex(100); }
-      if (person.MovementCounter == 0) {        
-        person['DeltaLat'] = (move.loc.lat - person.Location.latitude)/move.speed;
-        person['DeltaLng'] = (move.loc.lng - person.Location.longitude)/move.speed;
+      if (animate.Marker.getZIndex() != 100) { animate.Marker.setZIndex(100); }
+      if (animate.MovementCounter == 0) {        
+        animate['DeltaLat'] = (move.loc.lat - animate.Location.latitude)/move.speed;
+        animate['DeltaLng'] = (move.loc.lng - animate.Location.longitude)/move.speed;
       } else {
-        const lat = person.Location.latitude + person.DeltaLat;
-        const lng = person.Location.longitude + person.DeltaLng;
-        person.Location = new GeoPoint(lat, lng);
-        person.Marker.setPosition(new google.maps.LatLng(lat, lng));
+        const lat = animate.Location.latitude + animate.DeltaLat;
+        const lng = animate.Location.longitude + animate.DeltaLng;
+        animate.Location = new GeoPoint(lat, lng);
+        animate.Marker.setPosition(new google.maps.LatLng(lat, lng));
       }
-      if(person.MovementCounter != move.speed){
-        person.MovementCounter++;
-        setTimeout(function () { GoogleMapComponent.moveMarker(person, moveIndex) }, this.delay);
+      if(animate.MovementCounter != move.speed){
+        animate.MovementCounter++;
+        setTimeout(function () { GoogleMapComponent.moveMarker(animate, moveIndex) }, this.delay);
       } else if (moveIndex < movements.length - 1) {
         moveIndex++;
-        person.MovementCounter = 0;
-        this.moveMarker(person, moveIndex);
+        animate.MovementCounter = 0;
+        this.moveMarker(animate, moveIndex);
       }
     } else if (move.cmd == 'wait') {
-      person.Marker.setVisible((move.hid == 0));
+      animate.Marker.setVisible((move.hid == 0));
       if (move.att != '') {
-        const scaledSize = person.Marker.getIcon()['scaledSize'];
-        var url = person.Marker.getIcon()['url'];
+        const scaledSize = animate.Marker.getIcon()['scaledSize'];
+        var url = animate.Marker.getIcon()['url'];
         if (move.att == 'WellDressedWomanFerragamos') {
           url = url.replaceAll('WellDressedWoman', 'WellDressedWomanFerragamos');
           url = url.replace('l_dolcezza_cup/fl_layer_apply,x_-80,y_-120/', '');
         } else if (move.att == 'WellDressedManGlasses' && url.indexOf('WellDressedManGlasses') == -1) {
           url = url.replaceAll('WellDressedMan', 'WellDressedManGlasses');
         } else if (move.att == "Man" || move.att == "Woman") {
-          if (this.personWaiting == undefined) {
-            this.personWaiting = person;
-            this.personWaitingMoveIndex = moveIndex;
+          if (this.animateWaiting == undefined) {
+            this.animateWaiting = animate;
+            this.animateWaitingMoveIndex = moveIndex;
             this.waitUntil =  new Date().getMilliseconds() + move.dur * 1000;            
           } else {
             const timeToWait = this.waitUntil - new Date().getMilliseconds();
-            this.personCatchingUp = person;
-            this.personCatchingUpMoveIndex = moveIndex;
+            this.animateCatchingUp = animate;
+            this.animateCatchingUpMoveIndex = moveIndex;
             setTimeout(function() {
                setTimeout(function() { 
-                 GoogleMapComponent.personWaitingMoveIndex++;
-                 GoogleMapComponent.personCatchingUpMoveIndex++;
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.personWaiting, GoogleMapComponent.personWaitingMoveIndex);
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.personCatchingUp, GoogleMapComponent.personCatchingUpMoveIndex);                 
+                 GoogleMapComponent.animateWaitingMoveIndex++;
+                 GoogleMapComponent.animateCatchingUpMoveIndex++;
+                 GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
+                 GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);                 
                }, move.dur * 1000);
             }, timeToWait);
           }
@@ -538,71 +539,73 @@ export class GoogleMapComponent implements OnInit {
           url = `${GoogleMapComponent.cloudinaryPath}WellDressedMan.png`;
           url = url.replace('/upload/', `/upload/l_boss_bag/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
         } else if (move.att == 'CallUber') {
-          GoogleMapComponent.moveMarker(GoogleMapComponent.personUber, 0);
+          GoogleMapComponent.moveMarker(GoogleMapComponent.animateUber, 0);
         } else if (move.att == 'CarArrived') { 
           GoogleMapComponent.resumingMovement = true;
-          GoogleMapComponent.personWaitingMoveIndex += 6;
-          GoogleMapComponent.personCatchingUpMoveIndex += 6;
-          GoogleMapComponent.moveMarker(GoogleMapComponent.personWaiting, GoogleMapComponent.personWaitingMoveIndex);
-          GoogleMapComponent.moveMarker(GoogleMapComponent.personCatchingUp, GoogleMapComponent.personCatchingUpMoveIndex);
+          GoogleMapComponent.animateWaitingMoveIndex += 6;
+          GoogleMapComponent.animateCatchingUpMoveIndex += 6;
+          GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
+          GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);
         } else if (move.att == 'Restart') {          
-          this.personRestart = true;
+          this.animateRestart = true;
         } else {
           url = url.replace('/upload/', `/upload/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
+          console.log('att url', url);
         }
         var icon: google.maps.Icon = {
           url: url,
           scaledSize: scaledSize,
         };
-        person.Marker.setIcon(icon);      
+        animate.Marker.setIcon(icon);      
       }
       if (move.att != "Man" && move.att != "Woman") {
         setTimeout(function() { 
-          if (GoogleMapComponent.personRestart == true) {
+          if (GoogleMapComponent.animateRestart == true) {
             console.log('Restarting...');
-            GoogleMapComponent.personWaiting = undefined;
-            GoogleMapComponent.personCatchingUp = undefined;
-            GoogleMapComponent.personWaitingMoveIndex = 0;
-            GoogleMapComponent.personCatchingUpMoveIndex = 0;
-            GoogleMapComponent.personRestart = false;
+            GoogleMapComponent.animateWaiting = undefined;
+            GoogleMapComponent.animateCatchingUp = undefined;
+            GoogleMapComponent.animateWaitingMoveIndex = 0;
+            GoogleMapComponent.animateCatchingUpMoveIndex = 0;
+            GoogleMapComponent.animateRestart = false;
             const zoomFactor = GoogleMapComponent.getZoomFactor(null);
-            GoogleMapComponent.people.forEach(person => {
+            GoogleMapComponent.animated.forEach(animate => {
               var img = new Image();
               img.onload = function() {
-                person['imgWidth'] = img.width/4;
-                person['imgHeight'] = img.height/4;  
-                var scaledSize = new google.maps.Size(person.imgWidth * zoomFactor, person.imgHeight * zoomFactor);        
+                animate['imgWidth'] = img.width/4;
+                animate['imgHeight'] = img.height/4;  
+                var scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);        
                 var icon: google.maps.Icon = {
                   url: img.src,
                   scaledSize: scaledSize,        
                 };
-                person.Marker.setPosition(new google.maps.LatLng(person.Location.latitude, person.Location.longitude));
-                person.Marker.setIcon(icon);
-                person['MovementCounter'] = 0;
-                if (person.Name == 'Uber') {
-                  GoogleMapComponent.personUber = person;
+                animate.Marker.setPosition(new google.maps.LatLng(animate.Location.latitude, animate.Location.longitude));
+                animate.Marker.setIcon(icon);
+                animate['MovementCounter'] = 0;
+                if (animate.Name == 'Uber') {
+                  GoogleMapComponent.animateUber = animate;
                 } else {
-                  GoogleMapComponent.moveMarker(person, 0);
+                  GoogleMapComponent.moveMarker(animate, 0);
                 }  
               };        
-              if (person.Name == 'Uber') {
+              if (animate.Name == 'Uber') {
                 const seconds = new Date().getSeconds();
                 const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
                 img.src = GoogleMapComponent.cloudinaryPath + carName + '.png';
               } else {
-                img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(person.Name) + '.png';
+                if (animate.Name.indexOf('Uber') > -1) {
+                  console.log('this one', animate.Name);
+                }        
+                img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(animate.Name) + '.png';
               }
             });
           } else {
             moveIndex++;
-            person.Marker.setVisible(true); 
-            GoogleMapComponent.moveMarker(person, moveIndex);
+            animate.Marker.setVisible(true); 
+            GoogleMapComponent.moveMarker(animate, moveIndex);
           }  
         }, move.dur * 1000);
       }
     } else if (move.cmd == 'break') {
-      // GoogleMapComponent.personWaitingMoveIndex++;
-      // GoogleMapComponent.personCatchingUpMoveIndex++;
     }
   }
 
@@ -793,7 +796,7 @@ export class GoogleMapComponent implements OnInit {
         anchor.set('position', {lat: houseMarker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: houseMarker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
         GoogleMapComponent.updateHouseMarkers(false);
         GoogleMapComponent.suspendUpdate = true;
-        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center';
+        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown';
         GoogleMapComponent.updateIcon(place, houseMarker, selectIcon);
         markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
         setTimeout(function () {
@@ -846,14 +849,14 @@ export class GoogleMapComponent implements OnInit {
     marker.setIcon(icon);
   }
 
-  public static updatePersonIcon(person:any) {
+  public static updateAnimateIcon(animate:any) {
     let zoomFactor = this.getZoomFactor(null);
-    const scaledSize = new google.maps.Size(person.imgWidth * zoomFactor, person.imgHeight * zoomFactor);
-    var newUrl = person.Marker.getIcon()['url'];
+    const scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);
+    var newUrl = animate.Marker.getIcon()['url'];
 
     if (newUrl.indexOf('/l_v') == -1) {
-       var heartX = String(person.imgWidth / 3).split('.')[0];
-       var heartY = String(-(person.imgHeight/3)).split('.')[0];
+       var heartX = String(animate.imgWidth / 3).split('.')[0];
+       var heartY = String(-(animate.imgHeight/3)).split('.')[0];
        newUrl = newUrl.replace('/v', '/l_v1655671870:heart.png,x_' + heartX + ',y_' + heartY + '/v');
     }
 
@@ -862,7 +865,7 @@ export class GoogleMapComponent implements OnInit {
        scaledSize: scaledSize
     };
 
-    person.Marker.setIcon(icon);
+    animate.Marker.setIcon(icon);
   }
 
   public static getZoomFactor(place: any) {
