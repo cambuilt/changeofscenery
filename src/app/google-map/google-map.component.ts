@@ -376,7 +376,7 @@ export class GoogleMapComponent implements OnInit {
         //     }
         //   }, 1);
         // }, 5000);
-      } else if (markerName = 'City Center' || markerName == 'Hingham') {
+      } else if (markerName == 'City Center' || markerName == 'Chinatown' || markerName == 'Hingham') {
         setTimeout(function() {
           GoogleMapComponent.startAnimated();
         }, 2000);
@@ -473,9 +473,6 @@ export class GoogleMapComponent implements OnInit {
         const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
         img.src = this.cloudinaryPath + carName + '.png';
       } else {
-        if (animate.Name.indexOf('Uber') > -1) {
-          console.log('this one', animate.Name);
-        }
         img.src = this.cloudinaryPath + this.sanitizeName(animate.Name) + '.png';
       }
     });
@@ -504,10 +501,10 @@ export class GoogleMapComponent implements OnInit {
         this.moveMarker(animate, moveIndex);
       }
     } else if (move.cmd == 'wait') {
+      var url = animate.Marker.getIcon()['url'];;
+      var scaledSize = animate.Marker.getIcon()['scaledSize'];
       animate.Marker.setVisible((move.hid == 0));
-      if (move.att != '') {
-        const scaledSize = animate.Marker.getIcon()['scaledSize'];
-        var url = animate.Marker.getIcon()['url'];
+      if (move.att != '') {        
         if (move.att == 'WellDressedWomanFerragamos') {
           url = url.replaceAll('WellDressedWoman', 'WellDressedWomanFerragamos');
           url = url.replace('l_dolcezza_cup/fl_layer_apply,x_-80,y_-120/', '');
@@ -548,20 +545,30 @@ export class GoogleMapComponent implements OnInit {
           GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);
         } else if (move.att == 'Restart') {          
           this.animateRestart = true;
+        } else if (move.att == 'RemoveAttachment') {
+          if (url.indexOf('BlackCouple') > -1) {
+            url = GoogleMapComponent.cloudinaryPath + 'BlackCouple.png';
+          } else if (url.indexOf('Couple') > -1) {
+            url = GoogleMapComponent.cloudinaryPath + 'Couple.png';
+          }  
         } else {
-          url = url.replace('/upload/', `/upload/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
-          console.log('att url', url);
+          const cloudinaryCity = GoogleMapComponent.cloudinaryPath.split('/')[GoogleMapComponent.cloudinaryPath.split('/').length - 2];
+          url = url.replace(`/${cloudinaryCity}/`, `/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/${cloudinaryCity}/`);          
         }
-        var icon: google.maps.Icon = {
-          url: url,
-          scaledSize: scaledSize,
-        };
-        animate.Marker.setIcon(icon);      
+      } else if (move.att1 != undefined) {
+        url = url.replace('/upload/', `/upload/l_${move.att1}/fl_layer_apply,x_${move.attx1},y_${move.atty1}/`);
+        url = url.replace('/upload/', `/upload/l_${move.att2}/fl_layer_apply,x_${move.attx2},y_${move.atty2}/`);
       }
+
+      var icon: google.maps.Icon = {
+        url: url,
+        scaledSize: scaledSize,
+      };
+      animate.Marker.setIcon(icon);      
+
       if (move.att != "Man" && move.att != "Woman") {
         setTimeout(function() { 
           if (GoogleMapComponent.animateRestart == true) {
-            console.log('Restarting...');
             GoogleMapComponent.animateWaiting = undefined;
             GoogleMapComponent.animateCatchingUp = undefined;
             GoogleMapComponent.animateWaitingMoveIndex = 0;
@@ -592,15 +599,12 @@ export class GoogleMapComponent implements OnInit {
                 const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
                 img.src = GoogleMapComponent.cloudinaryPath + carName + '.png';
               } else {
-                if (animate.Name.indexOf('Uber') > -1) {
-                  console.log('this one', animate.Name);
-                }        
                 img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(animate.Name) + '.png';
               }
             });
           } else {
             moveIndex++;
-            animate.Marker.setVisible(true); 
+            animate.Marker.setVisible(true);
             GoogleMapComponent.moveMarker(animate, moveIndex);
           }  
         }, move.dur * 1000);
