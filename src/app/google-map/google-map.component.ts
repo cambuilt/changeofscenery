@@ -478,8 +478,11 @@ export class GoogleMapComponent implements OnInit {
     });
   }
   
-  public static async moveMarker(animate, moveIndex) {
+  public static async moveMarker(animate, moveIndex) {    
     const movements = JSON.parse(animate.Route);
+    if (moveIndex > movements.length - 1) {
+      return;
+    }
     const move = movements[moveIndex];
     if (move.cmd == 'go') {
       if (animate.Marker.getZIndex() != 100) { animate.Marker.setZIndex(100); }
@@ -501,113 +504,121 @@ export class GoogleMapComponent implements OnInit {
         this.moveMarker(animate, moveIndex);
       }
     } else if (move.cmd == 'wait') {
-      var url = animate.Marker.getIcon()['url'];;
-      var scaledSize = animate.Marker.getIcon()['scaledSize'];
-      animate.Marker.setVisible((move.hid == 0));
-      if (move.att != '') {        
-        if (move.att == 'WellDressedWomanFerragamos') {
-          url = url.replaceAll('WellDressedWoman', 'WellDressedWomanFerragamos');
-          url = url.replace('l_dolcezza_cup/fl_layer_apply,x_-80,y_-120/', '');
-        } else if (move.att == 'WellDressedManGlasses' && url.indexOf('WellDressedManGlasses') == -1) {
-          url = url.replaceAll('WellDressedMan', 'WellDressedManGlasses');
-        } else if (move.att == "Man" || move.att == "Woman") {
-          if (this.animateWaiting == undefined) {
-            this.animateWaiting = animate;
-            this.animateWaitingMoveIndex = moveIndex;
-            this.waitUntil =  new Date().getMilliseconds() + move.dur * 1000;            
+      if (animate == undefined) {
+        console.log('no animate');        
+      } else {
+        var url = animate.Marker.getIcon()['url'];;
+        var scaledSize = animate.Marker.getIcon()['scaledSize'];
+        animate.Marker.setVisible((move.hid == 0));
+        if (move.att != '') {        
+          if (move.att == 'WellDressedWomanFerragamos') {
+            url = url.replaceAll('WellDressedWoman', 'WellDressedWomanFerragamos');
+            url = url.replace('l_dolcezza_cup/fl_layer_apply,x_-80,y_-120/', '');
+          } else if (move.att == 'WellDressedManGlasses' && url.indexOf('WellDressedManGlasses') == -1) {
+            url = url.replaceAll('WellDressedMan', 'WellDressedManGlasses');
+          } else if (move.att == "Man" || move.att == "Woman") {
+            if (this.animateWaiting == undefined) {
+              this.animateWaiting = animate;
+              this.animateWaitingMoveIndex = moveIndex;
+              this.waitUntil =  new Date().getMilliseconds() + move.dur * 1000;            
+            } else {
+              const timeToWait = this.waitUntil - new Date().getMilliseconds();
+              this.animateCatchingUp = animate;
+              this.animateCatchingUpMoveIndex = moveIndex;
+              setTimeout(function() {
+                setTimeout(function() { 
+                  GoogleMapComponent.animateWaitingMoveIndex++;
+                  GoogleMapComponent.animateCatchingUpMoveIndex++;
+                  GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
+                  GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);                 
+                }, move.dur * 1000);
+              }, timeToWait);
+            }
+          } else if (move.att == 'WomanSwapBags') {
+            url = `${GoogleMapComponent.cloudinaryPath}WellDressedWomanStraightArms.png`;
+            url = url.replace('/upload/', `/upload/l_hermesbg/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
+            url = url.replace('/upload/', `/upload/l_tiffany_bag/fl_layer_apply,x_60,y_140/`);
+          } else if (move.att == 'ManSwapBags') {
+            url = `${GoogleMapComponent.cloudinaryPath}WellDressedMan.png`;
+            url = url.replace('/upload/', `/upload/l_boss_bag/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
+          } else if (move.att == 'CallUber') {
+            GoogleMapComponent.moveMarker(GoogleMapComponent.animateUber, 0);
+          } else if (move.att == 'CarArrived') { 
+            GoogleMapComponent.resumingMovement = true;
+            GoogleMapComponent.animateWaitingMoveIndex += 6;
+            GoogleMapComponent.animateCatchingUpMoveIndex += 6;
+            GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
+            GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);
+          } else if (move.att == 'Restart') {          
+            this.animateRestart = true;
+          } else if (move.att == 'RemoveAttachment') {
+            if (url.indexOf('StyleandFlair') > -1) {
+              url = GoogleMapComponent.cloudinaryPath + 'StyleandFlair.png';
+            } else if (url.indexOf('CapriandButtonDown') > -1) {
+              url = GoogleMapComponent.cloudinaryPath + 'CapriandButtonDown.png';
+            }
+          } else if (move.att == 'BigHeads') {
+            url = url.replace('CapriandButtonDown', 'CapriandButtonDownBigHeads');  
           } else {
-            const timeToWait = this.waitUntil - new Date().getMilliseconds();
-            this.animateCatchingUp = animate;
-            this.animateCatchingUpMoveIndex = moveIndex;
-            setTimeout(function() {
-               setTimeout(function() { 
-                 GoogleMapComponent.animateWaitingMoveIndex++;
-                 GoogleMapComponent.animateCatchingUpMoveIndex++;
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
-                 GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);                 
-               }, move.dur * 1000);
-            }, timeToWait);
+            const cloudinaryCity = GoogleMapComponent.cloudinaryPath.split('/')[GoogleMapComponent.cloudinaryPath.split('/').length - 2];
+            url = url.replace(`/${cloudinaryCity}/`, `/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/${cloudinaryCity}/`);          
           }
-        } else if (move.att == 'WomanSwapBags') {
-          url = `${GoogleMapComponent.cloudinaryPath}WellDressedWomanStraightArms.png`;
-          url = url.replace('/upload/', `/upload/l_hermesbg/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
-          url = url.replace('/upload/', `/upload/l_tiffany_bag/fl_layer_apply,x_60,y_140/`);
-        } else if (move.att == 'ManSwapBags') {
-          url = `${GoogleMapComponent.cloudinaryPath}WellDressedMan.png`;
-          url = url.replace('/upload/', `/upload/l_boss_bag/fl_layer_apply,x_${move.attx},y_${move.atty}/`);
-        } else if (move.att == 'CallUber') {
-          GoogleMapComponent.moveMarker(GoogleMapComponent.animateUber, 0);
-        } else if (move.att == 'CarArrived') { 
-          GoogleMapComponent.resumingMovement = true;
-          GoogleMapComponent.animateWaitingMoveIndex += 6;
-          GoogleMapComponent.animateCatchingUpMoveIndex += 6;
-          GoogleMapComponent.moveMarker(GoogleMapComponent.animateWaiting, GoogleMapComponent.animateWaitingMoveIndex);
-          GoogleMapComponent.moveMarker(GoogleMapComponent.animateCatchingUp, GoogleMapComponent.animateCatchingUpMoveIndex);
-        } else if (move.att == 'Restart') {          
-          this.animateRestart = true;
-        } else if (move.att == 'RemoveAttachment') {
-          if (url.indexOf('BlackCouple') > -1) {
-            url = GoogleMapComponent.cloudinaryPath + 'BlackCouple.png';
-          } else if (url.indexOf('Couple') > -1) {
-            url = GoogleMapComponent.cloudinaryPath + 'Couple.png';
-          }  
-        } else {
-          const cloudinaryCity = GoogleMapComponent.cloudinaryPath.split('/')[GoogleMapComponent.cloudinaryPath.split('/').length - 2];
-          url = url.replace(`/${cloudinaryCity}/`, `/l_${move.att}/fl_layer_apply,x_${move.attx},y_${move.atty}/${cloudinaryCity}/`);          
+        } else if (move.att1 != undefined) {
+          url = url.replace('/upload/', `/upload/l_${move.att1}/fl_layer_apply,x_${move.attx1},y_${move.atty1}/`);
+          url = url.replace('/upload/', `/upload/l_${move.att2}/fl_layer_apply,x_${move.attx2},y_${move.atty2}/`);
         }
-      } else if (move.att1 != undefined) {
-        url = url.replace('/upload/', `/upload/l_${move.att1}/fl_layer_apply,x_${move.attx1},y_${move.atty1}/`);
-        url = url.replace('/upload/', `/upload/l_${move.att2}/fl_layer_apply,x_${move.attx2},y_${move.atty2}/`);
-      }
 
-      var icon: google.maps.Icon = {
-        url: url,
-        scaledSize: scaledSize,
-      };
-      animate.Marker.setIcon(icon);      
+        var icon: google.maps.Icon = {
+          url: url,
+          scaledSize: scaledSize,
+        };
+        animate.Marker.setIcon(icon);      
 
-      if (move.att != "Man" && move.att != "Woman") {
-        setTimeout(function() { 
-          if (GoogleMapComponent.animateRestart == true) {
-            GoogleMapComponent.animateWaiting = undefined;
-            GoogleMapComponent.animateCatchingUp = undefined;
-            GoogleMapComponent.animateWaitingMoveIndex = 0;
-            GoogleMapComponent.animateCatchingUpMoveIndex = 0;
-            GoogleMapComponent.animateRestart = false;
-            const zoomFactor = GoogleMapComponent.getZoomFactor(null);
-            GoogleMapComponent.animated.forEach(animate => {
-              var img = new Image();
-              img.onload = function() {
-                animate['imgWidth'] = img.width/4;
-                animate['imgHeight'] = img.height/4;  
-                var scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);        
-                var icon: google.maps.Icon = {
-                  url: img.src,
-                  scaledSize: scaledSize,        
-                };
-                animate.Marker.setPosition(new google.maps.LatLng(animate.Location.latitude, animate.Location.longitude));
-                animate.Marker.setIcon(icon);
-                animate['MovementCounter'] = 0;
+        if (move.att != "Man" && move.att != "Woman") {
+          setTimeout(function() { 
+            if (GoogleMapComponent.animateRestart == true) {
+              GoogleMapComponent.animateWaiting = undefined;
+              GoogleMapComponent.animateCatchingUp = undefined;
+              GoogleMapComponent.animateWaitingMoveIndex = 0;
+              GoogleMapComponent.animateCatchingUpMoveIndex = 0;
+              GoogleMapComponent.animateRestart = false;
+              const zoomFactor = GoogleMapComponent.getZoomFactor(null);
+              GoogleMapComponent.animated.forEach(animate => {
+                var img = new Image();
+                img.onload = function() {
+                  animate['imgWidth'] = img.width/4;
+                  animate['imgHeight'] = img.height/4;  
+                  var scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);        
+                  var icon: google.maps.Icon = {
+                    url: img.src,
+                    scaledSize: scaledSize,        
+                  };
+                  animate.Marker.setPosition(new google.maps.LatLng(animate.Location.latitude, animate.Location.longitude));
+                  animate.Marker.setIcon(icon);
+                  animate['MovementCounter'] = 0;
+                  if (animate.Name == 'Uber') {
+                    GoogleMapComponent.animateUber = animate;
+                  } else {
+                    GoogleMapComponent.moveMarker(animate, 0);
+                  }  
+                };        
                 if (animate.Name == 'Uber') {
-                  GoogleMapComponent.animateUber = animate;
+                  const seconds = new Date().getSeconds();
+                  const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
+                  img.src = GoogleMapComponent.cloudinaryPath + carName + '.png';
                 } else {
-                  GoogleMapComponent.moveMarker(animate, 0);
-                }  
-              };        
-              if (animate.Name == 'Uber') {
-                const seconds = new Date().getSeconds();
-                const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
-                img.src = GoogleMapComponent.cloudinaryPath + carName + '.png';
-              } else {
-                img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(animate.Name) + '.png';
+                  img.src = GoogleMapComponent.cloudinaryPath + GoogleMapComponent.sanitizeName(animate.Name) + '.png';
+                }
+              });
+            } else {
+              if (moveIndex < movements.length - 1) {
+                moveIndex++;
+                animate.Marker.setVisible(true);
+                GoogleMapComponent.moveMarker(animate, moveIndex);
               }
-            });
-          } else {
-            moveIndex++;
-            animate.Marker.setVisible(true);
-            GoogleMapComponent.moveMarker(animate, moveIndex);
-          }  
-        }, move.dur * 1000);
+            }  
+          }, move.dur * 1000);
+        }
       }
     } else if (move.cmd == 'break') {
     }
