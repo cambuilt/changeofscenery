@@ -62,18 +62,6 @@ a {
     padding: 0px !important;
 }
 
-.si-content-wrapper {
-    width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    padding: 0px !important;
-    background-color: #fff;
-}
-
-.si-content {
-    overflow: hidden !important;
-}
-
 .spinner {
     position: fixed;
     bottom: 160px;
@@ -90,53 +78,14 @@ a {
     width: 40px;
     border: 2px solid black;
     white-space: nowrap;
-  }
-
-  #marker {
-      background-color: blue !important;
-  }
-
-  .drawer-overlay {
-    background-color: rgba(35, 34, 35, 0.1);
-    display: none;
-    height: 100%;
-    left: 0px;
-    position: fixed;
-    top: 0px;
-    width: 100%;
-    z-index: 3;
 }
 
-.drawer-overlay.show {
-    animation-duration: 0.25s;
-    animation-name: showDrawerOverlay;
-    display: block;
-    opacity: 1;
-}
-
-.drawer-container {
-    background-color: #ffffff;
-    box-shadow: 0px 19px 36px 0px rgba(0, 0, 0, 0.26);
-    height: 100%;
-    position: fixed;
-    right: 0px;
-    top: 0px;
-    transform: translateX(440px);
-    transition: transform 0.25s;
-    width: 400px;
-    z-index: 5;
-}
-
-.drawer-container.show {
-    transform: translateX(0px);
-}
-
-.drawer-header-text {
-    margin-left: 16px;
+#marker {
+    background-color: blue !important;
 }
 
 #google_map {
-    height:100.5vh;
+    height:0vh;
 }
 
 #splash {    
@@ -278,14 +227,6 @@ td.splashCell {
         opacity: 0;
         display: none;
     }
-}
-
-.drawer-content {
-    background-color: #fafafa;
-    height: 100%;
-    max-height: calc(100% - 129px);
-    overflow-y: auto;
-    position: relative;
 }
 
 .longName, .reallyLongName, .nameTop {
@@ -450,71 +391,6 @@ h3 {
     padding-bottom: 16px;
 }
 
-.drawerContainer {
-    background-color: #ffffff;
-    box-shadow: 0px 19px 36px 0px rgba(0, 0, 0, 0.26);
-    height: 100%;
-    position: fixed;
-    right: 0px;
-    top: 0px;
-    transform: translateX(400px);
-    transition: transform 0.25s;
-    width: 370px;
-    z-index: 5;
-}
-
-.drawerContainer.show {
-    transform: translateX(0px);
-}
-
-.drawerOverlay {
-    background-color: rgba(35, 34, 35, 0.6);
-    display: none;
-    height: 100%;
-    left: 0px;
-    position: fixed;
-    top: 0px;
-    width: 100%;
-    z-index: 3;
-}
-
-@keyframes showDrawerOverlay {
-    0% {
-        opacity: 0;
-    }
-    1% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-@keyframes hideDrawerOverlay {
-    0% {
-        opacity: 1;
-    }
-    1% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
-}
-
-.drawerOverlay.show {
-    animation-duration: 0.25s;
-    animation-name: showDrawerOverlay;
-    display: block;
-    opacity: 1;
-}
-
-.drawerOverlay.hide {
-    animation-duration: 0.25s;
-    animation-name: hideDrawerOverlay;
-    opacity: 0;
-}
-
 .text, .bulletText, .bigText, .footerText, .shortText {
     font-family: Helvetica, Arial, sans-serif;
     font-style: normal;
@@ -584,11 +460,6 @@ h3 {
     margin: 0px;
     padding: 0px;
     z-index: 1;
-}
-
-#apple_map {
-    width: 100vw;
-    height: 100vh;
 }
 
 .gm-style-iw-t::after {

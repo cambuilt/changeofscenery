@@ -143,7 +143,8 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public selectCity(cityName) {
-    $('#splash').addClass('hide');    
+    $('#splash').addClass('hide');
+    $('#google_map').css('height', '100vh');
     setTimeout(function() { $('#splash').css('display', 'none');$('.backButton').addClass('show');}, 1000);
     const gmc = GoogleMapComponent;
     gmc.currentCity = cityName;
@@ -376,7 +377,7 @@ export class GoogleMapComponent implements OnInit {
         //     }
         //   }, 1);
         // }, 5000);
-      } else if (markerName == 'City Center' || markerName == 'Chinatown' || markerName == 'Hingham') {
+      } else if (markerName == 'City Center' || markerName == 'Chinatown') {
         setTimeout(function() {
           GoogleMapComponent.startAnimated();
         }, 2000);
@@ -625,6 +626,9 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public toggleLanding(onOff) {
+    if (onOff == 'on' && GoogleMapComponent.currentMarker == '') {
+      $('#google_map').css('height', '0vh');      
+    }
     if (GoogleMapComponent.currentMarker == '') {
       $('#splash').removeClass('hide');
       $('#splash').css('display', 'flex');  
