@@ -2,6 +2,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
+import { getAuth } from 'firebase/auth' ;
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint } from "firebase/firestore";
 
 @Component({
@@ -246,6 +247,14 @@ export class GoogleMapComponent implements OnInit {
           $('#loading').addClass('show');
           try {
             const app = initializeApp(GoogleMapComponent.firebaseConfig);
+            const auth = getAuth(app);
+            auth.onAuthStateChanged(user => {
+              if (user != null) {
+                console.log('logged in!');
+              } else {
+                console.log('no user!');
+              }
+            });
             const db = getFirestore(app);
             const querySnapshot = await getDocs(collection(db, this.collectionCity));
             querySnapshot.forEach((doc) => {

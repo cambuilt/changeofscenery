@@ -37,7 +37,7 @@
     "depcheck": "^1.4.3",
     "eslint-scope": "^7.1.1",
     "express": "^4.17.1",
-    "firebase": "^9.8.3",
+    "firebase": "^9.9.0",
     "firebase-admin": "^11.0.0",
     "firestore-export-import": "^0.2.9",
     "fs": "0.0.1-security",
