@@ -21,7 +21,8 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		{
 			requireDisplayName: false,
 			provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
-		}
+		},
+		firebase.auth.TwitterAuthProvider.PROVIDER_ID
 	],
 	tosUrl: '<your-tos-link>',
 	privacyPolicyUrl: '<your-privacyPolicyUrl-link>',
@@ -54,3 +55,4 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 })
 
 export class AppModule { }
+

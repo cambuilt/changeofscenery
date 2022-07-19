@@ -2,9 +2,10 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint } from "firebase/firestore";
-import {AngularFireAuth} from '@angular/fire/compat/auth';
+import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where } from "firebase/firestore";
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult} from 'firebaseui-angular';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 
 @Component({
   selector: 'bhg-google-map',
@@ -49,6 +50,7 @@ export class GoogleMapComponent implements OnInit {
   public static currentCity = "boston";  
   public static currentMarker = "";  
   public static currentPlace: any;  
+  public static currentUser: any;  
   public static onLanding = true;
   public static zooming = false;
   public static sizeMultiple = 76;
@@ -76,7 +78,24 @@ export class GoogleMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.afAuth.authState.subscribe(d => console.log(d));
+    this.afAuth.authState.subscribe(d => { 
+      if (d != null) {
+        $('firebase-ui').hide();
+      }
+    });
+
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        GoogleMapComponent.currentUser = user;
+        this.getUser(user);
+      } else {
+        console.log('no user logged in here');
+        GoogleMapComponent.currentUser = null;
+      }
+    });  
+
     window['angularComponentReferenceLike'] = { component: this, zone: this.ngZone, loadLike: () => this.like() }; 
     window['angularComponentReferenceUnlike'] = { component: this, zone: this.ngZone, loadUnlike: () => this.unlike() };     
     if (this.route.snapshot.url.length > 0) { 
@@ -150,8 +169,41 @@ export class GoogleMapComponent implements OnInit {
   }
 
   successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
-    console.log('successCallback', data);  
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, data.authResult.user.email, data.authResult.user.uid)
+      .then((userCredential) => {
+        this.getUser(userCredential.user);
+      })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;      
+    });
     $('firebase-ui').hide();  
+  }
+
+  async getUser(user: any) {
+    const config = require('./config.js');
+    const app = initializeApp(config);
+    const db = getFirestore(app);
+    const name = user.email == null ? user.displayName : user.email;
+    const q = query(collection(db, "User"), where("Name", "==", name));    
+    var querySnapshot = await getDocs(q);
+    if (querySnapshot.empty == true) {
+      try {
+        addDoc(collection(db, 'User'), {
+          "Name": name
+        });
+        querySnapshot = await getDocs(q);
+        GoogleMapComponent.currentUser = querySnapshot.docs[0];
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    } else {
+      GoogleMapComponent.currentUser = querySnapshot.docs[0];
+      if (GoogleMapComponent.currentUser.get('City') != undefined) {
+        this.selectCity(GoogleMapComponent.currentUser.get('City'));
+      }
+    }
   }
 
   errorCallback(data: FirebaseUISignInFailure) {
@@ -162,7 +214,7 @@ export class GoogleMapComponent implements OnInit {
     console.log('UI shown');
   }
 
-  public selectCity(cityName) {
+  public async selectCity(cityName) {
     $('#splash').addClass('hide');
     $('#google_map').css('height', '100vh');
     setTimeout(function() { $('#splash').css('display', 'none');$('.backButton').addClass('show');}, 1000);
@@ -247,8 +299,14 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[0].addListener('click', () => { gmc.movePerspective('City Center', 38.90056, -77.02513, 17, 360, 40); });
       icon = {url: 'assets/washingtondc/Chinatown.svg',scaledSize: new google.maps.Size(67, 22)};   
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('Chinatown', 38.90056, -77.02, 17, 360, 40); });
+      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('Chinatown', 38.90056, -77.02, 17, 360, 40); });       
     }  
+
+    const config = require('./config.js');
+    const app = initializeApp(config);
+    const db = getFirestore(app);
+    const docRef = doc(db, "User", GoogleMapComponent.currentUser.id);
+    await updateDoc(docRef, { City:  cityName});
   }
 
   public static async handleZoom() {
@@ -329,6 +387,10 @@ export class GoogleMapComponent implements OnInit {
       place['visible'] = false;
     });        
     this.placeTotal = 0;
+  }
+
+  public hideAppMenu() {
+    GoogleMapComponent.hideAppMenu();
   }
 
   public static hideAppMenu() {
