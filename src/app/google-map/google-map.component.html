@@ -35,7 +35,7 @@
         <li class="appMenuItem" (click)="showAbout()">About</li>
         <li class="appMenuItem" (click)="sendContactEmail()">Contact</li>
         <li class="appMenuItem" (click)="goToMarketing()">Marketing</li>
-        <li class="appMenuItem" (click)="goToBoston()">Boston</li>
+        <li class="appMenuItem" (click)="logout()">Log Out</li>
         <li class="appMenuItem" (click)="goToCharleston()">Charleston</li>
         <li class="appMenuItem" (click)="goToWashingtonDC()">Washington DC</li>
         <li class="appMenuItem">&nbsp;</li>
@@ -57,3 +57,6 @@
     interesting, you move in closer. Standard digital maps hide what's there <i>until</i>
     you move in closer. We believe this is a mistake.     
 </div>
+<firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
+                (signInFailure)="errorCallback($event)"
+                (uiShown)="uiShownCallback()"></firebase-ui>

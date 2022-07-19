@@ -2,8 +2,9 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
-import { getAuth } from 'firebase/auth' ;
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint } from "firebase/firestore";
+import {AngularFireAuth} from '@angular/fire/compat/auth';
+import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult} from 'firebaseui-angular';
 
 @Component({
   selector: 'bhg-google-map',
@@ -12,7 +13,6 @@ import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint } f
 })
 
 export class GoogleMapComponent implements OnInit {
-  public static firebaseConfig = require('./config.js');
   public static map: google.maps.Map;
   messageInfoWindow: google.maps.InfoWindow;  
   public static lastInfoWindow: google.maps.InfoWindow;
@@ -58,7 +58,6 @@ export class GoogleMapComponent implements OnInit {
   public static lastZoom = 0;
   public static updateHouseMarkerCounter = -1;
   public static intervalFunction;
-
   public static maxIconSize = 10;
   public static suspendUpdate = false;
   public static delay = 1; //milliseconds
@@ -73,13 +72,13 @@ export class GoogleMapComponent implements OnInit {
   public static lastMoveIndex = -1;
   public static stopAnimation = false;
 
-  constructor(private route: ActivatedRoute, private ngZone: NgZone) {    
+  constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth) {    
   }
 
   ngOnInit(): void {
+    this.afAuth.authState.subscribe(d => console.log(d));
     window['angularComponentReferenceLike'] = { component: this, zone: this.ngZone, loadLike: () => this.like() }; 
-    window['angularComponentReferenceUnlike'] = { component: this, zone: this.ngZone, loadUnlike: () => this.unlike() }; 
-
+    window['angularComponentReferenceUnlike'] = { component: this, zone: this.ngZone, loadUnlike: () => this.unlike() };     
     if (this.route.snapshot.url.length > 0) { 
       this.selectCity(this.route.snapshot.url[0].path);
     }
@@ -142,6 +141,25 @@ export class GoogleMapComponent implements OnInit {
       $("span[name='instaNames1']").text('@cos_boston, @cos_charleston,');
       $("span[name='instaNames2']").text('@cos_washingtondc');
     }, 100);
+  }
+
+  public logout() {
+    this.afAuth.signOut();
+    $('firebase-ui').show();
+    GoogleMapComponent.hideAppMenu();
+  }
+
+  successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
+    console.log('successCallback', data);  
+    $('firebase-ui').hide();  
+  }
+
+  errorCallback(data: FirebaseUISignInFailure) {
+    console.warn('errorCallback', data);
+  }
+
+  uiShownCallback() {
+    console.log('UI shown');
   }
 
   public selectCity(cityName) {
@@ -244,19 +262,12 @@ export class GoogleMapComponent implements OnInit {
       }   
       if (this.markers.length == 0) {
         if (this.places.length == 0) {
-          $('#loading').addClass('show');
+          $('#loading').addClass('show');          
           try {
-            const app = initializeApp(GoogleMapComponent.firebaseConfig);
-            const auth = getAuth(app);
-            auth.onAuthStateChanged(user => {
-              if (user != null) {
-                console.log('logged in!');
-              } else {
-                console.log('no user!');
-              }
-            });
-            const db = getFirestore(app);
-            const querySnapshot = await getDocs(collection(db, this.collectionCity));
+            const config = require('./config.js');
+            const app = initializeApp(config);
+            const firestoreDb = getFirestore(app);
+            const querySnapshot = await getDocs(collection(firestoreDb, this.collectionCity));
             querySnapshot.forEach((doc) => {
               GoogleMapComponent.places.push(doc.data());
               GoogleMapComponent.places[GoogleMapComponent.places.length - 1]['id'] = doc.id;
@@ -398,7 +409,8 @@ export class GoogleMapComponent implements OnInit {
   public static async startAnimation() {
     this.stopAnimation = false;
     const zoomFactor = this.getZoomFactor(null);
-    const app = initializeApp(this.firebaseConfig);
+    const config = require('./config.js');
+    const app = initializeApp(config);
     const db = getFirestore(app);
     const querySnapshot = await getDocs(collection(db, this.collectionCity + 'Animated'));
     const city = GoogleMapComponent.currentCity; 
@@ -1075,7 +1087,8 @@ export class GoogleMapComponent implements OnInit {
 
   public like() {
     const place = GoogleMapComponent.currentPlace;
-    const app = initializeApp(GoogleMapComponent.firebaseConfig);
+    const config = require('./config.js');
+    const app = initializeApp(config);
     const db = getFirestore(app);
     const placeDoc = doc(db, GoogleMapComponent.collectionCity + '/' + place.id);
     place.Likes++;
@@ -1103,8 +1116,9 @@ export class GoogleMapComponent implements OnInit {
 }
 
 public unlike() {
-    const place = GoogleMapComponent.currentPlace;
-    const app = initializeApp(GoogleMapComponent.firebaseConfig);
+    const place = GoogleMapComponent.currentPlace
+    const config = require('./config.js');;
+    const app = initializeApp(config);
     const db = getFirestore(app);
     const placeDoc = doc(db, GoogleMapComponent.collectionCity + '/' + place.id);
     place.Likes--;
@@ -1133,7 +1147,8 @@ public unlike() {
 }
 
   async addDocument() {
-    const app = initializeApp(GoogleMapComponent.firebaseConfig);
+    const config = require('./config.js');
+    const app = initializeApp(config);
     const db = getFirestore(app);          
     try {
       var docRef = await addDoc(collection(db, "Boston"), {

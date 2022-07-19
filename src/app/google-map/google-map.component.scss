@@ -3,7 +3,18 @@
     src: url('../../assets/Trattatello.ttf');
 }
 
+firebase-ui {
+    background-color: #BCAC8C;
+    position: fixed;
+    top: 250px;
+    left: 22vw;
+    right: 20vw;
+    width: 60vw;
+    height: 187px;
+}
+
 .appTitle {
+    display: none;
     display: none;
     position: fixed;
     bottom: 30px;
