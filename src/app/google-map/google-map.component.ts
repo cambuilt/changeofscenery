@@ -166,6 +166,8 @@ export class GoogleMapComponent implements OnInit {
     this.afAuth.signOut();
     $('firebase-ui').show();
     GoogleMapComponent.hideAppMenu();
+    GoogleMapComponent.currentMarker = '';
+    this.toggleLanding('on');
   }
 
   successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
