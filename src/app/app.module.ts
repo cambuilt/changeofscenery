@@ -13,6 +13,8 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { firebase, firebaseui, FirebaseUIModule } from 'firebaseui-angular';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { environment } from '../environments/environment';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { TermsOfServiceComponent } from './terms-of-service/terms-of-service.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
 	signInFlow: 'popup',
@@ -24,8 +26,8 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		},
 		firebase.auth.TwitterAuthProvider.PROVIDER_ID
 	],
-	tosUrl: 'termsofservice.html',
-	privacyPolicyUrl: 'privacypolicy.html',
+	tosUrl: './termsofservice',
+	privacyPolicyUrl: './privacypolicy',
 	credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
 };
 
@@ -38,7 +40,9 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		RouteErrorComponent,
 		PanoramaComponent,
 		CharlestonComponent,
-  		GoogleMapComponent
+  		GoogleMapComponent,
+    PrivacyPolicyComponent,
+    TermsOfServiceComponent
 	],
 	imports: [
 		CommonModule,
