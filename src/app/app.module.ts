@@ -24,8 +24,8 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		},
 		firebase.auth.TwitterAuthProvider.PROVIDER_ID
 	],
-	tosUrl: '<your-tos-link>',
-	privacyPolicyUrl: '<your-privacyPolicyUrl-link>',
+	tosUrl: 'termsofservice.html',
+	privacyPolicyUrl: 'privacypolicy.html',
 	credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
 };
 
