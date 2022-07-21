@@ -9,8 +9,7 @@ const routes: Routes = [
   { path: 'charleston', component: GoogleMapComponent },
   { path: 'boston', component: GoogleMapComponent },
   { path: 'washingtondc', component: GoogleMapComponent },
-  { path: 'panorama', component: PanoramaComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'panorama', component: PanoramaComponent }
 ];
 
 @NgModule({
