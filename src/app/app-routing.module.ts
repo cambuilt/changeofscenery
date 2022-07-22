@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'boston', component: GoogleMapComponent },
   { path: 'washingtondc', component: GoogleMapComponent },
   { path: 'panorama', component: PanoramaComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'privacypolicy', redirectTo: './privacy-policy/privacy-policy.component.html' }
 ];
 
 @NgModule({
