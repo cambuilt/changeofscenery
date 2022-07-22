@@ -7,12 +7,12 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RouteErrorComponent } from './route-error/route-error.component';
 import { PanoramaComponent } from './panorama/panorama.component';
-import { CharlestonComponent } from './charleston/charleston.component';
 import { GoogleMapComponent } from './google-map/google-map.component';
 import { AngularFireModule } from "@angular/fire/compat";
 import { firebase, firebaseui, FirebaseUIModule } from 'firebaseui-angular';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { environment } from '../environments/environment';
+import * as $ from 'jquery';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
 	signInFlow: 'popup',
@@ -37,7 +37,6 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		AppComponent,
 		RouteErrorComponent,
 		PanoramaComponent,
-		CharlestonComponent,
   		GoogleMapComponent
 	],
 	imports: [

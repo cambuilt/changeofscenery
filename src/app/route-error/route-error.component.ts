@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'bhg-route-error',
+  selector: 'changeofscenery-route-error',
   templateUrl: './route-error.component.html',
   styleUrls: ['./route-error.component.scss']
 })

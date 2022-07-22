@@ -3,14 +3,14 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "bhg": {
+    "changeofscenery": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "bhg",
+      "prefix": "changeofscenery",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
@@ -18,7 +18,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "aot": true,
-            "outputPath": "dist/bhg",
+            "outputPath": "dist/changeofscenery",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -41,7 +41,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -65,18 +64,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "bhg:build"
+            "browserTarget": "changeofscenery:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "bhg:build:production"
+              "browserTarget": "changeofscenery:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "bhg:build"
+            "browserTarget": "changeofscenery:build"
           }
         },
         "test": {
@@ -108,7 +107,7 @@
         }
       }
     },
-    "bhg-e2e": {
+    "changeofscenery-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -117,11 +116,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "bhg:serve"
+            "devServerTarget": "changeofscenery:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "bhg:serve:production"
+              "devServerTarget": "changeofscenery:serve:production"
             }
           }
         },
@@ -137,7 +136,6 @@
       }
     }
   },
-  "defaultProject": "bhg",
   "cli": {
     "analytics": "61c63f4c-a74d-4c1c-8890-795da595a33a"
   }

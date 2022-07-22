@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-	selector: 'bhg-root',
+	selector: 'changeofscenery-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss']
 })

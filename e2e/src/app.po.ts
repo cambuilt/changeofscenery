@@ -6,6 +6,6 @@ export class AppPage {
   }
 
   getTitleText() {
-    return element(by.css('bhg-root h1')).getText();
+    return element(by.css('changeofscenery-root h1')).getText();
   }
 }

@@ -4,11 +4,11 @@ import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where } from "firebase/firestore";
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult} from 'firebaseui-angular';
+import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 
 @Component({
-  selector: 'bhg-google-map',
+  selector: 'changeofscenery-google-map',
   templateUrl: './google-map.component.html',
   styleUrls: ['./google-map.component.scss']
 })

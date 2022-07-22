@@ -143,7 +143,7 @@
           },
           "configurations": {
             "production": {
-              "devServerTarget": "bhchangeofsceneryg:serve:production"
+              "devServerTarget": "changeofscenery:serve:production"
             }
           }
         },
@@ -159,7 +159,6 @@
       }
     }
   },
-  "defaultProject": "changeofscenery",
   "cli": {
     "analytics": "61c63f4c-a74d-4c1c-8890-795da595a33a"
   }

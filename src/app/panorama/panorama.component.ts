@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 
 
 @Component({
-  selector: 'bhg-panorama',
+  selector: 'changeofscenery-panorama',
   templateUrl: './panorama.component.html',
   styleUrls: ['./panorama.component.css']
 })
