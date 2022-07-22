@@ -24,8 +24,8 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		},
 		firebase.auth.TwitterAuthProvider.PROVIDER_ID
 	],
-	tosUrl: './termsofservice',
-	privacyPolicyUrl: './privacypolicy',
+	tosUrl: 'https://cambuilt.com/terms-of-service.html',
+	privacyPolicyUrl: 'https://cambuilt.com/privacy-policy.html',
 	credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
 };
 
