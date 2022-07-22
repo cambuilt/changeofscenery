@@ -13,8 +13,6 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { firebase, firebaseui, FirebaseUIModule } from 'firebaseui-angular';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { environment } from '../environments/environment';
-import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
-import { TermsOfServiceComponent } from './terms-of-service/terms-of-service.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
 	signInFlow: 'popup',
@@ -40,9 +38,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		RouteErrorComponent,
 		PanoramaComponent,
 		CharlestonComponent,
-  		GoogleMapComponent,
-		PrivacyPolicyComponent,
-		TermsOfServiceComponent
+  		GoogleMapComponent
 	],
 	imports: [
 		CommonModule,
