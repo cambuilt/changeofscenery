@@ -109,7 +109,7 @@ export class GoogleMapComponent implements OnInit {
         gestureHandling: 'greedy',
         zoomControl: false,
         fullscreenControl: false,
-        mapId: 'acd734c8f229407d'
+        mapId: 'd5860e1d98873021'
     });
 
     GoogleMapComponent.map.addListener('click', (e) => {
