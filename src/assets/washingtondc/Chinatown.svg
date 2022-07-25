@@ -5,7 +5,7 @@
       </filter>
   </defs>
   <g>
-    <rect width="100" height="100" style="fill:#f8f4af;filter:url(#shadow);"></rect>
+    <rect width="100" height="100" style="fill:#f8f4af;filter:url(#shadow);" stroke="black"></rect>
     <text font-size="14" font-family="Futura-Medium, Futura" font-weight="500"><tspan x="5" y="16">Chinatown</tspan></text>
   </g>
 </svg>
