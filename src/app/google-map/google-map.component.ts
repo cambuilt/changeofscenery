@@ -269,39 +269,42 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[5].addListener('click', () => { gmc.movePerspective('Marshfield', 42.095, -70.6817, 13.00, 0, 42); });    
       icon = {url: 'assets/boston/Boston.svg',scaledSize: new google.maps.Size(80, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.346, lng: -71.064}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[6].addListener('click', () => { gmc.movePerspective('Boston', 42.35736, -71.06300, 14.00, 0, 0); });    
+      gmc.streetMarkers[6].addListener('click', () => { gmc.movePerspective('Boston', 42.35736, -71.06300, 14.00, 0, 0); });
       icon = {url: 'assets/boston/BeaconHill.svg',scaledSize: new google.maps.Size(80, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.355, lng: -71.069}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[7].addListener('click', () => { gmc.movePerspective('Beacon Hill', 42.35666, -71.06944, 18.75, 0, 0); });    
+      gmc.streetMarkers[7].addListener('click', () => { gmc.movePerspective('Beacon Hill', 42.35666, -71.06944, 18.75, 0, 0); });
       icon = {url: 'assets/boston/Downtown.svg',scaledSize: new google.maps.Size(80, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.3600, lng: -71.0570}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[8].addListener('click', () => { gmc.movePerspective('Downtown', 42.3614, -71.0572, 18.75, 0, 0); });    
+      gmc.streetMarkers[8].addListener('click', () => { gmc.movePerspective('Downtown', 42.3614, -71.0572, 18.75, 0, 0); });
       icon = {url: 'assets/boston/NorthEnd.svg',scaledSize: new google.maps.Size(80, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.3630, lng: -71.05435}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[9].addListener('click', () => { gmc.movePerspective('North End', 42.36380, -71.05564, 18.75, 297, 54); });    
+      gmc.streetMarkers[9].addListener('click', () => { gmc.movePerspective('North End', 42.36380, -71.05564, 18.75, 297, 54); });
     } else if (city == 'charleston') {
       icon = {url: 'assets/charleston/RainbowRow.svg',scaledSize: new google.maps.Size(120, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77535, lng: -79.92660}, icon: icon, map: gmc.map, zIndex: 100}));
       gmc.streetMarkers[0].addListener('click', () => { gmc.movePerspective('RainbowRow', 32.77580, -79.92740, 21, 327, 90); });
-      icon = {url: 'assets/charleston/EastBaySt.svg',scaledSize: new google.maps.Size(120, 40)};    
+      icon = {url: 'assets/charleston/EastBaySt.svg',scaledSize: new google.maps.Size(120, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77380, lng: -79.92730}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('EastBaySt', 32.77355, -79.92752, 21, 348, 64); });    
-      icon = {url: 'assets/charleston/EastBattery.svg',scaledSize: new google.maps.Size(120, 40)};    
+      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('EastBaySt', 32.77355, -79.92752, 21, 348, 64); });
+      icon = {url: 'assets/charleston/EastBattery.svg',scaledSize: new google.maps.Size(120, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77130, lng: -79.92780}, icon: icon, map: gmc.map, zIndex: 150}));
-      gmc.streetMarkers[2].addListener('click', () => { gmc.movePerspective('EastBattery', 32.77095, -79.92823, 21, 3, 49); });    
+      gmc.streetMarkers[2].addListener('click', () => { gmc.movePerspective('EastBattery', 32.77095, -79.92823, 21, 3, 49); });
       icon = {url: 'assets/charleston/ChurchSt.svg', scaledSize: new google.maps.Size(120, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77230, lng: -79.92930}, icon: icon, map: gmc.map, zIndex: 100}));
       gmc.streetMarkers[3].addListener('click', () => { gmc.movePerspective('ChurchSt', 32.771321, -79.92938, 21, 344, 67); });
-      icon = {url: 'assets/charleston/BroadSt.svg',scaledSize: new google.maps.Size(120, 40)};    
+      icon = {url: 'assets/charleston/BroadSt.svg',scaledSize: new google.maps.Size(120, 40)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77635, lng: -79.92920}, icon: icon, map: gmc.map, zIndex: 100}));
       gmc.streetMarkers[4].addListener('click', () => { gmc.movePerspective('BroadSt', 32.77656, -79.93001, 19, 285, 67); });
     } else if (city == 'washingtondc') {
-      icon = {url: 'assets/washingtondc/CityCenter.svg',scaledSize: new google.maps.Size(67, 22)};   
+      icon = {url: 'assets/washingtondc/CityCenter.svg',scaledSize: new google.maps.Size(67, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02600}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
       gmc.streetMarkers[0].addListener('click', () => { gmc.movePerspective('City Center', 38.90056, -77.02513, 17, 360, 40); });
-      icon = {url: 'assets/washingtondc/Chinatown.svg',scaledSize: new google.maps.Size(67, 22)};   
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('Chinatown', 38.90056, -77.02, 17, 360, 40); });       
+      icon = {url: 'assets/washingtondc/Chinatown.svg',scaledSize: new google.maps.Size(67, 22)};
+      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.0195}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
+      gmc.streetMarkers[1].addListener('click', () => { gmc.movePerspective('Chinatown', 38.90056, -77.02, 17, 360, 40); });
+      icon = {url: 'assets/washingtondc/PennQuarter.svg',scaledSize: new google.maps.Size(67, 22)};
+      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.89731, lng: -77.02291}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
+      gmc.streetMarkers[2].addListener('click', () => { gmc.movePerspective('PennQuarter', 38.89681, -77.0243, 17, 360, 40); });
     }  
 
     const config = require('./config.js');
@@ -840,7 +843,7 @@ export class GoogleMapComponent implements OnInit {
 
       var icon: google.maps.Icon = {
         url: url,
-        scaledSize: scaledSize,        
+        scaledSize: scaledSize
       };
       var n = place.Name;
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;      
@@ -930,7 +933,8 @@ export class GoogleMapComponent implements OnInit {
       $('#loading').hide();      
     }
 
-    img.src = this.cloudinaryPath + 'icons/' + this.sanitizeName(place.Name) + '.png';
+    //img.src = this.cloudinaryPath.replace('upload/', 'upload/c_scale,w_0.25/') + 'icons/' + this.sanitizeName(place.Name) + '.png';    
+    img.src = this.cloudinaryPath + 'icons/' + this.sanitizeName(place.Name) + '.png';    
   }
 
   public static infoWindowClosing() {
