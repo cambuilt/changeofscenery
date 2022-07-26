@@ -464,8 +464,9 @@ export class GoogleMapComponent implements OnInit {
         //       }, 800);
         //     }
         //   }, 1);
+
         // }, 5000);
-      } else if (markerName == 'City Center' || markerName == 'Chinatown') {
+      } else if (markerName == 'City Center' || markerName == 'Chinatown' || markerName == 'Penn Quarter') {
         setTimeout(function() {
           GoogleMapComponent.startAnimation();
         }, 2000);
@@ -846,7 +847,7 @@ export class GoogleMapComponent implements OnInit {
         scaledSize: scaledSize
       };
       var n = place.Name;
-      var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;      
+      var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
 
       const houseMarker = new google.maps.Marker({
@@ -914,7 +915,7 @@ export class GoogleMapComponent implements OnInit {
         anchor.set('position', {lat: houseMarker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: houseMarker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
         GoogleMapComponent.updateHouseMarkers(false);
         GoogleMapComponent.suspendUpdate = true;
-        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown';
+        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown' || n == 'Penn Quarter';
         GoogleMapComponent.updateIcon(place, houseMarker, selectIcon);
         markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
         setTimeout(function () {
