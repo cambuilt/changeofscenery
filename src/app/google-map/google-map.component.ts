@@ -6,6 +6,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, qu
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -74,7 +75,7 @@ export class GoogleMapComponent implements OnInit {
   public static lastMoveIndex = -1;
   public static stopAnimation = false;
 
-  constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth) {    
+  constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
 
   ngOnInit(): void {
@@ -829,7 +830,9 @@ export class GoogleMapComponent implements OnInit {
       place['imgWidth'] = img.width;
       place['imgHeight'] = img.height;
       var scaledSize = new google.maps.Size(img.width * zoomFactor, img.height * zoomFactor);
-      var url = GoogleMapComponent.cloudinaryPath + 'icons/' + GoogleMapComponent.sanitizeName(place.Name) + '.png';
+      console.log(city)
+      const name = city == 'charleston' ? place.Address : place.Name;
+      var url = GoogleMapComponent.cloudinaryPath + 'icons/' + GoogleMapComponent.sanitizeName(name) + '.png';
       var heartIcon = 'heart_empty';
       var likesText = place.Likes == 0 ? '0 likes' : place.Likes == 1 ? '1 like' : place.Likes + ' likes';
 
@@ -934,8 +937,8 @@ export class GoogleMapComponent implements OnInit {
       $('#loading').hide();      
     }
 
-    //img.src = this.cloudinaryPath.replace('upload/', 'upload/c_scale,w_0.25/') + 'icons/' + this.sanitizeName(place.Name) + '.png';    
-    img.src = this.cloudinaryPath + 'icons/' + this.sanitizeName(place.Name) + '.png';    
+    const name = GoogleMapComponent.currentCity == 'charleston' ? place.Address : place.Name;
+    img.src = this.cloudinaryPath + 'icons/' + this.sanitizeName(name) + '.png';    
   }
 
   public static infoWindowClosing() {
@@ -1219,21 +1222,38 @@ public unlike() {
     const config = require('./config.js');
     const app = initializeApp(config);
     const db = getFirestore(app);          
-    try {
-      var docRef = await addDoc(collection(db, "Boston"), {
-        "Name": "Norwell MA",
-        "Website": "https://www.tripadvisor.com/Tourism-g41747-Norwell_Massachusetts-Vacations.html",
-        "Description": "Established 1888.",
-        "Address": "Norwell",
-        "Location": new GeoPoint(42.16290,-70.79200),
-        "Notes": "",
-        "Likes": 0,
-        "ImageCount": 1,
-        "Area": "Norwell"
+
+    this.httpClient.get("assets/charleston/charleston.json").subscribe(data =>{
+      const config = require('./config.js');
+      const app = initializeApp(config);
+      const db = getFirestore(app);          
+      var docs:any = data;
+      docs.forEach((doc) => {
+        var website = doc.Name.substring(doc.Name.indexOf('href') + 5);
+        website = website.substring(1, website.indexOf('target') - 2);
+        var name = this.removeHTML(doc.Name);
+        var address = doc.Address;
+        var area = address.indexOf('E Bay') > -1 ? 'Rainbow Row' : address.indexOf('Broad St') > -1 ? 'Broad St' : address.indexOf('E Battery') > -1 ? 'East Battery' : 'Church St';
+        var description = doc.Description;
+        var notes = doc.Notes;
+        var location = new GeoPoint(Number(doc.Latitude),Number(doc.Longitude));
+        try {
+          var docRef = addDoc(collection(db, "Charleston"), {
+            "Name": name,
+            "Website": website,
+            "Description": description,
+            "Address": address,
+            "Location": location,
+            "Notes": notes,
+            "Likes": 0,
+            "ImageCount": 1,
+            "Area": area
+          });  
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }  
       });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
+    });
   }
 }
 
