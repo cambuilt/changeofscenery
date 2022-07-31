@@ -514,17 +514,16 @@ export class GoogleMapComponent implements OnInit {
           zIndex: zIndex
         });
 
-        var width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
-        var contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
+        const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
+        const contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
         `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
         `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",1)'/></td>` + 
         `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${animation.Name}</a></h3></td><td></td></tr>` + 
-        `<tr><td><span style='font-weight:700;font-size:12px;'></td><td></td></tr>` + 
-        `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/heart_empty.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${animation.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">0 likes</span><br style="margin-bottom:32px;"/>${animation.Description}</td></tr>` + 
+        `<tr><td><span style='font-weight:700;font-size:12px;'></td><td></td></tr><tr><td class='descriptionInfoWindow'>` + 
+        `<img id='likedHeart${iconId}' src='assets/heart_empty.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${animation.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">0 likes</span><br style="margin-bottom:32px;"/>${animation.Description}</td></tr>` + 
         `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
         `<tr colspan="2" style="height:80%;"><td class="notes">${animation.Notes}</td></tr></table>` + 
-        `</td></tr><tr><td></td></tr></table></div>`;
-  
+        `</td></tr><tr><td></td></tr></table></div>`;  
         const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
         
         markerInfoWindow.addListener('closeclick', () => {
@@ -868,9 +867,10 @@ export class GoogleMapComponent implements OnInit {
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
       var width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
       var bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
+      var imgSrcRoot = place.ImageCount > 1 ? GoogleMapComponent.cloudinaryPath.replace('/upload/', '/upload/l_tapphoto/fl_layer_apply,x_240,y_320/') : GoogleMapComponent.cloudinaryPath;
       var contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
-      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
-      `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${GoogleMapComponent.sanitizeName(place.Name)}",${place.ImageCount})'/></td>` + 
+      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${imgSrcRoot + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
+      `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
       `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
       `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + GoogleMapComponent.currentMarker, '')}</span></td><td></td></tr>` + 
       `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
