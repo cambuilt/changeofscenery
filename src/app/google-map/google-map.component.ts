@@ -829,7 +829,6 @@ export class GoogleMapComponent implements OnInit {
       place['imgWidth'] = img.width;
       place['imgHeight'] = img.height;
       var scaledSize = new google.maps.Size(img.width * zoomFactor, img.height * zoomFactor);
-      console.log(city)
       const name = city == 'charleston' ? place.Address : place.Name;
       var url = GoogleMapComponent.cloudinaryPath + 'icons/' + GoogleMapComponent.sanitizeName(name) + '.png';
       var heartIcon = 'heart_empty';
@@ -862,14 +861,16 @@ export class GoogleMapComponent implements OnInit {
         zIndex: zIndex
       });
 
-      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
+      const fontSize = place.Name.length > 25 ? " style='font-size:12px;" : "";
+      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'${fontSize}>${place.Name}</a>`;
 
+      console.log(place.Name, place.ImageCount);
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
-      var width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
-      var bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
-      var imgSrcRoot = place.ImageCount > 1 ? GoogleMapComponent.cloudinaryPath.replace('/upload/', '/upload/l_tapphoto/fl_layer_apply,x_240,y_320/') : GoogleMapComponent.cloudinaryPath;
-      var contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
-      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${imgSrcRoot + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
+      const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
+      const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
+      const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
+      var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
+      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
       `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
       `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
       `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + GoogleMapComponent.currentMarker, '')}</span></td><td></td></tr>` + 
@@ -1154,7 +1155,7 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static sanitizeName(name) {
-    return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e');
+    return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e').replaceAll('+', '');
   }
 
   public like() {

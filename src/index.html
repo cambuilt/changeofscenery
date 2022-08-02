@@ -51,6 +51,7 @@
                         imageIndex = 1;
                     }
                     $('#' + name).attr('src', imagePath + name + imageIndex);
+                    $('#imageCount').html(imageIndex + '/' + imageCount);
                 } else {
                     $('#' + name).attr('src', imagePath + name);
                 }
