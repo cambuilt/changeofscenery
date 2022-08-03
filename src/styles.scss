@@ -102,8 +102,9 @@ a {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10px;
     position: absolute;
-    bottom: 230px;
-    left: 168px;    
+    top: 13px;
+    left: 168px;
+    text-shadow: 1px 1px 1px black;
 }
 
 @keyframes hideOverlay {

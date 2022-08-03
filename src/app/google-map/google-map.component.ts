@@ -861,10 +861,7 @@ export class GoogleMapComponent implements OnInit {
         zIndex: zIndex
       });
 
-      const fontSize = place.Name.length > 25 ? " style='font-size:12px;" : "";
-      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'${fontSize}>${place.Name}</a>`;
-
-      console.log(place.Name, place.ImageCount);
+      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
       const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
       const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
