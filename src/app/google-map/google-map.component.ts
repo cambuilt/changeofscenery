@@ -135,8 +135,7 @@ export class GoogleMapComponent implements OnInit {
       // console.log(`center: {lat: ${GoogleMapComponent.map.getCenter().lat()}, lng: ${GoogleMapComponent.map.getCenter().lng()}},`);
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
       // console.log('tilt', GoogleMapComponent.map.getTilt());
-      // console.log('heading', GoogleMapComponent.map.getHeading());
-      window.scrollTo(0,-100); // Hide iPhone address bar.
+      // console.log('heading', GoogleMapComponent.map.getHeading());      
     });
 
     GoogleMapComponent.map.addListener('zoom_changed', () => {
