@@ -25,14 +25,6 @@
         <meta name="theme-color" content="#1976d2">
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
         <script>
-            function initMap() {
-                map = new google.maps.Map(document.getElementById("google_map"), {
-                    center: {lat: 32.7738678, lng: -79.9283298},
-                    zoom: 17,
-                    heading: 90,
-                    mapId: "9b191a97885b1f7f",
-                });
-            }
             function scrollImage(imagePath, name, imageCount) {
                 while (name.indexOf(' ') > -1 || name.indexOf('’') > -1 || name.indexOf('è') > -1 || name.indexOf("'") > -1) {
                     name = name.replace(' ', '');
@@ -95,7 +87,8 @@
         </script>
     </head>
 
-    <body style="margin: 0px;">
+    <body style="margin: 0px;" onload="window.scrollTo(0,-100);">
+        hello
         <noscript>Please enable JavaScript to continue using this application.</noscript>
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
             integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
