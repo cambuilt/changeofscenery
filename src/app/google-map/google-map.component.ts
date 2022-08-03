@@ -136,7 +136,7 @@ export class GoogleMapComponent implements OnInit {
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
       // console.log('tilt', GoogleMapComponent.map.getTilt());
       // console.log('heading', GoogleMapComponent.map.getHeading());
-      window.scroll(-100, -100);  
+      window.scroll(0, -100);  
     });
 
     GoogleMapComponent.map.addListener('zoom_changed', () => {
