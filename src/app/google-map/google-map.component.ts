@@ -136,6 +136,7 @@ export class GoogleMapComponent implements OnInit {
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
       // console.log('tilt', GoogleMapComponent.map.getTilt());
       // console.log('heading', GoogleMapComponent.map.getHeading());
+      window.scrollTo(0,1); // Hide iPhone address bar.
     });
 
     GoogleMapComponent.map.addListener('zoom_changed', () => {
@@ -220,7 +221,6 @@ export class GoogleMapComponent implements OnInit {
   public async selectCity(cityName) {
     $('#splash').addClass('hide');
     $('#google_map').css('height', '100vh');
-    window.scrollTo(0,1); // Hide iPhone address bar.
     setTimeout(function() { $('#splash').css('display', 'none');$('.backButton').addClass('show');}, 1000);
     const gmc = GoogleMapComponent;
     gmc.currentCity = cityName;
