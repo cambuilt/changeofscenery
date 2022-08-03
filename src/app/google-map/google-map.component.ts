@@ -127,6 +127,9 @@ export class GoogleMapComponent implements OnInit {
       if (GoogleMapComponent.zooming == true) {
         return;
       }
+      if (GoogleMapComponent.map.getTilt() == 40) {
+        GoogleMapComponent.map.setTilt(0);
+      }
       if (GoogleMapComponent.suspendUpdate) {
         GoogleMapComponent.suspendUpdate = false;
       } else {
@@ -333,8 +336,8 @@ export class GoogleMapComponent implements OnInit {
             const firestoreDb = getFirestore(app);
             const querySnapshot = await getDocs(collection(firestoreDb, this.collectionCity));
             querySnapshot.forEach((doc) => {
-              GoogleMapComponent.places.push(doc.data());
-              GoogleMapComponent.places[GoogleMapComponent.places.length - 1]['id'] = doc.id;
+                GoogleMapComponent.places.push(doc.data());
+                GoogleMapComponent.places[GoogleMapComponent.places.length - 1]['id'] = doc.id;
             });
           } catch (e) {
             $('#loading').removeClass('show');
