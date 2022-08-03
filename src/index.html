@@ -25,6 +25,8 @@
         <meta name="theme-color" content="#1976d2">
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
         <script>
+            window.scrollTo(0,1); // Hide iPhone address bar.
+
             function initMap() {
                 map = new google.maps.Map(document.getElementById("google_map"), {
                     center: {lat: 32.7738678, lng: -79.9283298},

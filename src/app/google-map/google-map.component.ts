@@ -127,9 +127,6 @@ export class GoogleMapComponent implements OnInit {
       if (GoogleMapComponent.zooming == true) {
         return;
       }
-      if (GoogleMapComponent.map.getTilt() == 40) {
-        GoogleMapComponent.map.setTilt(0);
-      }
       if (GoogleMapComponent.suspendUpdate) {
         GoogleMapComponent.suspendUpdate = false;
       } else {
