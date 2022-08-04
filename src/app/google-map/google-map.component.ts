@@ -26,6 +26,7 @@ export class GoogleMapComponent implements OnInit {
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
+  public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
   public static markers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -364,21 +365,26 @@ export class GoogleMapComponent implements OnInit {
 
     this.places.forEach(place => {
       const marker = GoogleMapComponent.markers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
-      const markerVisible = place['visible'] == undefined || place['visible'] == false ? false : true;
-      if (place.Area == this.currentMarker || city == 'charleston' || city == 'washingtondc' || (this.currentMarker == 'Marshfield' && place.Area == 'Brant Rock')) {
-        if (markerVisible == false) {
-            this.placeTotal++;
-            this.createMarker(place);            
-          // }
-        } else {            
-          if (marker != undefined) {
-            GoogleMapComponent.updateIcon(place, marker, false);
+      if (GoogleMapComponent.markerFilter.find(m => m == place.Type) != undefined) {
+        const markerVisible = place['visible'] == undefined || place['visible'] == false ? false : true;
+        if (place.Area == this.currentMarker || city == 'charleston' || city == 'washingtondc' || (this.currentMarker == 'Marshfield' && place.Area == 'Brant Rock')) {
+          if (markerVisible == false) {
+              this.placeTotal++;
+              this.createMarker(place);            
+            // }
+          } else {            
+            if (marker != undefined) {
+              GoogleMapComponent.updateIcon(place, marker, false);
+            }
           }
-        }
-      } else if (markerVisible == true) {
+        } else if (markerVisible == true) {
+          marker.setMap(null);
+          place['visible'] = false;
+        }      
+      } else {
         marker.setMap(null);
         place['visible'] = false;
-      }      
+      }
     });
 
     this.animations.forEach(animate => {
@@ -421,6 +427,7 @@ export class GoogleMapComponent implements OnInit {
     this.map.setTilt(tilt);
     this.map.setHeading(heading); 
     this.toggleLanding('off');
+    GoogleMapComponent.hideAppMenu();
     
     if (markerName == 'Boston') {
       this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(false);
@@ -1215,6 +1222,19 @@ public unlike() {
     } catch (e) {
       console.error("Error updating document: ", e);
     }
+}
+
+public toggleType(event) {
+  var typeName = event.srcElement.innerHTML;
+  var typeId = Number(event.srcElement.dataset.typeid);
+  if (typeName.indexOf('✔️') == 0) {    
+    GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== typeId);
+    event.srcElement.innerHTML = typeName.substring(2);
+  } else {
+    GoogleMapComponent.markerFilter.push(Number(typeId));
+    event.srcElement.innerHTML = '✔️ ' + typeName;
+  }
+  GoogleMapComponent.updateHouseMarkers(false)
 }
 
   async addDocument() {
