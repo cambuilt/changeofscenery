@@ -381,7 +381,7 @@ export class GoogleMapComponent implements OnInit {
           marker.setMap(null);
           place['visible'] = false;
         }      
-      } else {
+      } else if (marker != undefined) {
         marker.setMap(null);
         place['visible'] = false;
       }
@@ -1160,6 +1160,7 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static sanitizeName(name) {
+    if (name == undefined) { return ""; }
     return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e').replaceAll('+', '');
   }
 
