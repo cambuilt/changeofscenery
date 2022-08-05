@@ -184,12 +184,13 @@ firebase-ui {
     display: none;
 }
 
-.typeLarge {
+.typeSelected, .typeUnselected {
+    color: black;
     font-size:15px;
     white-space:nowrap;
 }
 
-.typeSmall {
-    font-size:12px;
-    white-space:nowrap;
+.typeUnselected {
+    color: silver;
 }
+

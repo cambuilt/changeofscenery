@@ -32,12 +32,12 @@
 <div id="alert"></div>
 <div class="appMenu">
     <ul>
+        <li class="appMenuItem"><div class="row"><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="1">Dining</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="2">Shopping</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="3">Hotel</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="4">History</div></div></li>
+        <li class="appMenuItem"><div class="row"><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="5">Museum</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="6">Theater</div><div class="col-3 typeUnselected" (click)="toggleType($event)" data-typeid="7">Fun</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="8">Pharmacy</div></div></li>
+        <li class="appMenuItem"><div class="row"><div class="col-3 typeUnselected" (click)="toggleType($event)" data-typeid="9">Beauty</div><div class="col-3 typeUnselected" (click)="toggleType($event)" data-typeid="10">Gym</div><div class="col-3 typeSelected" (click)="toggleType($event)" data-typeid="11">Parking</div><div class="col-3 typeUnelected" (click)="toggleType($event)" data-typeid="12">Bank</div></div></li>
+        <li class="appMenuItem"><hr/></li>
         <li class="appMenuItem"><div class="row"><div class="col-6" (click)="showAbout()">About</div><div class="col-6" (click)="sendContactEmail()">Contact</div></div></li>
         <li class="appMenuItem"><div class="row"><div class="col-6" (click)="goToMarketing()">Marketing</div><div class="col-6" (click)="logout()">Log Out</div></div></li>
-        <li class="appMenuItem"><hr/></li>
-        <li class="appMenuItem"><div class="row"><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="1">✔️ Dining</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="2">✔️ Shopping</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="3">✔️ Hotel</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="4">✔️ History</div></div></li>
-        <li class="appMenuItem"><div class="row"><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="5">✔️ Museum</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="6">✔️ Theater</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="7">✔️ Fun</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="8">✔️ Pharmacy</div></div></li>
-        <li class="appMenuItem"><div class="row"><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="9">✔️ Beauty</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="10">✔️ Gym</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="11">✔️ Parking</div><div class="col-3 typeLarge" (click)="toggleType($event)" data-typeid="12">✔️ Bank</div></div></li>
     </ul>
     <div style="height:110px;"></div>
 </div>

@@ -26,7 +26,7 @@ export class GoogleMapComponent implements OnInit {
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
-  public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+  public static markerFilter: any = [1,2,3,4,5,6,8,11];
   public static markers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -370,6 +370,9 @@ export class GoogleMapComponent implements OnInit {
         if (place.Area == this.currentMarker || city == 'charleston' || city == 'washingtondc' || (this.currentMarker == 'Marshfield' && place.Area == 'Brant Rock')) {
           if (markerVisible == false) {
               this.placeTotal++;
+              if (place.Name == 'Grand Hyatt') {
+                console.log('creating Grand Hyatt');
+              }
               this.createMarker(place);            
             // }
           } else {            
@@ -383,6 +386,9 @@ export class GoogleMapComponent implements OnInit {
         }      
       } else if (marker != undefined) {
         marker.setMap(null);
+        if (place.Name == 'Grand Hyatt') {
+          console.log('removing Grand Hyatt');
+        }
         place['visible'] = false;
       }
     });
@@ -859,6 +865,10 @@ export class GoogleMapComponent implements OnInit {
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
 
+      if (place.Name == 'Grand Hyatt') {
+        console.log('creating marker Grand Hyatt');
+      }
+
       const houseMarker = new google.maps.Marker({
         position: {lat: Number(place.Location.latitude), lng: Number(place.Location.longitude)},
         title: place.Address,
@@ -1225,16 +1235,21 @@ public unlike() {
     }
 }
 
-public toggleType(event) {
-  var typeName = event.srcElement.innerHTML;
+public toggleType(event) {  
   var typeId = Number(event.srcElement.dataset.typeid);
-  if (typeName.indexOf('✔️') == 0) {    
+  var typeClasses = event.srcElement.classList;  
+  if (typeClasses['1'] == 'typeSelected') {
+    typeClasses.remove('typeSelected');
+    typeClasses.add('typeUnselected');
     GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== typeId);
-    event.srcElement.innerHTML = typeName.substring(2);
+    console.log(GoogleMapComponent.markerFilter);
   } else {
-    GoogleMapComponent.markerFilter.push(Number(typeId));
-    event.srcElement.innerHTML = '✔️ ' + typeName;
+    typeClasses.remove('typeUnselected');
+    typeClasses.add('typeSelected');
+    GoogleMapComponent.markerFilter.push(typeId);    
   }
+  console.log(typeClasses);
+  console.log(GoogleMapComponent.markerFilter);
   GoogleMapComponent.updateHouseMarkers(false)
 }
 
