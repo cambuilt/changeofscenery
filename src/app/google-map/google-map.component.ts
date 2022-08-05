@@ -398,6 +398,17 @@ export class GoogleMapComponent implements OnInit {
     this.placeTotal = 0;
   }
 
+  openAppMenu() {
+    if ($('.appMenu').css('display') == 'block') {
+      this.hideAppMenu();
+    } else {
+      $('#mapLogo').hide();
+      $('.appMenu').css('display', 'block');
+      $('.appMenu').removeClass('close');    
+      $('.appMenu').addClass('open');    
+    }
+  }
+
   public hideAppMenu() {
     GoogleMapComponent.hideAppMenu();
   }
@@ -408,7 +419,7 @@ export class GoogleMapComponent implements OnInit {
     $('.appMenu').css('display', 'none');
     $('#mapLogo').show();
   }
-
+  
   public hideSplash() {
     $('#splash').addClass('hide');
     $('#splash').css('display', 'none');    
@@ -903,7 +914,8 @@ export class GoogleMapComponent implements OnInit {
       });
       let map = GoogleMapComponent.map;
   
-      houseMarker.addListener('click', () => {              
+      houseMarker.addListener('click', () => {
+        GoogleMapComponent.hideAppMenu();              
         GoogleMapComponent.currentPlace = place;
         GoogleMapComponent.lastCenter = GoogleMapComponent.map.getCenter();
         GoogleMapComponent.lastZoomLevel = GoogleMapComponent.map.getZoom();
@@ -1105,13 +1117,6 @@ export class GoogleMapComponent implements OnInit {
         : "Error: Your browser doesn't support geolocation."
     );
     infoWindow.open(GoogleMapComponent.map);
-  }
-
-  openAppMenu() {
-    $('#mapLogo').hide();
-    $('.appMenu').css('display', 'block');
-    $('.appMenu').removeClass('close');    
-    $('.appMenu').addClass('open');    
   }
 
   sendContactEmail() {
