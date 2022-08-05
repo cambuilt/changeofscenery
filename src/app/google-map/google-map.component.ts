@@ -1227,19 +1227,16 @@ public unlike() {
 
 public toggleType(event) {  
   var typeId = Number(event.srcElement.dataset.typeid);
-  var typeClasses = event.srcElement.classList;  
+  var typeClasses = event.srcElement.classList;
   if (typeClasses['1'] == 'typeSelected') {
     typeClasses.remove('typeSelected');
     typeClasses.add('typeUnselected');
     GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== typeId);
-    console.log(GoogleMapComponent.markerFilter);
   } else {
     typeClasses.remove('typeUnselected');
     typeClasses.add('typeSelected');
     GoogleMapComponent.markerFilter.push(typeId);    
   }
-  console.log(typeClasses);
-  console.log(GoogleMapComponent.markerFilter);
   GoogleMapComponent.updateHouseMarkers(false)
 }
 
