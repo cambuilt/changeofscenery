@@ -366,30 +366,20 @@ export class GoogleMapComponent implements OnInit {
     this.places.forEach(place => {
       const marker = GoogleMapComponent.markers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
       if (GoogleMapComponent.markerFilter.find(m => m == place.Type) != undefined) {
-        const markerVisible = place['visible'] == undefined || place['visible'] == false ? false : true;
         if (place.Area == this.currentMarker || city == 'charleston' || city == 'washingtondc' || (this.currentMarker == 'Marshfield' && place.Area == 'Brant Rock')) {
-          if (markerVisible == false) {
+          if (marker == undefined) {
               this.placeTotal++;
-              if (place.Name == 'Grand Hyatt') {
-                console.log('creating Grand Hyatt');
-              }
               this.createMarker(place);            
             // }
           } else {            
-            if (marker != undefined) {
-              GoogleMapComponent.updateIcon(place, marker, false);
-            }
+            marker.setMap(GoogleMapComponent.map);
+            GoogleMapComponent.updateIcon(place, marker, false);
           }
-        } else if (markerVisible == true) {
+        } else if (marker != null) {
           marker.setMap(null);
-          place['visible'] = false;
         }      
       } else if (marker != undefined) {
         marker.setMap(null);
-        if (place.Name == 'Grand Hyatt') {
-          console.log('removing Grand Hyatt');
-        }
-        place['visible'] = false;
       }
     });
 
