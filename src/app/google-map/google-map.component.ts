@@ -26,7 +26,7 @@ export class GoogleMapComponent implements OnInit {
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
-  public static markerFilter: any = [1,2,3,4,5,6,8,11];
+  public static markerFilter: any = [1,2,3,4,5,6,7,8,11,12];
   public static markers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -370,7 +370,6 @@ export class GoogleMapComponent implements OnInit {
           if (marker == undefined) {
               this.placeTotal++;
               this.createMarker(place);            
-            // }
           } else {            
             marker.setMap(GoogleMapComponent.map);
             GoogleMapComponent.updateIcon(place, marker, false);
@@ -392,9 +391,6 @@ export class GoogleMapComponent implements OnInit {
     this.markers.forEach(marker => {
       marker.setMap(null);
     });
-    this.places.forEach(place => {
-      place['visible'] = false;
-    });        
     this.placeTotal = 0;
   }
 
@@ -832,9 +828,6 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static createMarker(place: any) {    
-    if (place['visible'] == undefined || place['visible'] == false) {
-      place['visible'] = true;
-    }
     const zoomFactor = this.getZoomFactor(place);
     const iconId = this.sanitizeName(place.Name);
     var img = new Image();
@@ -865,10 +858,6 @@ export class GoogleMapComponent implements OnInit {
       var n = place.Name;
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
-
-      if (place.Name == 'Grand Hyatt') {
-        console.log('creating marker Grand Hyatt');
-      }
 
       const houseMarker = new google.maps.Marker({
         position: {lat: Number(place.Location.latitude), lng: Number(place.Location.longitude)},
@@ -950,7 +939,7 @@ export class GoogleMapComponent implements OnInit {
           }
         }, 50);
       });
-  
+
       GoogleMapComponent.markers.push(houseMarker);      
       $('#loading').hide();      
     }
