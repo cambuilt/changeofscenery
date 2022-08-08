@@ -377,7 +377,8 @@ export class GoogleMapComponent implements OnInit {
         } else if (marker != null) {
           marker.setMap(null);
         }      
-      } else if (marker != undefined) {
+      } else if (marker != undefined && place.Name != undefined) {
+        console.log('set map to null for place', place);
         marker.setMap(null);
       }
     });
@@ -1158,7 +1159,7 @@ export class GoogleMapComponent implements OnInit {
 
   public static sanitizeName(name) {
     if (name == undefined) { return ""; }
-    return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e').replaceAll('+', '');
+    return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e').replaceAll('+', '').replaceAll('ã', 'a');
   }
 
   public like() {
