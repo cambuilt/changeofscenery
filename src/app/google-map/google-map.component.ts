@@ -28,6 +28,7 @@ export class GoogleMapComponent implements OnInit {
   public static likedPlaces: any = [];
   public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
   public static markers: google.maps.Marker[] = [];
+  public static browseQuadrants: any = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
   public static cloudinaryPath;
@@ -55,6 +56,7 @@ export class GoogleMapComponent implements OnInit {
   public static currentUser: any;  
   public static onLanding = true;
   public static zooming = false;
+  public static browseMode = false;
   public static sizeMultiple = 76;
   public static cities = [{name:'charleston', displayName: 'Charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
                           {name:'boston', displayName: 'Boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
@@ -128,10 +130,12 @@ export class GoogleMapComponent implements OnInit {
       if (GoogleMapComponent.zooming == true) {
         return;
       }
+      if (GoogleMapComponent.browseMode) {
+      }
       if (GoogleMapComponent.suspendUpdate) {
         GoogleMapComponent.suspendUpdate = false;
       } else {
-        GoogleMapComponent.updateHouseMarkers(false);
+        // GoogleMapComponent.updateHouseMarkers(false);
       }
       // console.log(`center: {lat: ${GoogleMapComponent.map.getCenter().lat()}, lng: ${GoogleMapComponent.map.getCenter().lng()}},`);
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
@@ -308,6 +312,11 @@ export class GoogleMapComponent implements OnInit {
       icon = {url: 'assets/washingtondc/PennQuarter.svg',scaledSize: new google.maps.Size(67, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.89731, lng: -77.02291}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
       gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 16, 360, 40); });
+
+      gmc.browseQuadrants.push({ name: 'Penn Quarter 7th to 9th', north: 38.89982, west: -77.02396, south: 38.89339, east: -77.02193 })
+      gmc.browseQuadrants.push({ name: 'Penn Quarter 9th to 10th', north: 38.89984, west: -77.02598, south: 38.89397, east: -77.02399 })
+      gmc.browseQuadrants.push({ name: 'Penn Quarter 10th to 12th', north: 38.89981, west: -77.02810, south: 38.89405, east: -77.02605 })
+      gmc.browseQuadrants.push({ name: 'Penn Quarter 12th to 14th', north: 38.89940, west: -77.03191, south: 38.89499, east: -77.02810 })
     }  
 
     const config = require('./config.js');
@@ -1115,6 +1124,19 @@ export class GoogleMapComponent implements OnInit {
   sendContactEmail() {
     document.location.href = 'mailto:info@changeofscenery.marketing?subject=CoS%20' + GoogleMapComponent.collectionCity + '%20Contact';
     GoogleMapComponent.hideAppMenu();
+  }
+
+  toggleBrowseMode() {
+    var browseModeElement = document.getElementById("browseMode") as HTMLElement;
+    if (GoogleMapComponent.browseMode) {
+      browseModeElement.classList.remove('typeSelected');
+      browseModeElement.classList.add('typeUnselected');
+      GoogleMapComponent.browseMode = false;
+    } else {
+      browseModeElement.classList.remove('typeUnselected');
+      browseModeElement.classList.add('typeSelected');
+      GoogleMapComponent.browseMode = true;
+    }
   }
 
   goToMarketing() {
