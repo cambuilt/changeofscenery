@@ -21,13 +21,14 @@ export class GoogleMapComponent implements OnInit {
   public static lastCenter;
   public static lastZoomLevel;
   public static lastTilt;
-  public static lastHeading;  
+  public static lastHeading;
+  public static placeCount = 0; 
   userLocationMarker: google.maps.Marker;
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
   public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
-  public static markers: google.maps.Marker[] = [];
+  public static placeMarkers: google.maps.Marker[] = [];
   public static browseQuadrants: any = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -311,7 +312,7 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[1].addListener('click', () => { gmc.selectArea('Chinatown', 38.90056, -77.021, 17, 360, 40); });
       icon = {url: 'assets/washingtondc/PennQuarter.svg',scaledSize: new google.maps.Size(67, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.89731, lng: -77.02291}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 16, 360, 40); });
+      gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 18, 360, 40); });
 
       gmc.browseQuadrants.push({ name: 'Penn Quarter 7th to 9th', north: 38.89982, west: -77.02396, south: 38.89339, east: -77.02193 })
       gmc.browseQuadrants.push({ name: 'Penn Quarter 9th to 10th', north: 38.89984, west: -77.02598, south: 38.89397, east: -77.02399 })
@@ -330,26 +331,28 @@ export class GoogleMapComponent implements OnInit {
     if (this.currentArea == '') {
       return;
     }    
+
     const zoom = this.map.getZoom();    
+
     if (zoom > 11 || (this.currentArea == 'Marshfield' && zoom > 11)) {
       if ($('.backButton').hasClass('show') == false) {
         setTimeout(function () {$('.backButton').addClass('show');}, 1000);
-      }   
-      if (this.markers.length == 0) {
-        if (this.places.length == 0) {
-          $('#loading').addClass('show');          
+      }
+      if (this.placeMarkers.length == 0) {
+        if (this.places.length == 0) {          
           try {
             const config = require('./config.js');
             const app = initializeApp(config);
             const firestoreDb = getFirestore(app);
             const querySnapshot = await getDocs(collection(firestoreDb, this.collectionCity));
+            console.log(querySnapshot);
             querySnapshot.forEach((doc) => {
                 GoogleMapComponent.places.push(doc.data());
                 GoogleMapComponent.places[GoogleMapComponent.places.length - 1]['id'] = doc.id;
             });
           } catch (e) {
-            $('#loading').removeClass('show');
-            $('#loading').hide();
+            //$('#loading').removeClass('show');
+            // $('#loading').hide();
             console.error("Error loading places: ", e);
             alert('Cannot get places, maybe due to weak Internet connection.');
           }      
@@ -364,8 +367,8 @@ export class GoogleMapComponent implements OnInit {
       this.clearHouseMarkers();
       this.toggleLanding('on');
     }
-    $('#loading').removeClass('show');
-    $('#loading').hide();
+    // $('#loading').removeClass('show');
+    // $('#loading').hide();
   }
 
   public static updateHouseMarkers(zooming:boolean) {
@@ -373,7 +376,7 @@ export class GoogleMapComponent implements OnInit {
     const city = GoogleMapComponent.currentCity;
 
     this.places.forEach(place => {
-      const marker = GoogleMapComponent.markers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
+      const marker = GoogleMapComponent.placeMarkers.find(m => m.getTitle() == place.Name);
       if (GoogleMapComponent.markerFilter.find(m => m == place.Type) != undefined) {
         if (place.Area == this.currentArea || city == 'charleston' || (this.currentArea == 'Marshfield' && place.Area == 'Brant Rock')) {
           if (marker == undefined) {
@@ -397,8 +400,151 @@ export class GoogleMapComponent implements OnInit {
     });
   }
 
+  public static createMarker(place: any) {    
+    const zoomFactor = this.getZoomFactor(place);
+    const iconId = this.sanitizeName(place.Name);
+    var img = new Image();
+
+    img.onload = function() {
+      const city = GoogleMapComponent.currentCity; 
+      place['imgWidth'] = img.width;
+      place['imgHeight'] = img.height;
+      var name = city == 'charleston' ? place.Address : GoogleMapComponent.sanitizeName(place.Name);
+      var scaledSize = new google.maps.Size(img.width * zoomFactor, img.height * zoomFactor);      
+      var url = GoogleMapComponent.cloudinaryPath + 'icons/' + name + '.png';
+      var heartIcon = 'heart_empty';
+      var likesText = place.Likes == 0 ? '0 likes' : place.Likes == 1 ? '1 like' : place.Likes + ' likes';
+
+      if (GoogleMapComponent.likedPlaces.length > 0) {        
+        if (GoogleMapComponent.likedPlaces.find(x => x == iconId) != undefined) {
+          const heartX = String(img.width/3).split('.')[0];
+          const heartY = String(-(img.height/3)).split('.')[0];          
+          url = url.replace('/upload/', '/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/');
+          heartIcon = 'heart';
+        }
+      }
+
+      var icon: google.maps.Icon = {
+        url: url,
+        scaledSize: scaledSize
+      };
+
+      if (place.SpriteHeight != undefined) {
+        place['imgWidth'] = place.SpriteWidth;
+        place['imgHeight'] = place.SpriteHeight;
+        const origin = new google.maps.Point(place.SpriteX * zoomFactor, place.SpriteY * zoomFactor);
+        const size = new google.maps.Size(place.SpriteWidth * zoomFactor, place.SpriteHeight * zoomFactor);
+        scaledSize = new google.maps.Size(11000 * zoomFactor, 2000 * zoomFactor);
+        url = GoogleMapComponent.cloudinaryPath + 'icons/Sprites' + place.SpriteIndex + '.png';
+        icon = { url: url, origin: origin, size: size, scaledSize: scaledSize };
+      } 
+
+      var n = place.Name;
+      var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
+      var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
+
+      const placeMarker = new google.maps.Marker({
+        position: {lat: Number(place.Location.latitude), lng: Number(place.Location.longitude)},
+        title: place.Name,
+        icon: icon,
+        optimized: true,
+        animation: animated,
+        map: GoogleMapComponent.map,
+        zIndex: zIndex
+      });
+
+      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
+      const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
+      const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
+      const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
+      const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
+      var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
+      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
+      `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
+      `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
+      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + GoogleMapComponent.currentArea, '')}</span></td><td></td></tr>` + 
+      `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
+      `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
+      `<tr colspan="2" style="height:80%;"><td class="notes">${place.Notes}</td></tr></table>` + 
+      `</td></tr><tr><td></td></tr></table></div>`;
+
+      if (place.Name == 'Bin26Enoteca') {
+        contentString = "<img src=\"https://res.cloudinary.com/backyardhiddengems-com/image/upload/Boston/Bin26EnotecaBG.png\" width=\"" + bgWidth + "\"" + 
+                        " style=\"margin-bottom:-10px;cursor:pointer;\" onclick=\"window.open('http://bin26.com/');\" />" + 
+                        "<div class=\"popup\">" + 
+                        "   <h1 style=\"margin-bottom:24px;\">Bin 26 Enoteca is a Beacon Hill neighborhood restaurant with a seasonally driven menu and international list of old world wines.</h1>" + 
+                        "   <a href=\"http://bin26.com/reservations-2/\" target=\"_blank\">Reservations</a><br/><br/>" + 
+                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-Wine-list-8.pdf\" target=\"_blank\">Wines by the Glass &amp; Beer</a><br/><br/>" + 
+                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-3.pdf\" target=\"_blank\">Cellar List</a><br/><br/>" + 
+                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Dinner-Menu-2022-4.pdf\" target=\"_blank\">Dinner Menu</a><a href=\"http://bin26.com/\" target=\"_blank\" style=\"margin-left:110px;\">Full Website</a>" + 
+                        "</div>";
+      }
+  
+      const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
+      
+      markerInfoWindow.addListener('closeclick', () => {
+        GoogleMapComponent.infoWindowClosing();
+      });
+      let map = GoogleMapComponent.map;
+  
+      placeMarker.addListener('click', () => {
+        GoogleMapComponent.hideAppMenu();              
+        GoogleMapComponent.currentPlace = place;
+        GoogleMapComponent.lastCenter = GoogleMapComponent.map.getCenter();
+        GoogleMapComponent.lastZoomLevel = GoogleMapComponent.map.getZoom();
+        GoogleMapComponent.lastTilt = GoogleMapComponent.map.getTilt();
+        GoogleMapComponent.lastHeading = GoogleMapComponent.map.getHeading();
+        // houseMarker.setAnimation(google.maps.Animation.BOUNCE);
+        // setTimeout(function () {houseMarker.setAnimation(null);}, 500);
+        if (GoogleMapComponent.onLanding == true) {
+          return;
+        }
+        if (GoogleMapComponent.lastInfoWindow != undefined) {
+          GoogleMapComponent.lastInfoWindow.close();
+        } 
+        GoogleMapComponent.lastInfoWindow = markerInfoWindow;            
+        var anchor: google.maps.MVCObject = new google.maps.MVCObject(); 
+        let latDelta = city == 'boston' ? 0.000 : 0.004;
+        let lngDelta = city == 'boston' ? 0.000 : -0.003;
+        anchor.set('position', {lat: placeMarker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: placeMarker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
+        GoogleMapComponent.updateHouseMarkers(false);
+        GoogleMapComponent.suspendUpdate = true;
+        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown' || n == 'Penn Quarter';
+        GoogleMapComponent.updateIcon(place, placeMarker, selectIcon);
+        markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
+        setTimeout(function () {
+          const iconId = GoogleMapComponent.sanitizeName(place.Name);  
+          if (GoogleMapComponent.likedPlaces.find(x => x == iconId) != undefined) {
+            $('#likedHeart' + iconId).attr('src', 'assets/heart.png');
+          }
+          if (GoogleMapComponent.currentPlace.Likes > 0) {
+            const plural = GoogleMapComponent.currentPlace.Likes != 1 ? 's' : '';
+            $('#likeCount' + iconId).text(GoogleMapComponent.currentPlace.Likes + ' like' + plural);
+          }
+        }, 50);
+      });
+
+      GoogleMapComponent.placeMarkers.push(placeMarker);
+      GoogleMapComponent.placeCount++;
+
+      if (GoogleMapComponent.placeCount == GoogleMapComponent.placeTotal) {
+        setTimeout(function() {
+         $('#loading').removeClass('show');
+        }, 2000);
+      }
+    }
+
+    var name = GoogleMapComponent.currentCity == 'charleston' ? place.Address : this.sanitizeName(place.Name);
+
+    if (place.SpriteHeight != undefined) {
+      img.src = this.cloudinaryPath + 'icons/Sprites' + place.SpriteIndex + '.png';
+    } else {
+      img.src = this.cloudinaryPath + 'icons/' + name + '.png';    
+    }
+  }
+
   public static clearHouseMarkers() {
-    this.markers.forEach(marker => {
+    this.placeMarkers.forEach(marker => {
       marker.setMap(null);
     });
     this.placeTotal = 0;
@@ -432,6 +578,8 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static selectArea(areaName, lat, lng, zoom, heading, tilt) {
+    $('#loading').addClass('show');
+    GoogleMapComponent.placeCount = 0;
     this.currentArea = areaName;
     this.onLanding = false;
     this.zooming = true;    
@@ -440,7 +588,7 @@ export class GoogleMapComponent implements OnInit {
     this.map.setTilt(tilt);
     this.map.setHeading(heading); 
     this.toggleLanding('off');
-    GoogleMapComponent.hideAppMenu();
+    GoogleMapComponent.hideAppMenu();    
     
     if (areaName == 'Boston') {
       this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(false);
@@ -802,7 +950,7 @@ export class GoogleMapComponent implements OnInit {
         this.map.setTilt(this.cities.find(x => x.name == city).tilt);
         this.updateHouseMarkerCounter = -1;
         this.clearHouseMarkers();
-        this.markers = [];
+        this.placeMarkers = [];
         this.places = [];
         var index = 6;
         if (this.currentArea == 'Boston') {
@@ -840,127 +988,6 @@ export class GoogleMapComponent implements OnInit {
     } 
   }
 
-  public static createMarker(place: any) {    
-    const zoomFactor = this.getZoomFactor(place);
-    const iconId = this.sanitizeName(place.Name);
-    var img = new Image();
-
-    img.onload = function() {
-      const city = GoogleMapComponent.currentCity; 
-      place['imgWidth'] = img.width;
-      place['imgHeight'] = img.height;
-      var scaledSize = new google.maps.Size(img.width * zoomFactor, img.height * zoomFactor);
-      const name = city == 'charleston' ? place.Address : place.Name;
-      var url = GoogleMapComponent.cloudinaryPath + 'icons/' + GoogleMapComponent.sanitizeName(name) + '.png';
-      var heartIcon = 'heart_empty';
-      var likesText = place.Likes == 0 ? '0 likes' : place.Likes == 1 ? '1 like' : place.Likes + ' likes';
-
-      if (GoogleMapComponent.likedPlaces.length > 0) {        
-        if (GoogleMapComponent.likedPlaces.find(x => x == iconId) != undefined) {
-          const heartX = String(img.width/3).split('.')[0];
-          const heartY = String(-(img.height/3)).split('.')[0];          
-          url = url.replace('/upload/', '/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/');
-          heartIcon = 'heart';
-        }
-      }
-
-      var icon: google.maps.Icon = {
-        url: url,
-        scaledSize: scaledSize
-      };
-      var n = place.Name;
-      var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
-      var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
-
-      const houseMarker = new google.maps.Marker({
-        position: {lat: Number(place.Location.latitude), lng: Number(place.Location.longitude)},
-        title: place.Address,
-        icon: icon,
-        optimized: true,
-        animation: animated,
-        map: GoogleMapComponent.map,
-        zIndex: zIndex
-      });
-
-      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
-      const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
-      const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
-      const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
-      const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
-      var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
-      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${GoogleMapComponent.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
-      `width='180px' height='180px' onclick='scrollImage("${GoogleMapComponent.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
-      `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
-      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + GoogleMapComponent.currentArea, '')}</span></td><td></td></tr>` + 
-      `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
-      `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
-      `<tr colspan="2" style="height:80%;"><td class="notes">${place.Notes}</td></tr></table>` + 
-      `</td></tr><tr><td></td></tr></table></div>`;
-
-      if (place.Name == 'Bin26Enoteca') {
-        contentString = "<img src=\"https://res.cloudinary.com/backyardhiddengems-com/image/upload/Boston/Bin26EnotecaBG.png\" width=\"" + bgWidth + "\"" + 
-                        " style=\"margin-bottom:-10px;cursor:pointer;\" onclick=\"window.open('http://bin26.com/');\" />" + 
-                        "<div class=\"popup\">" + 
-                        "   <h1 style=\"margin-bottom:24px;\">Bin 26 Enoteca is a Beacon Hill neighborhood restaurant with a seasonally driven menu and international list of old world wines.</h1>" + 
-                        "   <a href=\"http://bin26.com/reservations-2/\" target=\"_blank\">Reservations</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-Wine-list-8.pdf\" target=\"_blank\">Wines by the Glass &amp; Beer</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-3.pdf\" target=\"_blank\">Cellar List</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Dinner-Menu-2022-4.pdf\" target=\"_blank\">Dinner Menu</a><a href=\"http://bin26.com/\" target=\"_blank\" style=\"margin-left:110px;\">Full Website</a>" + 
-                        "</div>";
-      }
-  
-      const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
-      
-      markerInfoWindow.addListener('closeclick', () => {
-        GoogleMapComponent.infoWindowClosing();
-      });
-      let map = GoogleMapComponent.map;
-  
-      houseMarker.addListener('click', () => {
-        GoogleMapComponent.hideAppMenu();              
-        GoogleMapComponent.currentPlace = place;
-        GoogleMapComponent.lastCenter = GoogleMapComponent.map.getCenter();
-        GoogleMapComponent.lastZoomLevel = GoogleMapComponent.map.getZoom();
-        GoogleMapComponent.lastTilt = GoogleMapComponent.map.getTilt();
-        GoogleMapComponent.lastHeading = GoogleMapComponent.map.getHeading();
-        // houseMarker.setAnimation(google.maps.Animation.BOUNCE);
-        // setTimeout(function () {houseMarker.setAnimation(null);}, 500);
-        if (GoogleMapComponent.onLanding == true) {
-          return;
-        }
-        if (GoogleMapComponent.lastInfoWindow != undefined) {
-          GoogleMapComponent.lastInfoWindow.close();
-        } 
-        GoogleMapComponent.lastInfoWindow = markerInfoWindow;            
-        var anchor: google.maps.MVCObject = new google.maps.MVCObject(); 
-        let latDelta = city == 'boston' ? 0.000 : 0.004;
-        let lngDelta = city == 'boston' ? 0.000 : -0.003;
-        anchor.set('position', {lat: houseMarker.getPosition().lat() + (latDelta / GoogleMapComponent.map.getZoom()), lng: houseMarker.getPosition().lng() + (lngDelta / GoogleMapComponent.map.getZoom())});
-        GoogleMapComponent.updateHouseMarkers(false);
-        GoogleMapComponent.suspendUpdate = true;
-        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown' || n == 'Penn Quarter';
-        GoogleMapComponent.updateIcon(place, houseMarker, selectIcon);
-        markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
-        setTimeout(function () {
-          const iconId = GoogleMapComponent.sanitizeName(place.Name);  
-          if (GoogleMapComponent.likedPlaces.find(x => x == iconId) != undefined) {
-            $('#likedHeart' + iconId).attr('src', 'assets/heart.png');
-          }
-          if (GoogleMapComponent.currentPlace.Likes > 0) {
-            const plural = GoogleMapComponent.currentPlace.Likes != 1 ? 's' : '';
-            $('#likeCount' + iconId).text(GoogleMapComponent.currentPlace.Likes + ' like' + plural);
-          }
-        }, 50);
-      });
-
-      GoogleMapComponent.markers.push(houseMarker);      
-      $('#loading').hide();      
-    }
-
-    const name = GoogleMapComponent.currentCity == 'charleston' ? place.Address : place.Name;
-    img.src = this.cloudinaryPath + 'icons/' + this.sanitizeName(name) + '.png';    
-  }
-
   public static infoWindowClosing() {
     this.map.setCenter({lat: this.lastCenter.lat(), lng: this.lastCenter.lng()});
     this.map.setZoom(this.lastZoomLevel);
@@ -970,24 +997,35 @@ export class GoogleMapComponent implements OnInit {
 
   public static updateIcon(place:any, marker:google.maps.Marker, select:boolean) {
     let zoomFactor = this.getZoomFactor(place);
+    
     if (select) {
       zoomFactor += 0.1;
     }
 
     const imgWidth = Number(place.imgWidth);
     const imgHeight = Number(place.imgHeight);
-    const scaledSize = new google.maps.Size(imgWidth * zoomFactor, imgHeight * zoomFactor);
+    var scaledSize: google.maps.Size;
     var newUrl = marker.getIcon()['url'];
+
     if (newUrl.indexOf('/l_v') == -1) {
       var heartX = String(imgWidth / 3).split('.')[0];
       var heartY = String(-(imgHeight/3)).split('.')[0];
       newUrl = newUrl.replace('/v', '/l_v1655671870:heart.png,x_' + heartX + ',y_' + heartY + '/v');
     }
 
-    const icon: google.maps.Icon = {
-      url: newUrl,
-      scaledSize: scaledSize
-    };
+    var icon: google.maps.Icon;
+
+    if (place.SpriteHeight != undefined) {
+      place['imgWidth'] = place.SpriteWidth;
+      place['imgHeight'] = place.SpriteHeight;
+      const origin = new google.maps.Point(place.SpriteX * zoomFactor, place.SpriteY * zoomFactor);
+      const size = new google.maps.Size(place.SpriteWidth * zoomFactor, place.SpriteHeight * zoomFactor);
+      scaledSize = new google.maps.Size(11000 * zoomFactor, 2000 * zoomFactor);
+      icon = { url: newUrl, origin: origin, size: size, scaledSize: scaledSize };
+    } else {
+      scaledSize = new google.maps.Size(imgWidth * zoomFactor, imgHeight * zoomFactor);
+      icon = { url: newUrl, scaledSize: scaledSize };
+    }
 
     marker.setIcon(icon);
   }
@@ -1201,7 +1239,7 @@ export class GoogleMapComponent implements OnInit {
       const heartX = String(place.imgWidth/3).split('.')[0];
       const heartY = String(-(place.imgHeight/3)).split('.')[0];          
       url = url.replace('/upload/', '/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/');
-      const marker = GoogleMapComponent.markers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
+      const marker = GoogleMapComponent.placeMarkers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
       const zoomFactor = GoogleMapComponent.getZoomFactor(place);
       const scaledSize = new google.maps.Size(place.imgWidth * zoomFactor, place.imgHeight * zoomFactor);
       var icon: google.maps.Icon = {
@@ -1232,7 +1270,7 @@ public unlike() {
       const heartX = String(place.imgWidth/3).split('.')[0];
       const heartY = String(-(place.imgHeight/3)).split('.')[0];          
       url = url.replace('/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/', '/upload/');
-      const marker = GoogleMapComponent.markers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
+      const marker = GoogleMapComponent.placeMarkers.find(m => m.getIcon()['url'].indexOf(GoogleMapComponent.sanitizeName(place.Name)) > -1);
       const zoomFactor = GoogleMapComponent.getZoomFactor(place);
       const scaledSize = new google.maps.Size(place.imgWidth * zoomFactor, place.imgHeight * zoomFactor);
       var icon: google.maps.Icon = {
