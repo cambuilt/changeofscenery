@@ -429,7 +429,7 @@ export class GoogleMapComponent implements OnInit {
         scaledSize: scaledSize
       };
 
-      if (place.SpriteHeight != undefined) {
+      if (false) {  // place.SpriteHeight != undefined
         place['imgWidth'] = place.SpriteWidth;
         place['imgHeight'] = place.SpriteHeight;
         const origin = new google.maps.Point(place.SpriteX * zoomFactor, place.SpriteY * zoomFactor);
@@ -536,11 +536,11 @@ export class GoogleMapComponent implements OnInit {
 
     var name = GoogleMapComponent.currentCity == 'charleston' ? place.Address : this.sanitizeName(place.Name);
 
-    if (place.SpriteHeight != undefined) {
-      img.src = this.cloudinaryPath + 'icons/Sprites' + place.SpriteIndex + '.png';
-    } else {
+    // if (place.SpriteHeight != undefined) {
+    //   img.src = this.cloudinaryPath + 'icons/Sprites' + place.SpriteIndex + '.png';
+    // } else {
       img.src = this.cloudinaryPath + 'icons/' + name + '.png';    
-    }
+    // }
   }
 
   public static clearHouseMarkers() {
@@ -588,7 +588,7 @@ export class GoogleMapComponent implements OnInit {
     this.map.setTilt(tilt);
     this.map.setHeading(heading); 
     this.toggleLanding('off');
-    GoogleMapComponent.hideAppMenu();    
+    GoogleMapComponent.hideAppMenu();
     
     if (areaName == 'Boston') {
       this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(false);
@@ -1015,7 +1015,7 @@ export class GoogleMapComponent implements OnInit {
 
     var icon: google.maps.Icon;
 
-    if (place.SpriteHeight != undefined) {
+    if (false) {  // place.SpriteHeight != undefined
       place['imgWidth'] = place.SpriteWidth;
       place['imgHeight'] = place.SpriteHeight;
       const origin = new google.maps.Point(place.SpriteX * zoomFactor, place.SpriteY * zoomFactor);
