@@ -29,7 +29,6 @@ export class GoogleMapComponent implements OnInit {
   public static likedPlaces: any = [];
   public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
   public static placeMarkers: google.maps.Marker[] = [];
-  public static browseQuadrants: any = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
   public static cloudinaryPath;
@@ -313,11 +312,9 @@ export class GoogleMapComponent implements OnInit {
       icon = {url: 'assets/washingtondc/PennQuarter.svg',scaledSize: new google.maps.Size(67, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.89731, lng: -77.02291}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
       gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 18, 360, 40); });
-
-      gmc.browseQuadrants.push({ name: 'Penn Quarter 7th to 9th', north: 38.89982, west: -77.02396, south: 38.89339, east: -77.02193 })
-      gmc.browseQuadrants.push({ name: 'Penn Quarter 9th to 10th', north: 38.89984, west: -77.02598, south: 38.89397, east: -77.02399 })
-      gmc.browseQuadrants.push({ name: 'Penn Quarter 10th to 12th', north: 38.89981, west: -77.02810, south: 38.89405, east: -77.02605 })
-      gmc.browseQuadrants.push({ name: 'Penn Quarter 12th to 14th', north: 38.89940, west: -77.03191, south: 38.89499, east: -77.02810 })
+      icon = {url: 'assets/washingtondc/FriendshipHeights.svg',scaledSize: new google.maps.Size(100, 22)};
+      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.96077, lng: -77.08574}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
+      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });
     }  
 
     const config = require('./config.js');
