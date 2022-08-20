@@ -60,7 +60,8 @@ export class GoogleMapComponent implements OnInit {
   public static sizeMultiple = 76;
   public static cities = [{name:'charleston', displayName: 'Charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
                           {name:'boston', displayName: 'Boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
-                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0}]; 
+                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.95636, lng: -77.08440}, heading:0, zoom:14, tilt:0}];  // lat: 38.88500, lng: -77.01900
+                          
   public static lastZoom = 0;
   public static updateHouseMarkerCounter = -1;
   public static intervalFunction;
@@ -314,7 +315,7 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 18, 360, 40); });
       icon = {url: 'assets/washingtondc/FriendshipHeights.svg',scaledSize: new google.maps.Size(100, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.96077, lng: -77.08574}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });
+      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 17, 360, 40); });
     }  
 
     const config = require('./config.js');
@@ -342,7 +343,6 @@ export class GoogleMapComponent implements OnInit {
             const app = initializeApp(config);
             const firestoreDb = getFirestore(app);
             const querySnapshot = await getDocs(collection(firestoreDb, this.collectionCity));
-            console.log(querySnapshot);
             querySnapshot.forEach((doc) => {
                 GoogleMapComponent.places.push(doc.data());
                 GoogleMapComponent.places[GoogleMapComponent.places.length - 1]['id'] = doc.id;
