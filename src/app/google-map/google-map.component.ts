@@ -112,7 +112,7 @@ export class GoogleMapComponent implements OnInit {
         streetViewControl: false,
         keyboardShortcuts: false,
         gestureHandling: 'greedy',
-        zoomControl: false,
+        zoomControl: true,
         fullscreenControl: false,
         mapId: 'd5860e1d98873021'
     });
@@ -1049,18 +1049,27 @@ export class GoogleMapComponent implements OnInit {
   public static getZoomFactor(place: any) {
     var zoomFactor = Number((this.map.getZoom() * 10).toFixed(0));
     var floorNumber = 210;
-    const city = this.currentCity; 
-   
-    zoomFactor -= (floorNumber - zoomFactor) * 5.5;
-    
-    if (city == 'charleston') {
-      zoomFactor *= .0004;
-    } else {
-      zoomFactor *= .0004;
-    }
+    var maxNum = .011;
 
+    if (zoomFactor > 190) {
+      maxNum = zoomFactor * 0.00014;
+    } else if (zoomFactor > 185) {
+      maxNum = zoomFactor * 0.00013;
+    } else if (zoomFactor > 180) {
+      maxNum = zoomFactor * 0.00012;
+    } else if (zoomFactor > 175) {
+      maxNum = zoomFactor * 0.00011;
+    } else if (zoomFactor > 170) {
+      maxNum = zoomFactor * 0.00010;    
+    } else if (zoomFactor > 165) {
+      maxNum = zoomFactor * 0.00008;
+    }
+      
+    const city = this.currentCity; 
+    zoomFactor -= (floorNumber - zoomFactor) * 5.5;
+    zoomFactor *= .0004;
     zoomFactor = Math.max(0.001, zoomFactor);
-    zoomFactor = Math.max(0.015, zoomFactor);
+    zoomFactor = Math.max(maxNum, zoomFactor);
 
     if (zoomFactor >= 0.08 && city == 'charleston') {
        zoomFactor *= 2;
@@ -1085,6 +1094,8 @@ export class GoogleMapComponent implements OnInit {
     } else {
       zoomFactor *= 4;
     }
+
+    console.log('zoomFactor end', zoomFactor);
 
     return zoomFactor;
   }
