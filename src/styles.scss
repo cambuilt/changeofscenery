@@ -132,28 +132,20 @@ td.splashCell {
     text-align: center;
 }
 
-.menuRow {
-    height: 60px;
-}
-
 .footerRow {
     position: absolute;
     bottom: -10px;
 }
 
-#cityCell {
+.cityCell {
+    height: 60px;
+    text-align: center;
     font-family: Futura;
     font-size: 32px;
     font-weight: 500;
     padding-top: 0px;
     padding-left: 19px;
-    opacity: 0;
-}
-
-#cityCell.show {
-    animation-duration: 2s;
-    animation-name: showCityCell;
-    opacity: 1;
+    cursor: pointer;
 }
 
 @keyframes showCityCell {

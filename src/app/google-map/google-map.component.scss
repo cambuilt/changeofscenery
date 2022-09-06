@@ -116,6 +116,7 @@ firebase-ui {
     top:18px;
     right:72px;
     z-index:1;
+    cursor: pointer;
 }
 
 .walkingMan {
@@ -128,7 +129,7 @@ firebase-ui {
 
 .appMenu {
     position:absolute;
-    bottom: -130px;
+    bottom: -330px;
     width: 100%;
     background-color: white;
     font-family: Arial, Helvetica, sans-serif;
@@ -151,12 +152,13 @@ firebase-ui {
 .appMenu.close {
     animation-duration: 0.25s;
     animation-name: closeMenu;
-    bottom: -130px;
+    bottom: -330px;
+    display: none;
 }
 
 @keyframes openMenu {
     0% {
-        bottom: -130px;
+        bottom: -330px;
     }
     100% {
         bottom: 0px;
@@ -168,7 +170,8 @@ firebase-ui {
         bottom: 0px;
     }
     100% {
-        bottom: -130px;
+        bottom: -330px;
+        display: none;
     }
 }
 

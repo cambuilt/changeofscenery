@@ -27,7 +27,7 @@ export class GoogleMapComponent implements OnInit {
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
-  public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+  public static markerFilter: any = [1,2,3,4,6,7,8,9,10,11];
   public static placeMarkers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -548,7 +548,7 @@ export class GoogleMapComponent implements OnInit {
   }
 
   openAppMenu() {
-    if ($('.appMenu').css('display') == 'block') {
+    if ($('.appMenu').css('bottom') == '0px') {
       this.hideAppMenu();
     } else {
       $('#mapLogo').hide();
@@ -563,9 +563,8 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static hideAppMenu() {
-    $('.appMenu').removeClass('open');
     $('.appMenu').addClass('close');
-    $('.appMenu').css('display', 'none');
+    $('.appMenu').removeClass('open');
     $('#mapLogo').show();
   }
   
@@ -1095,8 +1094,6 @@ export class GoogleMapComponent implements OnInit {
       zoomFactor *= 4;
     }
 
-    console.log('zoomFactor end', zoomFactor);
-
     return zoomFactor;
   }
 
@@ -1297,11 +1294,21 @@ public toggleType(event) {
   if (typeClasses['1'] == 'typeSelected') {
     typeClasses.remove('typeSelected');
     typeClasses.add('typeUnselected');
-    GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== typeId);
+    if (typeId == 15) {
+      GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== 12 && f !== 13 && f !== 14);
+    } else {
+      GoogleMapComponent.markerFilter = GoogleMapComponent.markerFilter.filter(f => f !== typeId);
+    }
   } else {
     typeClasses.remove('typeUnselected');
     typeClasses.add('typeSelected');
-    GoogleMapComponent.markerFilter.push(typeId);    
+    if (typeId == 15) {
+      GoogleMapComponent.markerFilter.push(12);
+      GoogleMapComponent.markerFilter.push(13);
+      GoogleMapComponent.markerFilter.push(14);
+    } else {
+      GoogleMapComponent.markerFilter.push(typeId);    
+    }
   }
   GoogleMapComponent.updateHouseMarkers(false)
 }
