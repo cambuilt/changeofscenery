@@ -27,7 +27,7 @@ export class GoogleMapComponent implements OnInit {
   public static places: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
-  public static markerFilter: any = [1,2,3,4,6,7,8,9,10,11];
+  public static markerFilter: any = [1,2,3,4,6,7,8,9,10,11,13,14];
   public static placeMarkers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
@@ -85,7 +85,14 @@ export class GoogleMapComponent implements OnInit {
   ngOnInit(): void {
     this.afAuth.authState.subscribe(d => { 
       if (d != null) {
+        $('td[name="coscell"]').css('padding-bottom', '0px'); 
+        $('td[name="washingtondc"]').show();
+        $('td[name="charleston"]').show();
         $('firebase-ui').hide();
+      } else {
+        $('td[name="coscell"]').css('padding-bottom', '140px'); 
+        $('td[name="washingtondc"]').hide();
+        $('td[name="charleston"]').hide();
       }
     });
 
