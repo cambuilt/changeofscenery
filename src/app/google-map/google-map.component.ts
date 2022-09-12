@@ -251,6 +251,11 @@ export class GoogleMapComponent implements OnInit {
     gmc.currentCity = cityName;
     var icon: google.maps.Icon;
     const city = gmc.currentCity;
+    if (gmc.streetMarkers.length > 0) {
+      GoogleMapComponent.streetMarkers.forEach(streetMarker => {
+        streetMarker.setMap(null);
+      });
+    }
     gmc.streetMarkers = [];
     gmc.map.setCenter(gmc.cities.find(x => x.name == city).center);
     gmc.map.setTilt(gmc.cities.find(x => x.name == city).tilt);
@@ -614,9 +619,9 @@ export class GoogleMapComponent implements OnInit {
           this.streetMarkers[index].setVisible(true);
         }
       }
-    } else {           
+    } else {                 
       if (this.currentCity == 'washingtondc') {
-        this.streetMarkers.forEach(streetMarker => {
+        GoogleMapComponent.streetMarkers.forEach(streetMarker => {
           streetMarker.setVisible(false);
         });
       } else {
