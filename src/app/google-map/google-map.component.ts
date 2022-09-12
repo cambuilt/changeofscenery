@@ -20,6 +20,7 @@ export class GoogleMapComponent implements OnInit {
   public static lastInfoWindow: google.maps.InfoWindow;
   public static lastCenter;
   public static lastZoomLevel;
+  public static lastZoomInProgressLevel;
   public static lastTilt;
   public static lastHeading;
   public static placeCount = 0; 
@@ -32,7 +33,7 @@ export class GoogleMapComponent implements OnInit {
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
   public static cloudinaryPath;
-  public static carDriveInterval;
+  // public static carDriveInterval;
   public static carMarker: google.maps.Marker;
   public static carStartPosition = {lat: 42.36305, lng: -71.05520};
   public static carCounter = 0;
@@ -64,7 +65,7 @@ export class GoogleMapComponent implements OnInit {
                           
   public static lastZoom = 0;
   public static updateHouseMarkerCounter = -1;
-  public static intervalFunction;
+  public static zoomIntervalFunction;
   public static maxIconSize = 10;
   public static suspendUpdate = false;
   public static delay = 1; //milliseconds
@@ -156,7 +157,18 @@ export class GoogleMapComponent implements OnInit {
       if (GoogleMapComponent.zooming == true) {
         setTimeout(function() { GoogleMapComponent.zooming = false; GoogleMapComponent.handleZoom(); }, 500);       
       } else {
-        GoogleMapComponent.handleZoom();
+        if (GoogleMapComponent.zoomIntervalFunction == undefined) {
+          GoogleMapComponent.lastZoomInProgressLevel = GoogleMapComponent.map.getZoom();
+          GoogleMapComponent.zoomIntervalFunction = setInterval(function() {
+            if (GoogleMapComponent.lastZoomInProgressLevel == GoogleMapComponent.map.getZoom()) {
+              clearInterval(GoogleMapComponent.zoomIntervalFunction);
+              GoogleMapComponent.zoomIntervalFunction = undefined;
+              GoogleMapComponent.handleZoom();
+            } else {
+              GoogleMapComponent.lastZoomInProgressLevel = GoogleMapComponent.map.getZoom();
+            }
+          }, 250);
+        }
       }
     });   
       
