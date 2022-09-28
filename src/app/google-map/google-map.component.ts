@@ -23,7 +23,8 @@ export class GoogleMapComponent implements OnInit {
   public static lastZoomInProgressLevel;
   public static lastTilt;
   public static lastHeading;
-  public static placeCount = 0; 
+  public static placeCount = 0;
+  public static mouseDownStartSeconds = 0;
   userLocationMarker: google.maps.Marker;
   public static places: any = [];
   public static animations: any = [];
@@ -32,6 +33,7 @@ export class GoogleMapComponent implements OnInit {
   public static placeMarkers: google.maps.Marker[] = [];
   public static placeTotal = 0;
   public static streetMarkers: google.maps.Marker[] = [];
+  public static dcZones: any = [];
   public static cloudinaryPath;
   // public static carDriveInterval;
   public static carMarker: google.maps.Marker;
@@ -57,11 +59,13 @@ export class GoogleMapComponent implements OnInit {
   public static currentUser: any;  
   public static onLanding = true;
   public static zooming = false;
+  public static centerChanging = false;
+  public static atAreaHome = false;
   public static browseMode = false;
   public static sizeMultiple = 76;
   public static cities = [{name:'charleston', displayName: 'Charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
                           {name:'boston', displayName: 'Boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
-                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0}];  // lat: 38.95636, lng: -77.08440
+                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.95380, lng: -77.08622}, heading:0, zoom:14, tilt:0}];  // {lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0
                           
   public static lastZoom = 0;
   public static updateHouseMarkerCounter = -1;
@@ -125,7 +129,7 @@ export class GoogleMapComponent implements OnInit {
         mapId: 'd5860e1d98873021'
     });
 
-    GoogleMapComponent.map.addListener('click', (e) => {
+    GoogleMapComponent.map.addListener('click', (e) => {      
       if (GoogleMapComponent.lastInfoWindow != undefined) {
         GoogleMapComponent.lastInfoWindow.close();
         GoogleMapComponent.infoWindowClosing();
@@ -135,7 +139,33 @@ export class GoogleMapComponent implements OnInit {
       GoogleMapComponent.hideAppMenu();
     });
 
-    GoogleMapComponent.map.addListener('center_changed', () => {         
+    GoogleMapComponent.map.addListener('mousedown', (e) => {
+      GoogleMapComponent.mouseDownStartSeconds = new Date().getSeconds();
+    });
+
+    GoogleMapComponent.map.addListener('mouseup', (e) => {
+      const gmc = GoogleMapComponent;
+      if (GoogleMapComponent.centerChanging == true) {
+        GoogleMapComponent.centerChanging = false;
+        return;
+      }
+      if (Math.abs(new Date().getSeconds() - gmc.mouseDownStartSeconds) > 0) {
+        var lat = e.latLng.lat(), lng = e.latLng.lng();
+        gmc.dcZones.forEach(zone => {
+          console.log('lat', lat, 'lng', lng);
+          console.log('zone', zone);
+          if (lat <= zone.north && lat >= zone.south && lng <= zone.east && lng >= zone.west) {            
+            gmc.map.setCenter(zone.center);
+            gmc.map.setTilt(zone.tilt);
+            gmc.map.setHeading(zone.heading);
+            gmc.map.setZoom(zone.zoom);        
+          }
+        });
+      }
+    });
+
+    GoogleMapComponent.map.addListener('center_changed', () => {
+      GoogleMapComponent.atAreaHome = false;
       if (GoogleMapComponent.zooming == true) {
         return;
       }
@@ -148,8 +178,9 @@ export class GoogleMapComponent implements OnInit {
       }
       // console.log(`center: {lat: ${GoogleMapComponent.map.getCenter().lat()}, lng: ${GoogleMapComponent.map.getCenter().lng()}},`);
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
-      // console.log('tilt', GoogleMapComponent.map.getTilt());
       // console.log('heading', GoogleMapComponent.map.getHeading());
+      // console.log('tilt', GoogleMapComponent.map.getTilt());
+      GoogleMapComponent.centerChanging = true;
       window.scroll(0, -100);  
     });
 
@@ -339,8 +370,10 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 18, 360, 40); });
       icon = {url: 'assets/washingtondc/FriendshipHeights.svg',scaledSize: new google.maps.Size(100, 22)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.96077, lng: -77.08574}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });
-    }  
+      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });   // 38.95416, -77.08243, 20, 246, 67
+
+      gmc.dcZones.push({name: 'NPark', west: -77.09356, north: 38.96439, east: -77.08916, south: 38.96311, center:{lat: 38.96347, lng: -77.09100}, zoom:17, heading:0, tilt:40});
+    }
 
     const config = require('./config.js');
     const app = initializeApp(config);
@@ -598,8 +631,9 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static selectArea(areaName, lat, lng, zoom, heading, tilt) {
+    const gmc = GoogleMapComponent;
     $('#loading').addClass('show');
-    GoogleMapComponent.placeCount = 0;
+    gmc.placeCount = 0;
     this.currentArea = areaName;
     this.onLanding = false;
     this.zooming = true;    
@@ -608,7 +642,7 @@ export class GoogleMapComponent implements OnInit {
     this.map.setTilt(tilt);
     this.map.setHeading(heading); 
     this.toggleLanding('off');
-    GoogleMapComponent.hideAppMenu();
+    gmc.hideAppMenu();
     
     if (areaName == 'Boston') {
       this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(false);
@@ -621,7 +655,7 @@ export class GoogleMapComponent implements OnInit {
       }
     } else {                 
       if (this.currentCity == 'washingtondc') {
-        GoogleMapComponent.streetMarkers.forEach(streetMarker => {
+        gmc.streetMarkers.forEach(streetMarker => {
           streetMarker.setVisible(false);
         });
       } else {
@@ -658,9 +692,10 @@ export class GoogleMapComponent implements OnInit {
         // }, 5000);
       } else if (areaName == 'City Center' || areaName == 'Chinatown' || areaName == 'Penn Quarter') {
         setTimeout(function() {
-          GoogleMapComponent.startAnimation();
+          gmc.startAnimation();
         }, 2000);
       }
+      gmc.atAreaHome = true;
     }
   }
 
@@ -909,22 +944,31 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public toggleLanding(onOff) {
-    GoogleMapComponent.stopAnimation = true;
-    GoogleMapComponent.animations.forEach(animation => {
+    const gmc = GoogleMapComponent;
+    if (gmc.atAreaHome == false && gmc.currentArea == 'Friendship Heights') {
+      gmc.map.setCenter({lat: 38.95930, lng: -77.08574});
+      gmc.map.setZoom(16);    
+      gmc.map.setTilt(40);
+      gmc.map.setHeading(360);
+      gmc.atAreaHome = true;
+      return;
+    }    
+    gmc.stopAnimation = true;
+    gmc.animations.forEach(animation => {
       animation.Marker.setMap(null);
     });
-    GoogleMapComponent.animations = [];
-    if (onOff == 'on' && GoogleMapComponent.currentArea == '') {
+    gmc.animations = [];
+    if (onOff == 'on' && gmc.currentArea == '') {
       $('#google_map').css('height', '0vh');      
     }
-    if (GoogleMapComponent.currentArea == '') {
+    if (gmc.currentArea == '') {
       $('#splash').removeClass('hide');
       $('#splash').css('display', 'flex');  
       $('.backButton').removeClass('show');
       return;
     }
-    if (onOff == 'on' && GoogleMapComponent.currentArea == 'Boston') {
-      GoogleMapComponent.streetMarkers.forEach(streetMarker => {
+    if (onOff == 'on' && gmc.currentArea == 'Boston') {
+      gmc.streetMarkers.forEach(streetMarker => {
         const url = streetMarker.getIcon()['url'];
         if (url.indexOf('BeaconHill') > -1 || url.indexOf('Downtown') > -1 || url.indexOf('NorthEnd') > -1 ) {
           streetMarker.setVisible(false);
@@ -933,7 +977,7 @@ export class GoogleMapComponent implements OnInit {
     } else {
       $('.backButton').addClass('show');
     }
-    GoogleMapComponent.toggleLanding(onOff);
+    gmc.toggleLanding(onOff);
   }
 
   public static toggleLanding(onOff) {    
