@@ -59,6 +59,7 @@ export class GoogleMapComponent implements OnInit {
   public static currentUser: any;  
   public static onLanding = true;
   public static zooming = false;
+  public static gotoZone = false;
   public static centerChanging = false;
   public static atAreaHome = false;
   public static browseMode = false;
@@ -140,27 +141,20 @@ export class GoogleMapComponent implements OnInit {
     });
 
     GoogleMapComponent.map.addListener('mousedown', (e) => {
-      GoogleMapComponent.mouseDownStartSeconds = new Date().getSeconds();
+      const gmc = GoogleMapComponent;
+      gmc.gotoZone = true;
+      setTimeout(function() {
+        if (gmc.gotoZone == true && gmc.centerChanging == false) {
+          gmc.pantoZone(e.latLng.lat(),e.latLng.lng());
+        }
+      }, 1000);      
     });
 
     GoogleMapComponent.map.addListener('mouseup', (e) => {
       const gmc = GoogleMapComponent;
-      if (GoogleMapComponent.centerChanging == true) {
-        GoogleMapComponent.centerChanging = false;
-        return;
-      }
-      if (Math.abs(new Date().getSeconds() - gmc.mouseDownStartSeconds) > 0) {
-        var lat = e.latLng.lat(), lng = e.latLng.lng();
-        gmc.dcZones.forEach(zone => {
-          console.log('lat', lat, 'lng', lng);
-          console.log('zone', zone);
-          if (lat <= zone.north && lat >= zone.south && lng <= zone.east && lng >= zone.west) {            
-            gmc.map.setCenter(zone.center);
-            gmc.map.setTilt(zone.tilt);
-            gmc.map.setHeading(zone.heading);
-            gmc.map.setZoom(zone.zoom);        
-          }
-        });
+      gmc.gotoZone = false;
+      if (gmc.centerChanging == true) {
+        gmc.centerChanging = false;
       }
     });
 
@@ -176,10 +170,10 @@ export class GoogleMapComponent implements OnInit {
       } else {
         // GoogleMapComponent.updateHouseMarkers(false);
       }
-      // console.log(`center: {lat: ${GoogleMapComponent.map.getCenter().lat()}, lng: ${GoogleMapComponent.map.getCenter().lng()}},`);
-      // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
-      // console.log('heading', GoogleMapComponent.map.getHeading());
-      // console.log('tilt', GoogleMapComponent.map.getTilt());
+      console.log(`center: {lat: ${GoogleMapComponent.map.getCenter().lat()}, lng: ${GoogleMapComponent.map.getCenter().lng()}},`);
+      console.log('zoomLevel', GoogleMapComponent.map.getZoom());
+      console.log('heading', GoogleMapComponent.map.getHeading());
+      console.log('tilt', GoogleMapComponent.map.getTilt());
       GoogleMapComponent.centerChanging = true;
       window.scroll(0, -100);  
     });
@@ -218,6 +212,21 @@ export class GoogleMapComponent implements OnInit {
       $("span[name='instaNames1']").text('@cos_boston, @cos_charleston,');
       $("span[name='instaNames2']").text('@cos_washingtondc');
     }, 100);
+  }
+
+  public static pantoZone(lat, lng) {
+    const gmc = GoogleMapComponent;
+
+    gmc.dcZones.forEach(zone => {
+      console.log(lat, zone.north, zone.south, lng, zone.west, zone.east);
+      if (lat <= zone.north && lat >= zone.south && lng <= zone.east && lng >= zone.west) {            
+        console.log(zone.name);
+        gmc.map.setCenter(zone.center);
+        gmc.map.setTilt(zone.tilt);
+        gmc.map.setHeading(zone.heading);
+        gmc.map.setZoom(zone.zoom);        
+      }
+    });
   }
 
   public logout() {
@@ -372,7 +381,9 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.96077, lng: -77.08574}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
       gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });   // 38.95416, -77.08243, 20, 246, 67
 
-      gmc.dcZones.push({name: 'NPark', west: -77.09356, north: 38.96439, east: -77.08916, south: 38.96311, center:{lat: 38.96347, lng: -77.09100}, zoom:17, heading:0, tilt:40});
+      gmc.dcZones.push({name: 'NPark', west: -77.09356, north: 38.96439, east: -77.08916, south: 38.96261, center:{lat: 38.96347, lng: -77.09100}, zoom:17, heading:0, tilt:40});
+      gmc.dcZones.push({name: 'TheCollection', west: -77.08737, north: 38.96381, east: -77.08433, south: 38.96183, center:{lat: 38.96365, lng: -77.08620}, zoom:18, heading:341, tilt:62});
+      gmc.dcZones.push({name: 'WillardWest', west: -77.09489, north: 38.96211, east: -77.08880, south: 38.96181, center:{lat: 38.96211, lng: -77.09168}, zoom:16, heading:0, tilt:40});
     }
 
     const config = require('./config.js');
@@ -577,6 +588,21 @@ export class GoogleMapComponent implements OnInit {
           }
         }, 50);
       });
+
+      placeMarker.addListener('mousedown', (e) => {
+        const gmc = GoogleMapComponent;
+        gmc.gotoZone = true;
+        setTimeout(function() {
+          if (gmc.gotoZone == true) {
+            gmc.pantoZone(e.latLng.lat(),e.latLng.lng());
+          }
+        }, 1000);      
+      });
+
+      placeMarker.addListener('mouseup', () => {
+        const gmc = GoogleMapComponent;
+        gmc.gotoZone = false;
+      }); 
 
       GoogleMapComponent.placeMarkers.push(placeMarker);
       GoogleMapComponent.placeCount++;
