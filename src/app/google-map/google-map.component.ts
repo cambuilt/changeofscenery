@@ -393,7 +393,7 @@ export class GoogleMapComponent implements OnInit {
       gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });   // 38.95416, -77.08243, 20, 246, 67
 
       gmc.dcZones.push({name: 'NPark', west: -77.09356, north: 38.96439, east: -77.08916, south: 38.96261, center:{lat: 38.96347, lng: -77.09100}, zoom:17, heading:0, tilt:40});
-      gmc.dcZones.push({name: 'TheCollection', west: -77.08737, north: 38.96381, east: -77.08433, south: 38.96183, center:{lat: 38.96365, lng: -77.08620}, zoom:18, heading:341, tilt:62});
+      gmc.dcZones.push({name: 'TheCollection', west: -77.08737, north: 38.96381, east: -77.08433, south: 38.96183, center:{lat: 38.96321, lng: -77.08620}, zoom:18, heading:341, tilt:62});
       gmc.dcZones.push({name: 'WillardWest', west: -77.09489, north: 38.96211, east: -77.08880, south: 38.96181, center:{lat: 38.96211, lng: -77.09168}, zoom:16, heading:0, tilt:40});
     }
 
