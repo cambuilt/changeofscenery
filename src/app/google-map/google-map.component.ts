@@ -63,6 +63,7 @@ export class GoogleMapComponent implements OnInit {
   public static centerChanging = false;
   public static atAreaHome = false;
   public static cancelMarkerClick = false;
+  public static selectAreaWasClicked = false;
   public static caching = false;
   public static browseMode = false;
   public static sizeMultiple = 76;
@@ -199,11 +200,10 @@ export class GoogleMapComponent implements OnInit {
       }
     });
 
-    google.maps.event.addListenerOnce(GoogleMapComponent.map, 'tilesloaded', function(){
-      GoogleMapComponent.caching = false;
-      // GoogleMapComponent.showPlaceMarkers();
-      console.log('caching is all done');
-    });
+    // google.maps.event.addListenerOnce(GoogleMapComponent.map, 'tilesloaded', function(){
+    //   GoogleMapComponent.caching = false;
+    //     // GoogleMapComponent.showPlaceMarkers();
+    // });
 
     GoogleMapComponent.map.addListener('idle', () => {
       console.log('map is idle')
@@ -403,8 +403,8 @@ export class GoogleMapComponent implements OnInit {
     const docRef = doc(db, "User", GoogleMapComponent.currentUser.id);
     await updateDoc(docRef, { City:  cityName});
     if (gmc.currentCity == 'washingtondc') {
-      gmc.currentArea = 'Friendship Heights';
-      gmc.caching = true;
+      // gmc.currentArea = 'Friendship Heights';
+      // gmc.caching = true;
       gmc.handleZoom();
     }    
   }
@@ -528,7 +528,7 @@ export class GoogleMapComponent implements OnInit {
       var n = place.Name;
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
-      var visible = gmc.caching ? false : true;
+      var visible = gmc.selectAreaWasClicked;
 
       const placeMarker = new google.maps.Marker({
         position: {lat: Number(place.Location.latitude), lng: Number(place.Location.longitude)},
@@ -702,6 +702,7 @@ export class GoogleMapComponent implements OnInit {
 
   public static selectArea(areaName, lat, lng, zoom, heading, tilt) {
     const gmc = GoogleMapComponent;
+    gmc.selectAreaWasClicked = true;
     if (gmc.placeCount == 0) {
       $('#loading').addClass('show');
     }
