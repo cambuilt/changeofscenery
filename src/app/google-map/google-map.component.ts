@@ -7,6 +7,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
+import { animationFrameScheduler } from 'rxjs';
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -27,6 +28,7 @@ export class GoogleMapComponent implements OnInit {
   public static mouseDownStartSeconds = 0;
   userLocationMarker: google.maps.Marker;
   public static places: any = [];
+  public static areas: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
   public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
@@ -54,13 +56,14 @@ export class GoogleMapComponent implements OnInit {
   firstTime = true;
   public static collectionCity = 'Boston';
   public static currentCity = "boston";  
-  public static currentArea = "";  
+  public static currentArea;  
   public static currentPlace: any;  
   public static currentUser: any;  
   public static onLanding = true;
   public static zooming = false;
-  public static gotoZone = false;
-  public static centerChanging = false;
+  public static powerTouchGo = false;
+  public static powerTouchLeave = false;
+  public static centerChanged = false;
   public static atAreaHome = false;
   public static cancelMarkerClick = false;
   public static selectAreaWasClicked = false;
@@ -145,19 +148,30 @@ export class GoogleMapComponent implements OnInit {
 
     GoogleMapComponent.map.addListener('mousedown', (e) => {
       const gmc = GoogleMapComponent;
-      gmc.gotoZone = true;
+      gmc.powerTouchGo = true;      
+      gmc.powerTouchLeave = true;
       setTimeout(function() {
-        if (gmc.gotoZone == true && gmc.centerChanging == false) {
-          gmc.pantoZone(e.latLng.lat(),e.latLng.lng());
+        if (gmc.powerTouchGo == true) {
+          gmc.map.setCenter(e.latLng);
+          gmc.map.setZoom(18);
+          gmc.cancelMarkerClick = true;
         }
-      }, 1000);      
+      }, 1000);
+      setTimeout(function() {
+        if (gmc.powerTouchLeave == true) {
+          gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.zoomLat, gmc.currentArea.zoomLng));
+          gmc.map.setZoom(gmc.currentArea.zoom);
+          gmc.cancelMarkerClick = true;
+        }
+      }, 3000);
     });
 
     GoogleMapComponent.map.addListener('mouseup', (e) => {
       const gmc = GoogleMapComponent;
-      gmc.gotoZone = false;
-      if (gmc.centerChanging == true) {
-        gmc.centerChanging = false;
+      gmc.powerTouchGo = false;
+      gmc.powerTouchLeave = false;
+      if (gmc.centerChanged == true) {
+        gmc.centerChanged = false;
       }
     });
 
@@ -177,7 +191,7 @@ export class GoogleMapComponent implements OnInit {
       // console.log('zoomLevel', GoogleMapComponent.map.getZoom());
       // console.log('heading', GoogleMapComponent.map.getHeading());
       // console.log('tilt', GoogleMapComponent.map.getTilt());
-      GoogleMapComponent.centerChanging = true;
+      GoogleMapComponent.centerChanged = true;
       window.scroll(0, -100);  
     });
 
@@ -205,10 +219,6 @@ export class GoogleMapComponent implements OnInit {
     //     // GoogleMapComponent.showPlaceMarkers();
     // });
 
-    GoogleMapComponent.map.addListener('idle', () => {
-      console.log('map is idle')
-    });
-      
     this.messageInfoWindow = new google.maps.InfoWindow();
 
     if (localStorage.getItem('likedPlaces') != undefined) {
@@ -244,7 +254,7 @@ export class GoogleMapComponent implements OnInit {
     this.afAuth.signOut();
     $('firebase-ui').show();
     GoogleMapComponent.hideAppMenu();
-    GoogleMapComponent.currentArea = '';
+    GoogleMapComponent.currentArea = undefined;
     this.toggleLanding('on');
   }
 
@@ -332,70 +342,38 @@ export class GoogleMapComponent implements OnInit {
           shouldFocus: false               
         })}, 1000);            
       });
-      icon = {url: 'assets/boston/Hingham.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.235, lng: -70.89}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[0].addListener('click', () => { gmc.selectArea('Hingham', 42.24199, -70.88947, 19, 284, 66); });
-      icon = {url: 'assets/boston/Cohasset.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.225, lng: -70.797}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.selectArea('Cohasset', 42.2407, -70.80160, 19, 0, 58); });    
-      icon = {url: 'assets/boston/Scituate.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.18, lng: -70.73}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Scituate', 42.194, -70.725, 17, 0, 58); });    
-      icon = {url: 'assets/boston/Norwell.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.15, lng: -70.80}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Norwell', 42.16019, -70.79165, 17, 0, 58); });    
-      icon = {url: 'assets/boston/Hull.svg',scaledSize: new google.maps.Size(47, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.27, lng: -70.85}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[4].addListener('click', () => { gmc.selectArea('Hull', 42.265, -70.8525, 17, 0, 58); });    
-      icon = {url: 'assets/boston/Marshfield.svg',scaledSize: new google.maps.Size(80, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.07, lng: -70.70}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[5].addListener('click', () => { gmc.selectArea('Marshfield', 42.095, -70.6817, 13.00, 0, 42); });    
-      icon = {url: 'assets/boston/Boston.svg',scaledSize: new google.maps.Size(80, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.346, lng: -71.064}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[6].addListener('click', () => { gmc.selectArea('Boston', 42.35736, -71.06300, 14.00, 0, 0); });
-      icon = {url: 'assets/boston/BeaconHill.svg',scaledSize: new google.maps.Size(80, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.355, lng: -71.069}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[7].addListener('click', () => { gmc.selectArea('Beacon Hill', 42.35666, -71.06944, 18.75, 0, 0); });
-      icon = {url: 'assets/boston/Downtown.svg',scaledSize: new google.maps.Size(80, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.3600, lng: -71.0570}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[8].addListener('click', () => { gmc.selectArea('Downtown', 42.3614, -71.0572, 18.75, 0, 0); });
-      icon = {url: 'assets/boston/NorthEnd.svg',scaledSize: new google.maps.Size(80, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 42.3630, lng: -71.05435}, icon: icon, map: gmc.map, zIndex: 100, visible: false}));
-      gmc.streetMarkers[9].addListener('click', () => { gmc.selectArea('North End', 42.36380, -71.05564, 18.75, 297, 54); });
+      gmc.areas.push({name:'Hingham', lat:42.24199, lng:-70.88947, zoomLat:42.24199, zoomLng:-70.88947, zoom:19, heading:284, tilt:66, iconWidth:67, iconHeight:22});
+      gmc.areas.push({name:'Cohasset', lat:42.2407, lng:-70.80160, zoomLat:42.225, zoomLng:-70.797, zoom:19, heading:0, tilt:58, iconWidth:67, iconHeight:22});    
+      gmc.areas.push({name:'Scituate', lat:42.194, lng:-70.725, zoomLat:42.194, zoomLng:-70.725, zoom:17, heading:0, tilt:58, iconWidth:67, iconHeight:22});    
+      gmc.areas.push({name:'Norwell', lat:42.16019, lng:-70.79165, zoomLat:42.16019, zoomLng:-70.79165, zoom:17, heading:0, tilt:58, iconWidth:67, iconHeight:22});    
+      gmc.areas.push({name:'Hull', lat:42.265, lng:-70.8525, zoomLat:42.265, zoomLng:-70.8525, zoom:17, heading:0, tilt:58, iconWidth:47, iconHeight:22});    
+      gmc.areas.push({name:'Marshfield', lat:42.095, lng:-70.6817, zoomLat:42.095, zoomLng:-70.6817, zoom:13, heading:0, tilt:42, iconWidth:80, iconHeight:40});    
+      gmc.areas.push({name:'Boston', lat:42.35736, lng:-71.06300, zoomLat:42.35736, zoomLng:-70.06300, zoom:14, heading:0, tilt:0, iconWidth:80, iconHeight:40});
+      gmc.areas.push({name:'Beacon Hill', lat:42.35666, lng:-71.06944, zoomLat:42.35666, zoomLng:-71.06944, zoom:18.75, heading:0, tilt:0, iconWidth:80, iconHeight:40});
+      gmc.areas.push({name:'Downtown', lat:42.3614, lng:-71.0572, zoomLat:42.3614, zoomLng:-70.0572, zoom:18.75, heading:0, tilt:0, iconWidth:80, iconHeight:40});
+      gmc.areas.push({name:'North End', lat:42.36380, lng:-71.05564, zoomLat:42.36380, zoomLng:-70.05564, zoom:18.75, heading:297, tilt:54, iconWidth:80, iconHeight:40});
     } else if (city == 'charleston') {
-      icon = {url: 'assets/charleston/RainbowRow.svg',scaledSize: new google.maps.Size(120, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77535, lng: -79.92660}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[0].addListener('click', () => { gmc.selectArea('RainbowRow', 32.77580, -79.92740, 21, 327, 90); });
-      icon = {url: 'assets/charleston/EastBaySt.svg',scaledSize: new google.maps.Size(120, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77380, lng: -79.92730}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.selectArea('EastBaySt', 32.77355, -79.92752, 21, 348, 64); });
-      icon = {url: 'assets/charleston/EastBattery.svg',scaledSize: new google.maps.Size(120, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77130, lng: -79.92780}, icon: icon, map: gmc.map, zIndex: 150}));
-      gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('EastBattery', 32.77095, -79.92823, 21, 3, 49); });
-      icon = {url: 'assets/charleston/ChurchSt.svg', scaledSize: new google.maps.Size(120, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77230, lng: -79.92930}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('ChurchSt', 32.771321, -79.92938, 21, 344, 67); });
-      icon = {url: 'assets/charleston/BroadSt.svg',scaledSize: new google.maps.Size(120, 40)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 32.77635, lng: -79.92920}, icon: icon, map: gmc.map, zIndex: 100}));
-      gmc.streetMarkers[4].addListener('click', () => { gmc.selectArea('BroadSt', 32.77656, -79.93001, 19, 285, 67); });
+      gmc.areas.push({name:'RainbowRow', lat:32.77535, lng:-79.92660, zoomLat:32.77580, zoomLng:-79.92740, zoom:21, heading:327, tilt:90, iconWidth:120, iconHeight:40});
+      gmc.areas.push({name:'EastBaySt', lat:32.77380, lng:-79.92730, zoomLat:32.77355, zoomLng:-79.92752, zoom:21, heading:348, tilt:64, iconWidth:120, iconHeight:40});
+      gmc.areas.push({name:'EastBattery', lat:32.77130, lng:-79.92780, zoomLat:32.77095, zoomLng:-79.92823, zoom:21, heading:3, tilt:49, iconWidth:120, iconHeight:40});
+      gmc.areas.push({name:'ChurchSt', lat:32.77230, lng:-79.92930, zoomLat:32.771321, zoomLng:-79.92938, zoom:21, heading:344, tilt:67, iconWidth:120, iconHeight:40});
+      gmc.areas.push({name:'BroadSt', lat:32.77635, lng:-79.92920, zoomLat:32.77656, zoomLng:-79.93001, zoom:19, heading:285, tilt:67, iconWidth:120, iconHeight:40});
     } else if (city == 'washingtondc') {
-      icon = {url: 'assets/washingtondc/CityCenter.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.02600}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[0].addListener('click', () => { gmc.selectArea('City Center', 38.90056, -77.02513, 17, 360, 40); });
-      icon = {url: 'assets/washingtondc/Chinatown.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.90010, lng: -77.0195}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[1].addListener('click', () => { gmc.selectArea('Chinatown', 38.90056, -77.021, 17, 360, 40); });
-      icon = {url: 'assets/washingtondc/PennQuarter.svg',scaledSize: new google.maps.Size(67, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.89731, lng: -77.02291}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[2].addListener('click', () => { gmc.selectArea('Penn Quarter', 38.89681, -77.0243, 18, 360, 40); });
-      icon = {url: 'assets/washingtondc/FriendshipHeights.svg',scaledSize: new google.maps.Size(100, 22)};
-      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: 38.96077, lng: -77.08574}, icon: icon, map: GoogleMapComponent.map, zIndex: 100}));
-      gmc.streetMarkers[3].addListener('click', () => { gmc.selectArea('Friendship Heights', 38.95930, -77.08574, 16, 360, 40); });   // 38.95416, -77.08243, 20, 246, 67
+      gmc.areas.push({name:'CityCenter', lat:38.90010, lng:-77.02600, zoomLat:38.90056, zoomLng:-77.02513, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
+      gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, zoomLat:38.90056, zoomLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
+      gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, zoomLat:38.89681, zoomLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
+      gmc.areas.push({name:'FriendshipHeights', lat:38.96077, lng:-77.08574, zoomLat:38.95930, zoomLng:-77.08574, zoom:16, heading:360, tilt:40, iconWidth:100, iconHeight:22});
 
       gmc.dcZones.push({name: 'NPark', west: -77.09356, north: 38.96439, east: -77.08916, south: 38.96261, center:{lat: 38.96347, lng: -77.09100}, zoom:17, heading:0, tilt:40});
       gmc.dcZones.push({name: 'TheCollection', west: -77.08737, north: 38.96381, east: -77.08433, south: 38.96183, center:{lat: 38.96321, lng: -77.08620}, zoom:18, heading:341, tilt:62});
       gmc.dcZones.push({name: 'WillardWest', west: -77.09489, north: 38.96211, east: -77.08880, south: 38.96181, center:{lat: 38.96211, lng: -77.09168}, zoom:16, heading:0, tilt:40});
     }
+
+    gmc.areas.forEach(area => {
+      icon = {url: 'assets/' + city + '/' + area.name + '.svg',scaledSize: new google.maps.Size(area.iconWidth, area.iconHeight)};
+      gmc.streetMarkers.push(new google.maps.Marker({position: {lat: area.lat, lng: area.lng}, icon: icon, map: gmc.map, zIndex: 100}));
+      gmc.streetMarkers[gmc.streetMarkers.length-1].addListener('click', () => { gmc.selectArea(area); });
+    });
 
     const config = require('./config.js');
     const app = initializeApp(config);
@@ -403,19 +381,19 @@ export class GoogleMapComponent implements OnInit {
     const docRef = doc(db, "User", GoogleMapComponent.currentUser.id);
     await updateDoc(docRef, { City:  cityName});
     if (gmc.currentCity == 'washingtondc') {
-      // gmc.currentArea = 'Friendship Heights';
+      // gmc.currentArea = this.currentArea = this.areas.find(a => a.name == 'Friendship Heights');
       // gmc.caching = true;
       gmc.handleZoom();
     }    
   }
 
   public static async handleZoom() {
-    if (this.currentArea == '') {
+    if (this.currentArea == undefined) {
       return;
     }
     const zoom = this.map.getZoom();
 
-    if (zoom > 11 || (this.currentArea == 'Marshfield' && zoom > 11)) {
+    if (zoom > 11 || (this.currentArea.name == 'Marshfield' && zoom > 11)) {
       if ($('.backButton').hasClass('show') == false) {
         setTimeout(function () {$('.backButton').addClass('show');}, 1000);
       }
@@ -459,7 +437,7 @@ export class GoogleMapComponent implements OnInit {
     this.places.forEach(place => {
       const marker = gmc.placeMarkers.find(m => m.getTitle() == place.Name);
       if (gmc.markerFilter.find(m => m == place.Type) != undefined) {
-        if (place.Area == this.currentArea || city == 'charleston' || (this.currentArea == 'Marshfield' && place.Area == 'Brant Rock')) {
+        if (place.Area.replaceAll(' ', '') == this.currentArea.name || city == 'charleston' || (this.currentArea.name == 'Marshfield' && place.Area == 'Brant Rock')) {
           if (marker == undefined) {
               this.placeTotal++;
               this.createMarker(place);            
@@ -550,7 +528,7 @@ export class GoogleMapComponent implements OnInit {
       `<table><tr style='height:20%;'><td><img id='${iconId}' src='${gmc.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
       `width='180px' height='180px' onclick='scrollImage("${gmc.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
       `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
-      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + gmc.currentArea, '')}</span></td><td></td></tr>` + 
+      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + gmc.currentArea.name, '')}</span></td><td></td></tr>` + 
       `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
       `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
       `<tr colspan="2" style="height:80%;"><td class="notes">${place.Notes}</td></tr></table>` + 
@@ -619,17 +597,31 @@ export class GoogleMapComponent implements OnInit {
 
       placeMarker.addListener('mousedown', (e) => {
         const gmc = GoogleMapComponent;
-        gmc.gotoZone = true;
+        gmc.powerTouchGo = true;      
+        gmc.powerTouchLeave = true;
         setTimeout(function() {
-          if (gmc.gotoZone == true) {
-            gmc.pantoZone(e.latLng.lat(),e.latLng.lng());
+          if (gmc.powerTouchGo == true) {
+            gmc.map.setCenter(e.latLng);
+            gmc.map.setZoom(18);
+            gmc.cancelMarkerClick = true;
           }
-        }, 1000);      
+        }, 1000);
+        setTimeout(function() {
+          if (gmc.powerTouchLeave == true) {
+            gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.zoomLat, gmc.currentArea.zoomLng));
+            gmc.map.setZoom(gmc.currentArea.zoom);
+            gmc.cancelMarkerClick = true;
+          }
+        }, 3000);
       });
 
       placeMarker.addListener('mouseup', () => {
         const gmc = GoogleMapComponent;
-        gmc.gotoZone = false;
+        gmc.powerTouchGo = false;
+        gmc.powerTouchLeave = false;
+        if (gmc.centerChanged == true) {
+          gmc.centerChanged = false;
+        }
       }); 
 
       GoogleMapComponent.placeMarkers.push(placeMarker);
@@ -649,8 +641,6 @@ export class GoogleMapComponent implements OnInit {
     // } else {
       img.src = this.cloudinaryPath + 'icons/' + name + '.png';    
     // }
-
-    console.log('creating marker.');
   }
 
   public static clearHouseMarkers() {
@@ -700,25 +690,25 @@ export class GoogleMapComponent implements OnInit {
     $('#splash').css('display', 'none');
   }
 
-  public static selectArea(areaName, lat, lng, zoom, heading, tilt) {
+  public static selectArea(area) {
     const gmc = GoogleMapComponent;
     gmc.selectAreaWasClicked = true;
     if (gmc.placeCount == 0) {
       $('#loading').addClass('show');
     }
-    this.currentArea = areaName;
+    this.currentArea = area;
     this.onLanding = false;
     this.zooming = true;    
-    this.map.setCenter({lat: lat, lng: lng});
-    this.map.setZoom(zoom);    
-    this.map.setTilt(tilt);
-    this.map.setHeading(heading); 
+    this.map.setCenter({lat: area.lat, lng: area.lng});
+    this.map.setZoom(area.zoom);    
+    this.map.setTilt(area.tilt);
+    this.map.setHeading(area.heading); 
     this.toggleLanding('off');
     gmc.hideAppMenu();
     
-    if (areaName == 'Boston') {
+    if (area.name == 'Boston') {
       this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(false);
-      if (zoom > 13 && zoom < 16 && lat > 40) {
+      if (area.zoom > 13 && area.zoom < 16 && area.lat > 40) {
         var index = 6;
         while(index++<9)
         {
@@ -731,9 +721,9 @@ export class GoogleMapComponent implements OnInit {
           streetMarker.setVisible(false);
         });
       } else {
-        this.streetMarkers.find(x => x.getIcon()['url'].indexOf(areaName.replace(' ', '')) > -1).setVisible(false);
+        this.streetMarkers.find(x => x.getIcon()['url'].indexOf(area.name.replace(' ', '')) > -1).setVisible(false);
       }
-      if (areaName == 'North End') {
+      if (area.name == 'North End') {
         // setTimeout(function() {
         //   this.carMarker.setVisible(true);
         //   this.carDriveInterval = setInterval(function() {
@@ -762,7 +752,7 @@ export class GoogleMapComponent implements OnInit {
         //   }, 1);
 
         // }, 5000);
-      } else if (areaName == 'City Center' || areaName == 'Chinatown' || areaName == 'Penn Quarter') {
+      } else if (area.name == 'City Center' || area.name == 'Chinatown' || area.name == 'Penn Quarter') {
         setTimeout(function() {
           gmc.startAnimation();
         }, 2000);
@@ -782,7 +772,7 @@ export class GoogleMapComponent implements OnInit {
     
     querySnapshot.forEach((doc) => {
       const animation = doc.data();
-      if (animation.Area == GoogleMapComponent.currentArea) {
+      if (animation.Area == GoogleMapComponent.currentArea.name) {
         this.animations.push(doc.data());
         this.animations[this.animations.length - 1]['id'] = doc.id;      
       }
@@ -1017,7 +1007,7 @@ export class GoogleMapComponent implements OnInit {
 
   public toggleLanding(onOff) {
     const gmc = GoogleMapComponent;
-    if (gmc.atAreaHome == false && gmc.currentArea == 'Friendship Heights') {
+    if (gmc.atAreaHome == false && gmc.currentArea.name == 'Friendship Heights') {
       gmc.map.setCenter({lat: 38.95930, lng: -77.08574});
       gmc.map.setZoom(16);    
       gmc.map.setTilt(40);
@@ -1030,16 +1020,16 @@ export class GoogleMapComponent implements OnInit {
       animation.Marker.setMap(null);
     });
     gmc.animations = [];
-    if (onOff == 'on' && gmc.currentArea == '') {
+    if (onOff == 'on' && gmc.currentArea == undefined) {
       $('#google_map').css('height', '0vh');      
     }
-    if (gmc.currentArea == '') {
+    if (gmc.currentArea == undefined) {
       $('#splash').removeClass('hide');
       $('#splash').css('display', 'flex');  
       $('.backButton').removeClass('show');
       return;
     }
-    if (onOff == 'on' && gmc.currentArea == 'Boston') {
+    if (onOff == 'on' && gmc.currentArea.name == 'Boston') {
       gmc.streetMarkers.forEach(streetMarker => {
         const url = streetMarker.getIcon()['url'];
         if (url.indexOf('BeaconHill') > -1 || url.indexOf('Downtown') > -1 || url.indexOf('NorthEnd') > -1 ) {
@@ -1056,7 +1046,7 @@ export class GoogleMapComponent implements OnInit {
     const city = this.currentCity; 
 
     if (onOff == 'on') {
-      if (city == 'boston' && (this.currentArea == 'Beacon Hill' || this.currentArea == 'Downtown' || this.currentArea == 'North End')) {
+      if (city == 'boston' && (this.currentArea.name == 'Beacon Hill' || this.currentArea.name == 'Downtown' || this.currentArea.name == 'North End')) {
         this.clearHouseMarkers();
         this.onLanding = false;
         this.zooming = true;    
@@ -1071,14 +1061,13 @@ export class GoogleMapComponent implements OnInit {
         }
         this.streetMarkers[6].setVisible(false);
         this.onLanding = onOff == 'on';
-        this.currentArea = 'Boston';
+        this.currentArea.name = 'Boston';
       } else {
-        if (this.currentArea == 'Boston') {
+        if (this.currentArea.name == 'Boston') {
           this.streetMarkers.find(x => x.getIcon()['url'].indexOf('Boston') > -1).setVisible(true);
         } else {
-          this.streetMarkers.find(x => x.getIcon()['url'].indexOf(this.currentArea.replace(' ', '')) > -1).setVisible(true);
+          this.streetMarkers.find(x => x.getIcon()['url'].indexOf(this.currentArea.name.replace(' ', '')) > -1).setVisible(true);
         }
-        this.currentArea = '';
         this.zooming = true;
         this.map.setCenter(this.cities.find(x => x.name == city).center);
         this.map.setZoom(this.cities.find(x => x.name == city).zoom);
@@ -1089,13 +1078,13 @@ export class GoogleMapComponent implements OnInit {
         this.placeMarkers = [];
         this.places = [];
         var index = 6;
-        if (this.currentArea == 'Boston') {
+        if (this.currentArea.name == 'Boston') {
           while(index++<9)
           {
             this.streetMarkers[index].setVisible(false);
           }
-        } else if (this.currentArea == 'Beacon Hill' || this.currentArea == 'Downtown' || this.currentArea == 'North End') {
-          this.currentArea = 'Boston';
+        } else if (this.currentArea.name == 'Beacon Hill' || this.currentArea.name == 'Downtown' || this.currentArea.name == 'North End') {
+          this.currentArea = this.areas.find(a => a.name == 'Boston');
           this.onLanding = false;
           this.zooming = true;    
           this.map.setCenter({lat: 42.35736, lng: -71.06300});
