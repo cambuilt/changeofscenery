@@ -173,10 +173,10 @@ export class GoogleMapComponent implements OnInit {
       } else {
         // gmc.updateHouseMarkers(false);
       }
-      console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
-      console.log('zoomLevel', gmc.map.getZoom());
-      console.log('heading', gmc.map.getHeading());
-      console.log('tilt', gmc.map.getTilt());      
+      // console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
+      // console.log('zoomLevel', gmc.map.getZoom());
+      // console.log('heading', gmc.map.getHeading());
+      // console.log('tilt', gmc.map.getTilt());      
       window.scroll(0, -100);  
     });
 
@@ -332,8 +332,8 @@ export class GoogleMapComponent implements OnInit {
       gmc.areas.push({name:'CityCenter', lat:38.90010, lng:-77.02600, zoomLat:38.90056, zoomLng:-77.02513, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, zoomLat:38.90056, zoomLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, zoomLat:38.89681, zoomLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
-//      gmc.areas.push({name:'FriendshipHeights', lat:38.96077, lng:-77.08574, zoomLat:38.95930, zoomLng:-77.08574, zoom:16, heading:360, tilt:40, iconWidth:100, iconHeight:22});
-      gmc.areas.push({name:'FriendshipHeights', lat:38.95177, lng:-77.08224, zoomLat:38.95930, zoomLng:-77.08574, zoom:19, heading:253, tilt:67, iconWidth:100, iconHeight:22});
+      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, zoomLat:38.95930, zoomLng:-77.08574, zoom:16, heading:360, tilt:40, iconWidth:100, iconHeight:22});
+//      gmc.areas.push({name:'FriendshipHeights', lat:38.95101, lng:-77.07871, zoomLat:38.95930, zoomLng:-77.08574, zoom:19, heading:253, tilt:67, iconWidth:100, iconHeight:22});
     }
 
     gmc.areas.forEach(area => {
@@ -683,7 +683,6 @@ export class GoogleMapComponent implements OnInit {
     this.map.setZoom(area.zoom);    
     this.map.setTilt(area.tilt);
     this.map.setHeading(area.heading); 
-    console.log('selectArea toggleLanding');    
     this.toggleLanding('off');
     gmc.hideAppMenu();
     
@@ -988,7 +987,7 @@ export class GoogleMapComponent implements OnInit {
 
   public toggleLanding(onOff) {
     const gmc = GoogleMapComponent;
-    if (gmc.atAreaHome == false && gmc.currentArea.name == 'Friendship Heights') {
+    if (gmc.atAreaHome == false && gmc.currentArea != undefined && gmc.currentArea.name == 'Friendship Heights') {
       gmc.map.setCenter({lat: 38.95930, lng: -77.08574});
       gmc.map.setZoom(16);    
       gmc.map.setTilt(40);
@@ -1026,6 +1025,8 @@ export class GoogleMapComponent implements OnInit {
 
   public static toggleLanding(onOff) {    
     const city = this.currentCity; 
+
+    console.log('toggleLanding:', onOff);
 
     if (onOff == 'on') {
       if (city == 'boston' && this.currentArea != undefined && (this.currentArea.name == 'Beacon Hill' || this.currentArea.name == 'Downtown' || this.currentArea.name == 'North End')) {
