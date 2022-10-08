@@ -24,7 +24,20 @@
     </table>
 </div>    
 <div id="google_map"></div>
-<img src="assets/ellipsis-circle.svg" class="appMenuIcon" (click)="openAppMenu()"/>
+<img src="assets/ellipsis-circle.svg" id="appMenuIcon" (click)="openAppMenu()"/>
+<div id="typeSelector" hidden (click)="openTypeList()"></div>
+<div id="typeList" hidden>
+    <p class="typeOption" (click)="selectType(1)"><img src="assets/dining.svg" width="16px;"/>&nbsp;Restaurant</p>
+    <p class="typeOption" (click)="selectType(2)"><img src="assets/shop.svg" width="18px;"/>&nbsp;Shopping</p>
+    <p class="typeOption" (click)="selectType(3)"><img src="assets/hotel.svg" width="18px;"/>&nbsp;Hotel</p>
+    <p class="typeOption" (click)="selectType(4)" style="margin-left:-5px;"><img src="assets/history.svg" width="24px;"/>&nbsp;History</p>
+    <p class="typeOption" (click)="selectType(5)"><img src="assets/museum.svg" width="18px;"/>&nbsp;Museum</p>
+    <p class="typeOption" (click)="selectType(6)"><img src="assets/theater.svg" width="18px;"/>&nbsp;Theatre</p>
+    <p class="typeOption" (click)="selectType(7)"><img src="assets/fun.svg" width="16px;"/>&nbsp;Fun</p>
+    <p class="typeOption" (click)="selectType(8)"><img src="assets/pharmacy.svg" width="16px;"/>&nbsp;Pharmacy</p>
+    <p class="typeOption" (click)="selectType(9)"><img src="assets/beauty.svg" width="16px;"/>&nbsp;Beauty</p>
+    <p class="typeOption" (click)="selectType(10)"><img src="assets/gym.svg" width="16px;"/>&nbsp;Gym</p>
+</div>
 <i class="fas fa-location-arrow panToUserLocation" (click)="panToUserLocation()"></i>
 <img class="backButton" src="assets/back.svg" style="width:30px;" (click)="toggleLanding('on')"/>
 <div id="hcf">Research made possible by<br/><u><a href="https://www.historiccharleston.org">The Historic Charleston Foundation</a></u></div>

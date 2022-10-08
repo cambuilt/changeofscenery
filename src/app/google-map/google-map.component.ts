@@ -220,6 +220,8 @@ export class GoogleMapComponent implements OnInit {
       $("span[name='instaNames1']").text('@cos_boston, @cos_charleston,');
       $("span[name='instaNames2']").text('@cos_washingtondc');
     }, 100);
+
+    $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");
   }
 
   public logout() {
@@ -656,8 +658,64 @@ export class GoogleMapComponent implements OnInit {
     }
   }
 
+  openTypeList() {
+    if ($('#typeList').css('height') == '400px') {
+      this.hideTypeList();
+    } else {
+      $('#typeList').removeClass('close');
+      $('#typeList').addClass('open');    
+      $('#typeList').removeAttr('hidden');
+    }
+  }
+  
+  selectType(typeId) {
+    const gmc = GoogleMapComponent;
+    gmc.hideTypeList();
+    gmc.markerFilter = [typeId];
+    console.log(typeId);
+    switch (typeId) {
+      case 1:
+        $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");
+        break;
+      case 2:
+        $('#typeSelector').html("<img src=\"assets/shopWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Shopping");
+        break;
+      case 3:
+        $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Hotel");
+        break;
+      case 4:
+        $('#typeSelector').html("<img src=\"assets/historyWhite.svg\" width=\"24px;\" style=\"color:white;\"/> History");
+        break;
+      case 5:
+        $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Museum");
+        break;
+      case 6:
+        $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Theatre");
+        break;
+      case 7:
+        $('#typeSelector').html("<img src=\"assets/funWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Fun");
+        break;
+      case 8:
+        $('#typeSelector').html("<img src=\"assets/pharmacyWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Pharmacy");
+        break;
+      case 9:
+        $('#typeSelector').html("<img src=\"assets/beautyWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Beauty");
+        break;
+      case 10:
+        $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Gym");
+        break;
+      default:
+        break;
+    }
+    gmc.updatePlaceMarkers(false);
+  }
+
   public hideAppMenu() {
     GoogleMapComponent.hideAppMenu();
+  }
+
+  public hideTypeList() {
+    GoogleMapComponent.hideTypeList();
   }
 
   public static hideAppMenu() {
@@ -666,12 +724,19 @@ export class GoogleMapComponent implements OnInit {
     $('#mapLogo').show();
   }
   
+  public static hideTypeList() {
+    $('#typeList').addClass('close');
+    $('#typeList').removeClass('open');
+    $('#typeList').prop('hidden', true);
+  }
+  
   public hideSplash() {
     $('#splash').addClass('hide');
     $('#splash').css('display', 'none');
   }
 
   public static selectArea(area) {
+    $('#typeSelector').removeAttr('hidden');
     const gmc = GoogleMapComponent;
     gmc.selectAreaWasClicked = true;
     if (gmc.placeCount == 0) {
