@@ -27,16 +27,18 @@
 <img src="assets/ellipsis-circle.svg" id="appMenuIcon" (click)="openAppMenu()"/>
 <div id="typeSelector" hidden (click)="openTypeList()"></div>
 <div id="typeList" hidden>
-    <p class="typeOption" (click)="selectType(1)"><img src="assets/dining.svg" width="16px;"/>&nbsp;Restaurant</p>
-    <p class="typeOption" (click)="selectType(2)"><img src="assets/shop.svg" width="18px;"/>&nbsp;Shopping</p>
-    <p class="typeOption" (click)="selectType(3)"><img src="assets/hotel.svg" width="18px;"/>&nbsp;Hotel</p>
-    <p class="typeOption" (click)="selectType(4)" style="margin-left:-5px;"><img src="assets/history.svg" width="24px;"/>&nbsp;History</p>
-    <p class="typeOption" (click)="selectType(5)"><img src="assets/museum.svg" width="18px;"/>&nbsp;Museum</p>
-    <p class="typeOption" (click)="selectType(6)"><img src="assets/theater.svg" width="18px;"/>&nbsp;Theatre</p>
-    <p class="typeOption" (click)="selectType(7)"><img src="assets/fun.svg" width="16px;"/>&nbsp;Fun</p>
-    <p class="typeOption" (click)="selectType(8)"><img src="assets/pharmacy.svg" width="16px;"/>&nbsp;Pharmacy</p>
-    <p class="typeOption" (click)="selectType(9)"><img src="assets/beauty.svg" width="16px;"/>&nbsp;Beauty</p>
-    <p class="typeOption" (click)="selectType(10)"><img src="assets/gym.svg" width="16px;"/>&nbsp;Gym</p>
+    <p class="typeOption" id="type1" (click)="selectType(1)"><img src="assets/dining.svg" width="16px;"/>&nbsp;Restaurant</p>
+    <p class="typeOption" id="type2" (click)="selectType(2)"><img src="assets/shopping.svg" width="18px;"/>&nbsp;Shopping</p>
+    <p class="typeOption" id="type3" (click)="selectType(3)"><img src="assets/hotel.svg" width="18px;"/>&nbsp;Hotel</p>
+    <p class="typeOption" id="type4" (click)="selectType(4)" style="margin-left:-5px;"><img src="assets/history.svg" width="24px;"/>&nbsp;History</p>
+    <p class="typeOption" id="type5" (click)="selectType(5)"><img src="assets/museum.svg" width="18px;"/>&nbsp;Museum</p>
+    <p class="typeOption" id="type6" (click)="selectType(6)"><img src="assets/theater.svg" width="18px;"/>&nbsp;Theatre</p>
+    <p class="typeOption" id="type7" (click)="selectType(7)"><img src="assets/fun.svg" width="16px;"/>&nbsp;Fun</p>
+    <p class="typeOption" id="type8" (click)="selectType(8)"><img src="assets/pharmacy.svg" width="16px;"/>&nbsp;Pharmacy</p>
+    <p class="typeOption" id="type9" (click)="selectType(9)"><img src="assets/beauty.svg" width="16px;"/>&nbsp;Beauty</p>
+    <p class="typeOption" id="type10" (click)="selectType(10)"><img src="assets/gym.svg" width="16px;"/>&nbsp;Gym</p>
+    <p class="typeOption" id="type13" (click)="selectType(13)"><img src="assets/condo.svg" width="18px;"/>&nbsp;Condo</p>
+    <p class="typeOption" id="type14" (click)="selectType(14)"><img src="assets/apartment.svg" width="18px;"/>&nbsp;Apartment</p>
 </div>
 <i class="fas fa-location-arrow panToUserLocation" (click)="panToUserLocation()"></i>
 <img class="backButton" src="assets/back.svg" style="width:30px;" (click)="toggleLanding('on')"/>
@@ -44,7 +46,7 @@
 <div id="alert"></div>
 <div class="appMenu">
     <ul>
-        <li class="appMenuItem" style="margin-left:-20px;width:375px;"><div class="row"><div class="col-auto typeSelected" (click)="toggleType($event)" data-typeid="1"><img src="assets/dining.svg" width="16px;"/> Restaurant</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="2"><img src="assets/shop.svg" width="18px;"/>Shop</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="3"><img src="assets/hotel.svg" width="18px;"/> Hotel</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="4"><img src="assets/history.svg" width="24px;"/>History</div></div></li>
+        <li class="appMenuItem" style="margin-left:-20px;width:375px;"><div class="row"><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="1"><img src="assets/dining.svg" width="16px;"/> Restaurant</div><div class="col-auto typeSelected" (click)="toggleType($event)" data-typeid="2"><img src="assets/shopping.svg" width="18px;"/>Shopping</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="3"><img src="assets/hotel.svg" width="18px;"/> Hotel</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="4"><img src="assets/history.svg" width="24px;"/>History</div></div></li>
         <li class="appMenuItem" style="margin-left:-20px;width:375px;"><div class="row"><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="5"><img src="assets/museum.svg" width="18px;"/> Museum</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="6"><img src="assets/theater.svg" width="18px;"/> Theater</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="7"><img src="assets/fun.svg" width="16px;"/> Fun</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="8"><img src="assets/pharmacy.svg" width="18px;"/>Pharmacy</div></div></li>
         <li class="appMenuItem" style="margin-left:-20px;width:380px;"><div class="row"><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="9"><img src="assets/beauty.svg" width="18px;"/> Beauty</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="10"><img src="assets/gym.svg" width="18px;"/> Gym</div><div class="col-auto typeUnselected" (click)="toggleType($event)" data-typeid="11"><img src="assets/parking.svg" width="10px;"/> Park</div><div class="col-auto typeUnselected" style="margin-left:-5px;"  (click)="toggleType($event)" data-typeid="12"><img src="assets/bank.svg" width="18px;"/> Bank</div><div class="col-auto typeUnselected" style="margin-left:-10px;" (click)="toggleType($event)" data-typeid="15"><img src="assets/building.svg" width="15px;"/> Bldgs</div></div></li>
         <li class="appMenuItem"><hr/></li>
