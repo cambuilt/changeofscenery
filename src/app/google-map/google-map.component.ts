@@ -152,11 +152,11 @@ export class GoogleMapComponent implements OnInit {
     });
 
     gmc.map.addListener('mousedown', (e) => {
-      gmc.startTouchTimers(e);
+      // gmc.startTouchTimers(e);
     });
 
     gmc.map.addListener('mouseup', (e) => {
-      gmc.cancelTouchTimers();
+      // gmc.cancelTouchTimers();
     });
 
     gmc.map.addListener('center_changed', () => {
@@ -339,7 +339,6 @@ export class GoogleMapComponent implements OnInit {
       gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, centerLat:38.90056, centerLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, centerLat:38.89681, centerLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
-//      gmc.areas.push({name:'FriendshipHeights', lat:38.95101, lng:-77.07871, centerLat:38.95930, centerLng:-77.08574, zoom:19, heading:253, tilt:67, iconWidth:100, iconHeight:22});
     }
 
     gmc.areas.forEach(area => {
@@ -569,11 +568,11 @@ export class GoogleMapComponent implements OnInit {
       });
 
       placeMarker.addListener('mousedown', (e) => {
-        GoogleMapComponent.startTouchTimers(e);
+        // GoogleMapComponent.startTouchTimers(e);
       });
 
       placeMarker.addListener('mouseup', () => {
-        GoogleMapComponent.cancelTouchTimers();
+        // GoogleMapComponent.cancelTouchTimers();
       }); 
 
       GoogleMapComponent.placeMarkers.push(placeMarker);
@@ -802,18 +801,8 @@ export class GoogleMapComponent implements OnInit {
                          new google.maps.LatLng(38.96508, -77.08903),
                          new google.maps.LatLng(38.96546, -77.08803)                         
                         ];
-      // var polygonPaths = new google.maps.MVCArray<google.maps.MVCArray>();
-      // points.forEach(polyLine => {
-      //   var linePath = new google.maps.MVCArray<google.maps.LatLng>();  
-      //   const latLngStart = new google.maps.LatLng(polyLine.start.lat, polyLine.start.lng);
-      //   const latLngEnd = new google.maps.LatLng(polyLine.end.lat, polyLine.end.lng);
-      //   linePath.push(latLngStart);
-      //   linePath.push(latLngEnd);
-      //   // new google.maps.Polyline({path: linePath, strokeColor: "red", strokeWeight: 1, map: gmc.map });         
-      //   polygonPaths.push(linePath);        
-      // });
-      new google.maps.Polygon({paths: FHDCPoints, fillColor: "red", fillOpacity: 0.2, strokeColor: "red", strokeOpacity: 1, strokeWeight: 1, map: gmc.map});
-      new google.maps.Polygon({paths: FHVPoints, fillColor: "blue", fillOpacity: 0.2, strokeColor: "green", strokeOpacity: 1, strokeWeight: 1, map: gmc.map});
+      new google.maps.Polygon({paths: FHDCPoints, fillOpacity: 0, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+      new google.maps.Polygon({paths: FHVPoints, fillOpacity: 0, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
     }
 
     $('#typeSelector').removeAttr('hidden');
