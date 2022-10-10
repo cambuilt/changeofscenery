@@ -8,6 +8,7 @@ import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from '
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
 import { animationFrameScheduler } from 'rxjs';
+import { linkSync } from 'fs';
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -337,7 +338,7 @@ export class GoogleMapComponent implements OnInit {
       gmc.areas.push({name:'CityCenter', lat:38.90010, lng:-77.02600, centerLat:38.90056, centerLng:-77.02513, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, centerLat:38.90056, centerLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, centerLat:38.89681, centerLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
-      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08737, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
+      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
 //      gmc.areas.push({name:'FriendshipHeights', lat:38.95101, lng:-77.07871, centerLat:38.95930, centerLng:-77.08574, zoom:19, heading:253, tilt:67, iconWidth:100, iconHeight:22});
     }
 
@@ -695,7 +696,11 @@ export class GoogleMapComponent implements OnInit {
         }
         break;
       case 5:
-        $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Museum");
+        if (gmc.currentArea.name == 'FriendshipHeights') {
+          $('#typeSelector').html("<img src=\"assets/educationWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Education");
+        } else {
+          $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Museum");
+        }
         break;
       case 6:
         $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Theatre");
@@ -713,19 +718,23 @@ export class GoogleMapComponent implements OnInit {
         $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Gym");
         break;
       case 13:
-          if (gmc.currentArea.name == 'FriendshipHeights') {
-            $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Condo`);
-          } else {
-            $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Residential`);
-          }
-          break;
+        if (gmc.currentArea.name == 'FriendshipHeights') {
+          $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Condo`);
+        } else {
+          $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Residential`);
+        }
+        break;
       case 14:
-          if (gmc.currentArea.name == 'FriendshipHeights') {
-            $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Apartment`);
-          } else {
-            $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Office`);
-          }
-          break;
+        if (gmc.currentArea.name == 'FriendshipHeights') {
+          $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Apartment`);
+        } else {
+          $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Office`);
+        }
+        break;
+      case 20:
+        $('#typeSelector').html(`<img src=\"assets/allWhite.svg\" width=\"24px;\" style=\"color:white;\"/> All`);
+        gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+        break;
       default:
         break;
     }
@@ -758,16 +767,66 @@ export class GoogleMapComponent implements OnInit {
   }
 
   public static selectArea(area) {
-    $('#typeSelector').removeAttr('hidden');
     const gmc = GoogleMapComponent;
+    
+    if (area.name == 'FriendshipHeights') {
+      const FHDCPoints = [new google.maps.LatLng(38.95102, -77.08351),
+                          new google.maps.LatLng(38.95649, -77.09126),
+                          new google.maps.LatLng(38.96501, -77.08030),
+                          new google.maps.LatLng(38.95705, -77.08033),
+                          new google.maps.LatLng(38.95703, -77.07993),
+                          new google.maps.LatLng(38.95595, -77.07949),
+                          new google.maps.LatLng(38.95470, -77.07927),
+                          new google.maps.LatLng(38.95212, -77.07985),
+                          new google.maps.LatLng(38.95062, -77.08026),
+                          new google.maps.LatLng(38.95064, -77.08064),
+                          new google.maps.LatLng(38.95102, -77.08076)
+                         ];
+      const FHVPoints = [new google.maps.LatLng(38.96190, -77.08632),
+                         new google.maps.LatLng(38.96176, -77.08714),
+                         new google.maps.LatLng(38.96189, -77.08801),
+                         new google.maps.LatLng(38.96206, -77.08900),
+                         new google.maps.LatLng(38.96216, -77.08981),
+                         new google.maps.LatLng(38.96243, -77.09113),
+                         new google.maps.LatLng(38.96271, -77.09240),
+                         new google.maps.LatLng(38.96278, -77.09336),
+                         new google.maps.LatLng(38.96271, -77.09453),
+                         new google.maps.LatLng(38.96263, -77.09512),
+                         new google.maps.LatLng(38.96249, -77.09538),
+                         new google.maps.LatLng(38.96281, -77.09562),
+                         new google.maps.LatLng(38.96307, -77.09561),
+                         new google.maps.LatLng(38.96392, -77.09238),
+                         new google.maps.LatLng(38.96428, -77.09114),
+                         new google.maps.LatLng(38.96469, -77.08984),
+                         new google.maps.LatLng(38.96448, -77.08874),
+                         new google.maps.LatLng(38.96508, -77.08903),
+                         new google.maps.LatLng(38.96546, -77.08803)                         
+                        ];
+      // var polygonPaths = new google.maps.MVCArray<google.maps.MVCArray>();
+      // points.forEach(polyLine => {
+      //   var linePath = new google.maps.MVCArray<google.maps.LatLng>();  
+      //   const latLngStart = new google.maps.LatLng(polyLine.start.lat, polyLine.start.lng);
+      //   const latLngEnd = new google.maps.LatLng(polyLine.end.lat, polyLine.end.lng);
+      //   linePath.push(latLngStart);
+      //   linePath.push(latLngEnd);
+      //   // new google.maps.Polyline({path: linePath, strokeColor: "red", strokeWeight: 1, map: gmc.map });         
+      //   polygonPaths.push(linePath);        
+      // });
+      new google.maps.Polygon({paths: FHDCPoints, fillColor: "red", fillOpacity: 0.2, strokeColor: "red", strokeOpacity: 1, strokeWeight: 1, map: gmc.map});
+      new google.maps.Polygon({paths: FHVPoints, fillColor: "blue", fillOpacity: 0.2, strokeColor: "green", strokeOpacity: 1, strokeWeight: 1, map: gmc.map});
+    }
+
+    $('#typeSelector').removeAttr('hidden');
     gmc.selectAreaWasClicked = true;
     if (gmc.placeCount == 0) {
       $('#loading').addClass('show');
     }
     if (area.name == 'FriendshipHeights') {
       $('#type4').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>&nbsp;Medical");
+      $('#type5').html("<img src=\"assets/education.svg\" width=\"18px;\"/>&nbsp;Education");
     } else {
       $('#type4').html("<img src=\"assets/history.svg\" width=\"24px;\"/>&nbsp;History");
+      $('#type5').html("<img src=\"assets/museum.svg\" width=\"18px;\"/>&nbsp;Museum");
     }
     this.currentArea = area;
     this.onLanding = false;
