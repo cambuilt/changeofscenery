@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="13px" height="18px" viewBox="0 0 13 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>local_parking</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Rounded" transform="translate(-412.000000, -3213.000000)">
-            <g id="Maps" transform="translate(100.000000, 3068.000000)">
-                <g id="-Round-/-Maps-/-local_parking" transform="translate(306.000000, 142.000000)">
-                    <g>
-                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
-                        <path d="M12.79,3 L8,3 C6.9,3 6,3.9 6,5 L6,19 C6,20.1 6.9,21 8,21 C9.1,21 10,20.1 10,19 L10,15 L13,15 C16.57,15 19.42,11.87 18.95,8.21 C18.56,5.19 15.84,3 12.79,3 Z M13.2,11 L10,11 L10,7 L13.2,7 C14.3,7 15.2,7.9 15.2,9 C15.2,10.1 14.3,11 13.2,11 Z" id="🔹-Icon-Color" fill="#1D1D1D"></path>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<svg version="1.1" id="parking-11" xmlns="http://www.w3.org/2000/svg" width="11px" height="11px" viewBox="0 0 11 11">
+  <path d="M8.1,6.1C7.4363,6.5788,6.6268,6.8121,5.81,6.76H3.9V10H2V1h3.93c0.7801-0.0414,1.5484,0.2041,2.16,0.69&#xA;&#x9;C8.6707,2.2518,8.9681,3.0449,8.9,3.85C8.9884,4.6825,8.6941,5.5101,8.1,6.1z M6.64,2.86c-0.289-0.2119-0.6421-0.3178-1-0.3H3.9&#xA;&#x9;v2.65h1.72c0.3612,0.0191,0.717-0.0947,1-0.32c0.2559-0.2675,0.3867-0.6308,0.36-1C7.0323,3.5125,6.9068,3.1321,6.64,2.86z"/>
 </svg>

@@ -707,6 +707,9 @@ export class gmc implements OnInit {
       case 10:
         $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Gym");
         break;
+      case 11:
+        $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Park/Trans");
+        break;
       case 13:
         if (gmc.currentArea.name == 'FriendshipHeights') {
           $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Condo`);
