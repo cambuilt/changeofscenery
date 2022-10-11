@@ -32,7 +32,7 @@ export class GoogleMapComponent implements OnInit {
   public static areas: any = [];
   public static animations: any = [];
   public static likedPlaces: any = [];
-  public static markerFilter: any = [2];
+  public static markerFilter: any = [2,21];
   // public static markerFilter: any = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
   public static placeMarkers: google.maps.Marker[] = [];
   public static placeTotal = 0;
@@ -408,7 +408,7 @@ export class GoogleMapComponent implements OnInit {
     this.places.forEach(place => {
       const marker = gmc.placeMarkers.find(m => m.getTitle() == place.Name);
       if (place.Type != undefined) {
-        if (gmc.markerFilter.find(m => place.Type == m || (place.Type.indexOf(',') > -1 && place.Type.split(',').indexOf(String(m)) > -1))) {
+        if (gmc.markerFilter.find(m => place.Type == m || (place.Type.indexOf(',') > -1 && place.Type.split(',').indexOf(String(m)) > -1)) || place.Type == 21) {
           if (place.Area != undefined && place.Area.replaceAll(' ', '') == this.currentArea.name || city == 'charleston' || (this.currentArea.name == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {
                 this.placeTotal++;
@@ -677,6 +677,7 @@ export class GoogleMapComponent implements OnInit {
     gmc.hideTypeList();
     gmc.gotoAreaHome();
     gmc.markerFilter = [typeId];
+    console.log(typeId);
     switch (typeId) {
       case 1:
         $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");
@@ -801,8 +802,8 @@ export class GoogleMapComponent implements OnInit {
                          new google.maps.LatLng(38.96508, -77.08903),
                          new google.maps.LatLng(38.96546, -77.08803)                         
                         ];
-      new google.maps.Polygon({paths: FHDCPoints, fillOpacity: 0, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
-      new google.maps.Polygon({paths: FHVPoints, fillOpacity: 0, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+      new google.maps.Polygon({paths: FHDCPoints, fillColor: "#DD8888", fillOpacity: 0.2, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+      new google.maps.Polygon({paths: FHVPoints, fillColor: "#8888DD", fillOpacity: 0.2, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
     }
 
     $('#typeSelector').removeAttr('hidden');
