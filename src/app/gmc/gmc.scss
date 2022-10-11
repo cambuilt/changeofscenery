@@ -31,11 +31,19 @@ firebase-ui {
 }
 
 #loading {
+    background-color: white;
+    color: black;
+    display: block;
     position:absolute;
+    width:92px;
     bottom: 45vh;
     left: 40vw;
     font-family: Futura, Arial, Helvetica, sans-serif;
     opacity: 0;
+    padding-left: 10px;
+    border-radius: 15px;
+    z-index:1;
+    cursor: pointer;
 }
 
 #loading.show {

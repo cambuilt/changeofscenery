@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RouteErrorComponent } from './route-error/route-error.component';
 import { PanoramaComponent } from './panorama/panorama.component';
-import { GoogleMapComponent } from './google-map/google-map.component';
+import { gmc } from './gmc/gmc';
 import { AngularFireModule } from "@angular/fire/compat";
 import { firebase, firebaseui, FirebaseUIModule } from 'firebaseui-angular';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
@@ -37,7 +37,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		AppComponent,
 		RouteErrorComponent,
 		PanoramaComponent,
-  		GoogleMapComponent
+  		gmc
 	],
 	imports: [
 		CommonModule,
