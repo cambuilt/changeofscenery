@@ -118,8 +118,8 @@ export class gmc implements OnInit {
       if (user) {
         gmc.currentUser = user;
         this.getUser(user);
+        $('#splashTable').removeAttr('hidden');
       } else {
-        console.log('no user logged in here');
         gmc.currentUser = null;
       }
     });  
@@ -418,11 +418,8 @@ export class gmc implements OnInit {
             marker.setMap(null);
           }      
         } else if (marker != undefined && place.Name != undefined) {
-          console.log('hiding', place.Name);
           marker.setMap(null);
         }
-      } else {
-        console.log('place has no type', place.Name);
       }
     });
 
@@ -435,6 +432,7 @@ export class gmc implements OnInit {
     const zoomFactor = this.getZoomFactor(place);
     const iconId = this.sanitizeName(place.Name);
     var img = new Image();
+    // console.log('creating', place.Name);
 
     img.onload = function() {
       const city = gmc.currentCity; 
@@ -662,11 +660,14 @@ export class gmc implements OnInit {
   
   selectType(typeId) {
     gmc.hideTypeList();
+    gmc.unselectTypes();
     gmc.gotoAreaHome();
     gmc.markerFilter = [typeId];
+    $('[data-typeid=' + typeId + ']').removeClass('typeUnselected');
+    $('[data-typeid=' + typeId + ']').addClass('typeSelected');
     switch (typeId) {
       case 1:
-        $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");
+        $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");        
         break;
       case 2:
         $('#typeSelector').html("<img src=\"assets/shoppingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Shopping");
@@ -708,7 +709,7 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Gym");
         break;
       case 11:
-        $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Park/Trans");
+        $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Park/Metro");
         break;
       case 13:
         if (gmc.currentArea.name == 'FriendshipHeights') {
@@ -752,6 +753,15 @@ export class gmc implements OnInit {
     $('#typeList').addClass('close');
     $('#typeList').removeClass('open');
     $('#typeList').prop('hidden', true);
+  }
+
+  public static unselectTypes() {
+    var index = 1
+    while(index++<13)
+    {
+      $('[data-typeid=' + index + ']').removeClass('typeSelected');
+      $('[data-typeid=' + index + ']').addClass('typeUnselected');    
+    }
   }
   
   public hideSplash() {
@@ -807,12 +817,18 @@ export class gmc implements OnInit {
     }
     if (area.name == 'FriendshipHeights') {
       $('#type4').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>&nbsp;Medical");
+      $('[data-typeid=4]').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>Medical");
       $('#type5').html("<img src=\"assets/education.svg\" width=\"18px;\"/>&nbsp;Education");
+      $('[data-typeid=5]').html("<img src=\"assets/education.svg\" width=\"18px;\"/>&nbsp;Education");
       $('#type6').html("<img src=\"assets/pet.svg\" width=\"18px;\"/>&nbsp;Pet");
+      $('[data-typeid=6]').html("<img src=\"assets/pet.svg\" width=\"18px;\"/>&nbsp;Pet");
     } else {
       $('#type4').html("<img src=\"assets/history.svg\" width=\"24px;\"/>&nbsp;History");
+      $('[data-typeid=4]').html("<img src=\"assets/history.svg\" width=\"24px;\"/>History");
       $('#type5').html("<img src=\"assets/museum.svg\" width=\"18px;\"/>&nbsp;Museum");
+      $('[data-typeid=5]').html("<img src=\"assets/museum.svg\" width=\"18px;\"/>Museum");
       $('#type6').html("<img src=\"assets/theater.svg\" width=\"18px;\"/>&nbsp;Theatre");
+      $('[data-typeid=6]').html("<img src=\"assets/theater.svg\" width=\"18px;\"/>Theatre");
     }
     gmc.currentArea = area;
     this.zooming = true;    
@@ -1005,9 +1021,7 @@ export class gmc implements OnInit {
         this.animateMarker(animate, animationIndex);
       }
     } else if (animation.cmd == 'wait') {
-      if (animate == undefined) {
-        console.log('no animate');        
-      } else {
+      if (animate != undefined) {       
         var url = animate.Marker.getIcon()['url'];;
         var scaledSize = animate.Marker.getIcon()['scaledSize'];
         animate.Marker.setVisible((animation.hid == 0));
