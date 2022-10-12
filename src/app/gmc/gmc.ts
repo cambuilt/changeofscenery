@@ -770,47 +770,78 @@ export class gmc implements OnInit {
   }
 
   public static selectArea(area) {
-    if (area.name == 'FriendshipHeights' && gmc.polygon1 == undefined) {
-      const FHDCPoints = [new google.maps.LatLng(38.95102, -77.08351),
-                          new google.maps.LatLng(38.95649, -77.09126),
-                          new google.maps.LatLng(38.96501, -77.08030),
-                          new google.maps.LatLng(38.95705, -77.08033),
-                          new google.maps.LatLng(38.95703, -77.07993),
-                          new google.maps.LatLng(38.95595, -77.07949),
-                          new google.maps.LatLng(38.95470, -77.07927),
-                          new google.maps.LatLng(38.95212, -77.07985),
-                          new google.maps.LatLng(38.95062, -77.08026),
-                          new google.maps.LatLng(38.95064, -77.08064),
-                          new google.maps.LatLng(38.95102, -77.08076)
-                         ];
-      const FHVPoints = [new google.maps.LatLng(38.96190, -77.08632),
-                         new google.maps.LatLng(38.96176, -77.08714),
-                         new google.maps.LatLng(38.96189, -77.08801),
-                         new google.maps.LatLng(38.96206, -77.08900),
-                         new google.maps.LatLng(38.96216, -77.08981),
-                         new google.maps.LatLng(38.96243, -77.09113),
-                         new google.maps.LatLng(38.96271, -77.09240),
-                         new google.maps.LatLng(38.96278, -77.09336),
-                         new google.maps.LatLng(38.96271, -77.09453),
-                         new google.maps.LatLng(38.96263, -77.09512),
-                         new google.maps.LatLng(38.96249, -77.09538),
-                         new google.maps.LatLng(38.96281, -77.09562),
-                         new google.maps.LatLng(38.96307, -77.09561),
-                         new google.maps.LatLng(38.96392, -77.09238),
-                         new google.maps.LatLng(38.96428, -77.09114),
-                         new google.maps.LatLng(38.96469, -77.08984),
-                         new google.maps.LatLng(38.96448, -77.08874),
-                         new google.maps.LatLng(38.96508, -77.08903),
-                         new google.maps.LatLng(38.96546, -77.08803)                         
-                        ];
-      gmc.polygon1 =  new google.maps.Polygon({paths: FHVPoints, fillColor: "#8888DD", fillOpacity: 0.1, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
-      gmc.polygon2 = new google.maps.Polygon({paths: FHDCPoints, fillColor: "#DD8888", fillOpacity: 0.1, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
-    } else {
+    if (gmc.polygon1 == undefined) {
+      var points1, points2
+      if (area.name == 'FriendshipHeights') {
+        points1 = [new google.maps.LatLng(38.95102, -77.08351),
+                    new google.maps.LatLng(38.95649, -77.09126),
+                    new google.maps.LatLng(38.96501, -77.08030),
+                    new google.maps.LatLng(38.95705, -77.08033),
+                    new google.maps.LatLng(38.95703, -77.07993),
+                    new google.maps.LatLng(38.95595, -77.07949),
+                    new google.maps.LatLng(38.95470, -77.07927),
+                    new google.maps.LatLng(38.95212, -77.07985),
+                    new google.maps.LatLng(38.95062, -77.08026),
+                    new google.maps.LatLng(38.95064, -77.08064),
+                    new google.maps.LatLng(38.95102, -77.08076)
+                  ];
+        points2 = [new google.maps.LatLng(38.96190, -77.08632),
+                    new google.maps.LatLng(38.96176, -77.08714),
+                    new google.maps.LatLng(38.96189, -77.08801),
+                    new google.maps.LatLng(38.96206, -77.08900),
+                    new google.maps.LatLng(38.96216, -77.08981),
+                    new google.maps.LatLng(38.96243, -77.09113),
+                    new google.maps.LatLng(38.96271, -77.09240),
+                    new google.maps.LatLng(38.96278, -77.09336),
+                    new google.maps.LatLng(38.96271, -77.09453),
+                    new google.maps.LatLng(38.96263, -77.09512),
+                    new google.maps.LatLng(38.96249, -77.09538),
+                    new google.maps.LatLng(38.96281, -77.09562),
+                    new google.maps.LatLng(38.96307, -77.09561),
+                    new google.maps.LatLng(38.96392, -77.09238),
+                    new google.maps.LatLng(38.96428, -77.09114),
+                    new google.maps.LatLng(38.96469, -77.08984),
+                    new google.maps.LatLng(38.96448, -77.08874),
+                    new google.maps.LatLng(38.96508, -77.08903),
+                    new google.maps.LatLng(38.96546, -77.08803)                         
+                  ];
+      } else if (area.name == 'CityCenter' || area.name == 'Chinatown') {
+        points1 = [new google.maps.LatLng(38.89983, -77.02704),
+                    new google.maps.LatLng(38.90108, -77.02712),
+                    new google.maps.LatLng(38.90210, -77.02398),
+                    new google.maps.LatLng(38.89981, -77.02398)
+                  ];
+        points2 = [new google.maps.LatLng(38.90087, -77.02188),
+                    new google.maps.LatLng(38.90088, -77.01987),
+                    new google.maps.LatLng(38.89734, -77.01990),
+                    new google.maps.LatLng(38.89731, -77.02192)
+                  ];
+        gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,21];
+        $('#typeSelector').prop('hidden', true);
+      } else if (area.name == 'PennQuarter') {
+        points1 = [new google.maps.LatLng(38.89552, -77.03363),
+                    new google.maps.LatLng(38.89884, -77.03368),
+                    new google.maps.LatLng(38.90215, -77.02398),
+                    new google.maps.LatLng(38.90299, -77.02398),
+                    new google.maps.LatLng(38.90297, -77.02192),
+                    new google.maps.LatLng(38.90213, -77.02192),
+                    new google.maps.LatLng(38.89979, -77.01520),
+                    new google.maps.LatLng(38.89149, -77.01522),
+                    new google.maps.LatLng(38.89554, -77.02965)
+                  ];
+        gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,21];
+        $('#typeSelector').prop('hidden', true);
+      }
+      gmc.polygon1 =  new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: 0.1, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+      if (points2 != undefined) gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: 0.1, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+  } else {
       gmc.polygon1.setVisible(true);
-      gmc.polygon2.setVisible(true);
+      if (gmc.polygon2 != undefined) gmc.polygon2.setVisible(true);
     }
 
-    $('#typeSelector').removeAttr('hidden');
+    if (area.name == 'FriendshipHeights') {
+      $('#typeSelector').removeAttr('hidden');
+    }
     gmc.selectAreaWasClicked = true;
     if (gmc.placeCount == 0) {
       $('#loading').addClass('show');
