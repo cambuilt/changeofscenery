@@ -399,7 +399,7 @@ export class gmc implements OnInit {
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
           if (place.Area != undefined && this.currentArea != undefined && place.Area.replaceAll(' ', '') == this.currentArea.name || gmc.currentCity == 'charleston' || (this.currentArea.name == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {
-                this.placeTotal++;        
+                this.placeTotal++;
                 this.createMarker(place);            
             } else {
               if (marker.getVisible() == false) {
@@ -494,7 +494,11 @@ export class gmc implements OnInit {
       `<tr colspan="2" style="height:80%;"><td class="notes">${place.Notes}</td></tr></table>` + 
       `</td></tr><tr><td></td></tr></table></div>`;
 
-      if (place.Name == 'Bin26Enoteca') {
+      if (place.Popup != undefined) {
+        contentString = place.Popup.replace('bgWidth', bgWidth).replace('popups', gmc.cloudinaryPath + 'popups');
+      }
+
+      if (place.Name == 'Bin 26 Enoteca') {
         contentString = "<img src=\"https://res.cloudinary.com/backyardhiddengems-com/image/upload/Boston/Bin26EnotecaBG.png\" width=\"" + bgWidth + "\"" + 
                         " style=\"margin-bottom:-10px;cursor:pointer;\" onclick=\"window.open('http://bin26.com/');\" />" + 
                         "<div class=\"popup\">" + 
@@ -1235,6 +1239,7 @@ export class gmc implements OnInit {
       icon = { url: newUrl, scaledSize: scaledSize };
     }
 
+    marker.setIcon(null);
     marker.setIcon(icon);
   }
 
@@ -1261,8 +1266,6 @@ export class gmc implements OnInit {
     var zoomFactor = Number((this.map.getZoom() * 10).toFixed(0));
     var floorNumber = 210;
     var maxNum = .011;
-
-    console.log(zoomFactor);
 
     if (zoomFactor > 190) {
       maxNum = zoomFactor * 0.00014;
