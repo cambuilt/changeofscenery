@@ -173,16 +173,26 @@ export class gmc implements OnInit {
       window.scroll(0, -100);  
     });
 
+    gmc.map.addListener('dragstart', () => {
+      gmc.hidePlaceMarkers();
+    });
+
+    gmc.map.addListener('dragend', () => {
+      gmc.showPlaceMarkers();
+    });
+
     gmc.map.addListener('zoom_changed', () => {
       if (gmc.zooming == true) {
         setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);       
       } else {
         if (gmc.zoomIntervalFunction == undefined) {
+          gmc.hidePlaceMarkers();
           gmc.lastZoomInProgressLevel = gmc.map.getZoom();
           gmc.zoomIntervalFunction = setInterval(function() {
             if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
+              gmc.showPlaceMarkers();
               gmc.handleZoom();
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();
@@ -498,18 +508,6 @@ export class gmc implements OnInit {
         contentString = place.Popup.replace('bgWidth', bgWidth).replace('popups', gmc.cloudinaryPath + 'popups');
       }
 
-      if (place.Name == 'Bin 26 Enoteca') {
-        contentString = "<img src=\"https://res.cloudinary.com/backyardhiddengems-com/image/upload/Boston/Bin26EnotecaBG.png\" width=\"" + bgWidth + "\"" + 
-                        " style=\"margin-bottom:-10px;cursor:pointer;\" onclick=\"window.open('http://bin26.com/');\" />" + 
-                        "<div class=\"popup\">" + 
-                        "   <h1 style=\"margin-bottom:24px;\">Bin 26 Enoteca is a Beacon Hill neighborhood restaurant with a seasonally driven menu and international list of old world wines.</h1>" + 
-                        "   <a href=\"http://bin26.com/reservations-2/\" target=\"_blank\">Reservations</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-Wine-list-8.pdf\" target=\"_blank\">Wines by the Glass &amp; Beer</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Wine-BTG-2022-3.pdf\" target=\"_blank\">Cellar List</a><br/><br/>" + 
-                        "   <a href=\"http://bin26.com/bin26wordpress/wp-content/uploads/2022/04/Dinner-Menu-2022-4.pdf\" target=\"_blank\">Dinner Menu</a><a href=\"http://bin26.com/\" target=\"_blank\" style=\"margin-left:110px;\">Full Website</a>" + 
-                        "</div>";
-      }
-  
       const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
       
       markerInfoWindow.addListener('closeclick', () => {
@@ -595,10 +593,10 @@ export class gmc implements OnInit {
     });
   }
 
-  public static showPlaceMarkers() {    
+  public static showPlaceMarkers() {        
     this.placeMarkers.forEach(marker => {
       marker.setVisible(true);
-    });
+    });    
   }
 
   public static startTouchTimers(e) {
