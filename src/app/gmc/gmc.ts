@@ -223,7 +223,7 @@ export class gmc implements OnInit {
       $("span[name='instaNames2']").text('@cos_washingtondc');
     }, 100);
 
-    $('#typeSelector').html("<img src=\"assets/allWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:28px;\">Filter</span>");
+    $('#typeSelector').html("<img src=\"assets/filterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:28px;\">Filter</span>");
   }
 
   public logout() {
@@ -664,13 +664,13 @@ export class gmc implements OnInit {
     $('[data-typeid=' + typeId + ']').addClass('typeSelected');
     switch (typeId) {
       case 1:
-        $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Restaurant");        
+        $('#typeSelector').html("<img src=\"assets/diningWhite.svg\" width=\"16px;\" style=\"color:white;padding-bottom:2px;\"/> <span style=\"line-height:26px;\">Restaurant</span>");        
         break;
       case 2:
-        $('#typeSelector').html("<img src=\"assets/shoppingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Shopping");
+        $('#typeSelector').html("<img src=\"assets/shoppingWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:3px;\"/> <span style=\"line-height:26px;\">Shopping</span>");
         break;
       case 3:
-        $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Hotel");
+        $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:26px;\">Hotel</span>");
         break;
       case 4:
         if (gmc.currentArea.name == 'FriendshipHeights') {
