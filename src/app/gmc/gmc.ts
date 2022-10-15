@@ -223,7 +223,7 @@ export class gmc implements OnInit {
       $("span[name='instaNames2']").text('@cos_washingtondc');
     }, 100);
 
-    $('#typeSelector').html("<img src=\"assets/shoppingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Shopping");
+    $('#typeSelector').html("<img src=\"assets/allWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:28px;\">Filter</span>");
   }
 
   public logout() {
@@ -789,9 +789,7 @@ export class gmc implements OnInit {
 
       gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,21];
 
-      if (area.name == 'FriendshipHeights') {
-        gmc.markerFilter = [2,21];
-      } else if (area.name == 'CityCenter' || area.name == 'Chinatown' || area.name == 'PennQuarter') {
+      if (area.name == 'CityCenter' || area.name == 'Chinatown' || area.name == 'PennQuarter') {
         $('#typeSelector').prop('hidden', true);
       }
      
