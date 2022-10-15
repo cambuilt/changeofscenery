@@ -381,8 +381,6 @@ export class gmc implements OnInit {
                 gmc.places[gmc.places.length - 1]['id'] = doc.id;
             });
           } catch (e) {
-            //$('#loading').removeClass('show');
-            // $('#loading').hide();
             console.error("Error loading places: ", e);
             alert('Cannot get places, maybe due to weak Internet connection.');
           }      
@@ -396,8 +394,6 @@ export class gmc implements OnInit {
     } else if (this.placeTotal > 0) {      
       this.hidePlaceMarkers();
     }
-    // $('#loading').removeClass('show');
-    // $('#loading').hide();
   }
 
   public static updatePlaceMarkers(zooming:boolean) {
@@ -430,7 +426,7 @@ export class gmc implements OnInit {
 
     this.animations.forEach(animate => {
       gmc.updateAnimateIcon(animate);      
-    });    
+    });
   }
 
   public static createMarker(place: any) {    
@@ -567,7 +563,7 @@ export class gmc implements OnInit {
       if (gmc.placeCount == gmc.placeTotal) {
         setTimeout(function() {
          $('#loading').removeClass('show');
-        }, 2000);
+        }, 5000);
       }
     }
 
