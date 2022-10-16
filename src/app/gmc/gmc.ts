@@ -563,7 +563,7 @@ export class gmc implements OnInit {
       if (gmc.placeCount == gmc.placeTotal) {
         setTimeout(function() {
          $('#loading').removeClass('show');
-        }, 5000);
+        }, 3000);
       }
     }
 
@@ -666,60 +666,60 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/shoppingWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:3px;\"/> <span style=\"line-height:26px;\">Shopping</span>");
         break;
       case 3:
-        $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:26px;\">Hotel</span>");
+        $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:25px;\">Hotel</span>");
         break;
       case 4:
         if (gmc.currentArea.name == 'FriendshipHeights') {
-          $('#typeSelector').html(`<img src=\"assets/medicalWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Medical`);
+          $('#typeSelector').html("<img src=\"assets/medicalWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Medical</span>");
         } else {
-          $('#typeSelector').html(`<img src=\"assets/historyWhite.svg\" width=\"24px;\" style=\"color:white;\"/> History`);
+          $('#typeSelector').html("<img src=\"assets/historyWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:26px;\">History</span>");
         }
         break;
       case 5:
         if (gmc.currentArea.name == 'FriendshipHeights') {
-          $('#typeSelector').html("<img src=\"assets/educationWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Education");
+          $('#typeSelector').html("<img src=\"assets/educationWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Education</span>");
         } else {
-          $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Museum");
+          $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Museum</span>");
         }
         break;
       case 6:
         if (gmc.currentArea.name == 'FriendshipHeights') {
-          $('#typeSelector').html("<img src=\"assets/petWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Pet");
+          $('#typeSelector').html("<img src=\"assets/petWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Pet</span>");
         } else {
-          $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Theatre");
+          $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Theatre</span>");
         }
         break;
       case 7:
-        $('#typeSelector').html("<img src=\"assets/funWhite.svg\" width=\"16px;\" style=\"color:white;\"/> Fun");
+        $('#typeSelector').html("<img src=\"assets/funWhite.svg\" width=\"16px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Fun</span>");
         break;
       case 8:
-        $('#typeSelector').html("<img src=\"assets/pharmacyWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Pharmacy");
+        $('#typeSelector').html("<img src=\"assets/pharmacyWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Pharmacy</span>");
         break;
       case 9:
-        $('#typeSelector').html("<img src=\"assets/beautyWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Beauty");
+        $('#typeSelector').html("<img src=\"assets/beautyWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Beauty</span>");
         break;
       case 10:
-        $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Gym");
+        $('#typeSelector').html("<img src=\"assets/gymWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Gym</span>");
         break;
       case 11:
-        $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;\"/> Park/Metro");
+        $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:1px;\"/> <span style=\"line-height:27px;\">Park/Metro</span>");
         break;
       case 13:
         if (gmc.currentArea.name == 'FriendshipHeights') {
-          $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Condo`);
+          $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Condo</span>`);
         } else {
-          $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Residential`);
+          $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Residential</span>`);
         }
         break;
       case 14:
         if (gmc.currentArea.name == 'FriendshipHeights') {
-          $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Apartment`);
+          $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:0px;\"/> Apartment`);
         } else {
-          $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;\"/> Office`);
+          $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> Office`);
         }
         break;
       case 20:
-        $('#typeSelector').html(`<img src=\"assets/allWhite.svg\" width=\"24px;\" style=\"color:white;\"/> All`);
+        $('#typeSelector').html(`<img src=\"assets/allWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">All</span>`);
         gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
         break;
       default:
