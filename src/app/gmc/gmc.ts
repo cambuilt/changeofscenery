@@ -399,14 +399,15 @@ export class gmc implements OnInit {
   public static updatePlaceMarkers(zooming:boolean) {
 
     this.places.forEach(place => {
-      const marker = gmc.placeMarkers.find(m => m.getTitle() == place.Name);
+      var name = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
+      const marker = gmc.placeMarkers.find(m => m.getTitle() == name);
       if (place.Type != undefined) {
         const type = String(place.Type);
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
           if (place.Area != undefined && this.currentArea != undefined && place.Area.replaceAll(' ', '') == this.currentArea.name || gmc.currentCity == 'charleston' || (this.currentArea.name == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {
                 this.placeTotal++;
-                this.createMarker(place);            
+                this.createMarker(place);      
             } else {
               if (marker.getVisible() == false) {
                 marker.setVisible(true);
@@ -431,15 +432,14 @@ export class gmc implements OnInit {
 
   public static createMarker(place: any) {    
     const zoomFactor = this.getZoomFactor(place);
-    const iconId = this.sanitizeName(place.Name);
-    var img = new Image();
-    // console.log('creating', place.Name);
+    const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
+    var img = new Image();    
 
     img.onload = function() {
       const city = gmc.currentCity; 
       place['imgWidth'] = img.width;
       place['imgHeight'] = img.height;
-      var name = city == 'charleston' ? place.Address : gmc.sanitizeName(place.Name);
+      var name = city == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
       var scaledSize = new google.maps.Size(img.width * zoomFactor, img.height * zoomFactor);      
       var url = gmc.cloudinaryPath + 'icons/' + name + '.png';
       var heartIcon = 'heart_empty';
@@ -469,7 +469,8 @@ export class gmc implements OnInit {
         icon = { url: url, origin: origin, size: size, scaledSize: scaledSize };
       } 
 
-      var n = place.Name;
+      var n = gmc.currentCity == 'charleston' ? place.Address : place.Name;
+      const popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
       var visible = gmc.selectedAreaWasClicked;
@@ -491,7 +492,7 @@ export class gmc implements OnInit {
       const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
       const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
       var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
-      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${gmc.cloudinaryPath + iconId}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
+      `<table><tr style='height:20%;'><td><img id='${iconId}' src='${popupImage}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
       `width='180px' height='180px' onclick='scrollImage("${gmc.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
       `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
       `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + gmc.currentArea.name, '')}</span></td><td></td></tr>` + 
@@ -538,7 +539,7 @@ export class gmc implements OnInit {
         gmc.updateIcon(place, placeMarker, selectIcon);
         markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
         setTimeout(function () {
-          const iconId = gmc.sanitizeName(place.Name);  
+          const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);  
           if (gmc.likedPlaces.find(x => x == iconId) != undefined) {
             $('#likedHeart' + iconId).attr('src', 'assets/heart.png');
           }
@@ -567,12 +568,12 @@ export class gmc implements OnInit {
       }
     }
 
-    var name = gmc.currentCity == 'charleston' ? place.Address : this.sanitizeName(place.Name);
+    var name = gmc.currentCity == 'charleston' ? this.sanitizeName(place.Address) : this.sanitizeName(place.Name);
 
     // if (place.SpriteHeight != undefined) {
     //   img.src = this.cloudinaryPath + 'icons/Sprites' + place.SpriteIndex + '.png';
     // } else {
-      img.src = this.cloudinaryPath + 'icons/' + name + '.png';    
+    img.src = this.cloudinaryPath + 'icons/' + name + '.png';
     // }
   }
 
@@ -1218,6 +1219,7 @@ export class gmc implements OnInit {
     }
 
     var icon: google.maps.Icon;
+    console.log('newUrl', newUrl);
 
     if (false) {  // place.SpriteHeight != undefined
       place['imgWidth'] = place.SpriteWidth;
@@ -1462,14 +1464,14 @@ export class gmc implements OnInit {
     const docData = { Likes: place.Likes };
     try {
       updateDoc(placeDoc, docData);      
-      const iconId = gmc.sanitizeName(place.Name);
+      const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
       const plural = place.Likes != 1 ? 's' : '';
       $('#likeCount' + iconId).text(place.Likes + ' like' + plural);
-      var url = gmc.cloudinaryPath + 'icons/' + gmc.sanitizeName(place.Name) + '.png';
+      var url = gmc.cloudinaryPath + 'icons/' + iconId + '.png';
       const heartX = String(place.imgWidth/3).split('.')[0];
       const heartY = String(-(place.imgHeight/3)).split('.')[0];          
       url = url.replace('/upload/', '/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/');
-      const marker = gmc.placeMarkers.find(m => m.getIcon()['url'].indexOf(gmc.sanitizeName(place.Name)) > -1);
+      const marker = gmc.placeMarkers.find(m => m.getIcon()['url'].indexOf(iconId) > -1);
       const zoomFactor = gmc.getZoomFactor(place);
       const scaledSize = new google.maps.Size(place.imgWidth * zoomFactor, place.imgHeight * zoomFactor);
       var icon: google.maps.Icon = {
@@ -1492,15 +1494,15 @@ public unlike() {
     const docData = { Likes: place.Likes };
     try {
       updateDoc(placeDoc, docData);
-      const iconId = gmc.sanitizeName(place.Name);
+      const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
       gmc.likedPlaces = gmc.likedPlaces.filter(e => e !== iconId)
       const plural = place.Likes != 1 ? 's' : '';
       $('#likeCount' + iconId).text(place.Likes + ' like' + plural);
-      var url = gmc.cloudinaryPath + 'icons/' + gmc.sanitizeName(place.Name) + '.png';
+      var url = gmc.cloudinaryPath + 'icons/' + iconId + '.png';
       const heartX = String(place.imgWidth/3).split('.')[0];
       const heartY = String(-(place.imgHeight/3)).split('.')[0];          
       url = url.replace('/upload/l_heart/fl_layer_apply,x_' + heartX + ',y_' + heartY + '/', '/upload/');
-      const marker = gmc.placeMarkers.find(m => m.getIcon()['url'].indexOf(gmc.sanitizeName(place.Name)) > -1);
+      const marker = gmc.placeMarkers.find(m => m.getIcon()['url'].indexOf(iconId) > -1);
       const zoomFactor = gmc.getZoomFactor(place);
       const scaledSize = new google.maps.Size(place.imgWidth * zoomFactor, place.imgHeight * zoomFactor);
       var icon: google.maps.Icon = {
