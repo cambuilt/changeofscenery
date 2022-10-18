@@ -183,7 +183,7 @@ export class gmc implements OnInit {
 
     gmc.map.addListener('zoom_changed', () => {
       if (gmc.zooming == true) {
-        setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);       
+        setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
       } else {
         if (gmc.zoomIntervalFunction == undefined) {
           gmc.hidePlaceMarkers();
@@ -193,6 +193,7 @@ export class gmc implements OnInit {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
               gmc.showPlaceMarkers();
+              console.log('handling zoom...');
               gmc.handleZoom();
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();
@@ -340,7 +341,8 @@ export class gmc implements OnInit {
       gmc.areas.push({name:'CityCenter', lat:38.90010, lng:-77.02600, centerLat:38.90056, centerLng:-77.02513, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, centerLat:38.90056, centerLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, centerLat:38.89681, centerLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
-      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
+      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.96264, centerLng:-77.08727, zoom:18, heading:0, tilt:40, iconWidth:100, iconHeight:22});
+      // gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
     }
 
     gmc.areas.forEach(area => {
@@ -399,7 +401,7 @@ export class gmc implements OnInit {
   public static updatePlaceMarkers(zooming:boolean) {
 
     this.places.forEach(place => {
-      var name = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
+      var name = place.Name;
       const marker = gmc.placeMarkers.find(m => m.getTitle() == name);
       if (place.Type != undefined) {
         const type = String(place.Type);
@@ -431,9 +433,10 @@ export class gmc implements OnInit {
   }
 
   public static createMarker(place: any) {    
+    console.log('creating', place.Name);
     const zoomFactor = this.getZoomFactor(place);
     const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
-    var img = new Image();    
+    var img = new Image();
 
     img.onload = function() {
       const city = gmc.currentCity; 
@@ -1219,7 +1222,6 @@ export class gmc implements OnInit {
     }
 
     var icon: google.maps.Icon;
-    console.log('newUrl', newUrl);
 
     if (false) {  // place.SpriteHeight != undefined
       place['imgWidth'] = place.SpriteWidth;
@@ -1233,8 +1235,10 @@ export class gmc implements OnInit {
       icon = { url: newUrl, scaledSize: scaledSize };
     }
 
-    marker.setIcon(null);
-    marker.setIcon(icon);
+    console.log('newUrl', newUrl);
+    // var blankIcon: google.maps.Icon = { url: 'assets/pixel.png' };    
+    // marker.setIcon(blankIcon);    
+    marker.setIcon(icon);    
   }
 
   public static updateAnimateIcon(animate:any) {
