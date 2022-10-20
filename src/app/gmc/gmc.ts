@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, getModuleFactory } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where, orderBy } from "firebase/firestore";
@@ -93,6 +93,7 @@ export class gmc implements OnInit {
   public static stopAnimation = false;
   public static polygon1:google.maps.Polygon = undefined;
   public static polygon2:google.maps.Polygon = undefined;
+  public static infoWindowIsClosing = false;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -151,7 +152,7 @@ export class gmc implements OnInit {
 
     gmc.map.addListener('center_changed', () => {
       gmc.atAreaHome = false;
-      if (gmc.zooming == true) {
+      if (gmc.zooming == true || gmc.infoWindowIsClosing == true) {
         return;
       }
 
@@ -185,7 +186,7 @@ export class gmc implements OnInit {
       if (gmc.zooming == true) {
         setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
       } else {
-        if (gmc.zoomIntervalFunction == undefined) {
+        if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {          
           gmc.hidePlaceMarkers();
           gmc.lastZoomInProgressLevel = gmc.map.getZoom();
           gmc.zoomIntervalFunction = setInterval(function() {
@@ -193,12 +194,13 @@ export class gmc implements OnInit {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
               gmc.showPlaceMarkers();
-              console.log('handling zoom...');
               gmc.handleZoom();
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();
             }
           }, 250);
+        } else {
+          gmc.infoWindowIsClosing = false;
         }
       }
     });
@@ -362,7 +364,8 @@ export class gmc implements OnInit {
   }
 
   public static async handleZoom() {
-    if (this.currentArea == undefined) {
+    if (this.currentArea == undefined || gmc.infoWindowIsClosing == true) {
+      gmc.infoWindowIsClosing = false;
       return;
     }
     const zoom = this.map.getZoom();
@@ -433,7 +436,6 @@ export class gmc implements OnInit {
   }
 
   public static createMarker(place: any) {    
-    console.log('creating', place.Name);
     const zoomFactor = this.getZoomFactor(place);
     const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
     var img = new Image();
@@ -1197,6 +1199,7 @@ export class gmc implements OnInit {
   }
 
   public static infoWindowClosing() {
+    gmc.infoWindowIsClosing = true;
     this.map.setCenter({lat: this.lastCenter.lat(), lng: this.lastCenter.lng()});
     this.map.setZoom(this.lastZoomLevel);
     this.map.setTilt(this.lastTilt);
@@ -1235,9 +1238,6 @@ export class gmc implements OnInit {
       icon = { url: newUrl, scaledSize: scaledSize };
     }
 
-    console.log('newUrl', newUrl);
-    // var blankIcon: google.maps.Icon = { url: 'assets/pixel.png' };    
-    // marker.setIcon(blankIcon);    
     marker.setIcon(icon);    
   }
 
