@@ -196,7 +196,7 @@ export class gmc implements OnInit {
               gmc.showPlaceMarkers();
               gmc.handleZoom();
             } else {
-              gmc.lastZoomInProgressLevel = gmc.map.getZoom();
+              gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
             }
           }, 250);
         } else {
@@ -475,7 +475,8 @@ export class gmc implements OnInit {
       } 
 
       var n = gmc.currentCity == 'charleston' ? place.Address : place.Name;
-      const popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;
+      var popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;      
+      popupImage = popupImage.replace('/upload/', '/upload/fl_lossy/');
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
       var visible = gmc.selectedAreaWasClicked;

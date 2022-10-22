@@ -53,20 +53,6 @@
                     $('#' + name).attr('src', imagePath + name);
                 }
             }
-         
-            function changeImage(iconId, imgUrl) {                
-                let images = imgUrl.split(';');
-                imageIndex++;
-                if (currentName != iconId) {
-                    currentName = iconId;
-                    imageIndex = 1;
-                }
-
-                if (images.length == imageIndex) {
-                    imageIndex = 0;
-                }
-                $('#' + iconId).attr('src', 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/v' + images[imageIndex]);
-            }
 
             function toggleLike(iconId, id) {
                 const heartId = '#likedHeart' + iconId;
