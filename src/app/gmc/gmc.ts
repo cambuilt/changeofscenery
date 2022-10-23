@@ -306,7 +306,7 @@ export class gmc implements OnInit {
     gmc.map.setZoom(gmc.cities.find(x => x.name == city).zoom);
     const displayName = gmc.cities.find(x => x.name == city).displayName;
     gmc.collectionCity = displayName.replace(' ', '');
-    gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/';
+    gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/f_auto,q_auto/';
     gmc.cloudinaryPath += displayName.replace(' ', '%20') + '/';
 
     if (city == 'boston') {
@@ -475,8 +475,7 @@ export class gmc implements OnInit {
       } 
 
       var n = gmc.currentCity == 'charleston' ? place.Address : place.Name;
-      var popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;      
-      popupImage = popupImage.replace('/upload/', '/upload/fl_lossy/');
+      const popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;      
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
       var visible = gmc.selectedAreaWasClicked;
