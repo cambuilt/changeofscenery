@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'charleston', component: gmc },
   { path: 'boston', component: gmc },
   { path: 'washingtondc', component: gmc },
+  { path: 'washingtondc/kiosk', component: gmc },
   { path: 'panorama', component: PanoramaComponent },
   { path: '**', redirectTo: '' }
 ];

@@ -94,6 +94,7 @@ export class gmc implements OnInit {
   public static polygon1:google.maps.Polygon = undefined;
   public static polygon2:google.maps.Polygon = undefined;
   public static infoWindowIsClosing = false;
+  public static kioskMode = false;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -114,6 +115,10 @@ export class gmc implements OnInit {
 
     const auth = getAuth();
 
+    gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
+
+    console.log('kiosk?', gmc.kioskMode);
+    
     onAuthStateChanged(auth, (user) => {
       if (user) {
         gmc.currentUser = user;
@@ -126,9 +131,6 @@ export class gmc implements OnInit {
 
     window['angularComponentReferenceLike'] = { component: this, zone: this.ngZone, loadLike: () => this.like() }; 
     window['angularComponentReferenceUnlike'] = { component: this, zone: this.ngZone, loadUnlike: () => this.unlike() };     
-    if (this.route.snapshot.url.length > 0) { 
-      this.selectCity(this.route.snapshot.url[0].path);
-    }
 
     gmc.map = new google.maps.Map(document.getElementById("google_map") as HTMLElement, {
         mapTypeControl: false,
@@ -357,7 +359,9 @@ export class gmc implements OnInit {
     const app = initializeApp(config);
     const db = getFirestore(app);
     const docRef = doc(db, "User", gmc.currentUser.id);
+
     await updateDoc(docRef, { City:  cityName});
+
     if (gmc.currentCity == 'washingtondc') {
       gmc.handleZoom();
     }    
@@ -402,7 +406,6 @@ export class gmc implements OnInit {
   }
 
   public static updatePlaceMarkers(zooming:boolean) {
-
     this.places.forEach(place => {
       var name = place.Name;
       const marker = gmc.placeMarkers.find(m => m.getTitle() == name);
@@ -491,7 +494,8 @@ export class gmc implements OnInit {
         visible: visible
       });
 
-      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' target='_blank'>${place.Name}</a>`;
+      const newTab = gmc.kioskMode ? "" : "target='_blank'"
+      const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' ${newTab}>${place.Name}</a>`;
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
       const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
       const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
@@ -1300,7 +1304,6 @@ export class gmc implements OnInit {
     if (zoomFactor >= 0.08 && city == 'charleston') {
        zoomFactor *= 2;
     }
-
     if (place != null) {
       if (place.Address.indexOf('Church') > 0 || place.Address.indexOf('Bay') > 0 || place.Address.indexOf('Battery') > 0) {
         zoomFactor *= 6;
