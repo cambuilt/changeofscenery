@@ -512,6 +512,9 @@ export class gmc implements OnInit {
 
       if (place.Popup != undefined) {
         contentString = place.Popup.replace('bgWidth', bgWidth).replace('popups', gmc.cloudinaryPath + 'popups');
+        if (gmc.kioskMode) {
+          contentString = contentString.replaceAll('window.open(', 'location.href = ').replaceAll(');', ';');
+        }
       }
 
       const markerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: contentString, minWidth: 320 });
