@@ -114,10 +114,7 @@ export class gmc implements OnInit {
     });
 
     const auth = getAuth();
-
     gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
-
-    console.log('kiosk?', gmc.kioskMode);
     
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -843,7 +840,7 @@ export class gmc implements OnInit {
     gmc.currentArea = area;
     this.zooming = true;
     this.map.setCenter({lat: area.centerLat, lng: area.centerLng});
-    this.map.setZoom(area.zoom);    
+    this.map.setZoom(gmc.kioskMode ? area.zoom - 1 : area.zoom);    
     this.map.setTilt(area.tilt);
     this.map.setHeading(area.heading);
     this.zooming = false;       
