@@ -342,8 +342,7 @@ export class gmc implements OnInit {
       gmc.areas.push({name:'CityCenter', lat:38.90010, lng:-77.02600, centerLat:38.90056, centerLng:-77.02513, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'Chinatown', lat:38.90010, lng:-77.0195, centerLat:38.90056, centerLng:-77.021, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
       gmc.areas.push({name:'PennQuarter', lat:38.89731, lng:-77.02291, centerLat:38.89681, centerLng:-77.0243, zoom:17, heading:360, tilt:40, iconWidth:67, iconHeight:22});
-      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95944, centerLng:-77.08797, zoom:18, heading:0, tilt:40, iconWidth:100, iconHeight:22});
-      // gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, zoom:15, heading:0, tilt:40, iconWidth:100, iconHeight:22});
+      gmc.areas.push({name:'FriendshipHeights', lat:38.96066, lng:-77.08571, centerLat:38.95664, centerLng:-77.08727, centerLatKiosk:38.95914, centerLngKiosk:-77.08707, zoom:15, zoomKiosk:18, heading:0, tilt:40, iconWidth:100, iconHeight:22});
     }
 
     gmc.areas.forEach(area => {
@@ -618,8 +617,13 @@ export class gmc implements OnInit {
     }, 1000);
     setTimeout(function() {
       if (gmc.powerTouchLeave == true && gmc.centerChanged == false) {
-        gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.centerLat, gmc.currentArea.centerLng));
-        gmc.map.setZoom(gmc.currentArea.zoom);
+        if (gmc.kioskMode == true) {
+          gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.centerLatKiosk, gmc.currentArea.centerLngKiosk));
+          gmc.map.setZoom(gmc.currentArea.zoomKiosk);
+        } else {
+          gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.centerLat, gmc.currentArea.centerLng));
+          gmc.map.setZoom(gmc.currentArea.zoom);
+        }
         gmc.cancelMarkerClick = true;
       }
     }, 3000);
@@ -839,8 +843,13 @@ export class gmc implements OnInit {
 
     gmc.currentArea = area;
     this.zooming = true;
-    this.map.setCenter({lat: area.centerLat, lng: area.centerLng});
-    this.map.setZoom(gmc.kioskMode ? area.zoom - 1 : area.zoom);    
+    if (gmc.kioskMode == true) {
+      this.map.setCenter({lat: area.centerLatKiosk, lng: area.centerLngKiosk});
+      this.map.setZoom(area.zoomKiosk);    
+    } else {
+      this.map.setCenter({lat: area.centerLat, lng: area.centerLng});
+      this.map.setZoom(area.zoom);    
+    }
     this.map.setTilt(area.tilt);
     this.map.setHeading(area.heading);
     this.zooming = false;       
@@ -1195,8 +1204,13 @@ export class gmc implements OnInit {
 
   public static gotoAreaHome() {
     const area = gmc.currentArea;
-    gmc.map.setCenter({lat: area.centerLat, lng: area.centerLng});
-    gmc.map.setZoom(area.zoom);    
+    if (gmc.kioskMode == true) {
+      gmc.map.setCenter({lat: area.centerLatKiosk, lng: area.centerLngKiosk});
+      gmc.map.setZoom(area.zoomKiosk); 
+    } else {
+      gmc.map.setCenter({lat: area.centerLat, lng: area.centerLng});
+      gmc.map.setZoom(area.zoom);   
+    }
     gmc.map.setTilt(area.tilt);
     gmc.map.setHeading(area.heading);
     gmc.atAreaHome = true;
