@@ -18,7 +18,8 @@
       "google.maps"
     ],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "src/types"
     ],
     "lib": [
       "es2021",

@@ -172,10 +172,12 @@ export class gmc implements OnInit {
       // console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
       // console.log('zoomLevel', gmc.map.getZoom());
       // console.log('heading', gmc.map.getHeading());
-      // console.log('tilt', gmc.map.getTilt());      
+      // console.log('tilt', gmc.map.getTilt());
+      var window: any;   
       window.scroll(0, -100);
-      window.chrome.webview.postMessage('center changed');
-      window.postMessage("center changed", "/");
+      if (!!window.chrome.webview) {
+        window.chrome.webview.postMessage('center has changed');
+      }
     });
 
     gmc.map.addListener('dragstart', () => {
