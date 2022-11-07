@@ -10,6 +10,7 @@ import { HttpClient } from "@angular/common/http";
 import { animationFrameScheduler } from 'rxjs';
 import { linkSync } from 'fs';
 import { ThisReceiver } from '@angular/compiler';
+import { APP_CHECK_PROVIDER_NAME } from '@angular/fire/app-check/app-check';
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -173,6 +174,7 @@ export class gmc implements OnInit {
       // console.log('heading', gmc.map.getHeading());
       // console.log('tilt', gmc.map.getTilt());      
       window.scroll(0, -100);
+      window.chrome.webview.postMessage('center changed');
       window.postMessage("center changed", "/");
     });
 
