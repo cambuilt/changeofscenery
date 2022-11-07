@@ -7,10 +7,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
-import { animationFrameScheduler } from 'rxjs';
-import { linkSync } from 'fs';
-import { ThisReceiver } from '@angular/compiler';
-import { APP_CHECK_PROVIDER_NAME } from '@angular/fire/app-check/app-check';
+declare function centerChanged(): any;
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -173,11 +170,9 @@ export class gmc implements OnInit {
       // console.log('zoomLevel', gmc.map.getZoom());
       // console.log('heading', gmc.map.getHeading());
       // console.log('tilt', gmc.map.getTilt());
-      var window: any;   
+
       window.scroll(0, -100);
-      if (!!window.chrome.webview) {
-        window.chrome.webview.postMessage('center has changed');
-      }
+      centerChanged();     
     });
 
     gmc.map.addListener('dragstart', () => {
