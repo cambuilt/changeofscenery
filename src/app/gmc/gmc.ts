@@ -95,6 +95,7 @@ export class gmc implements OnInit {
   public static polygon2:google.maps.Polygon = undefined;
   public static infoWindowIsClosing = false;
   public static kioskMode = false;
+  public static gotoArea = undefined;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -115,7 +116,8 @@ export class gmc implements OnInit {
 
     const auth = getAuth();
     gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
-    
+    gmc.gotoArea = this.route.snapshot.queryParamMap.get('area');
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         gmc.currentUser = user;
@@ -361,6 +363,11 @@ export class gmc implements OnInit {
     if (gmc.currentCity == 'washingtondc') {
       gmc.handleZoom();
     }    
+
+    if (gmc.gotoArea != undefined) {
+      gmc.selectArea(gmc.areas.find(a => a.name == gmc.gotoArea));
+      gmc.gotoArea = undefined;
+    }
   }
 
   public static async handleZoom() {
