@@ -172,7 +172,8 @@ export class gmc implements OnInit {
       // console.log('zoomLevel', gmc.map.getZoom());
       // console.log('heading', gmc.map.getHeading());
       // console.log('tilt', gmc.map.getTilt());      
-      window.scroll(0, -100);  
+      window.scroll(0, -100);
+      window.postMessage("center changed", "/");
     });
 
     gmc.map.addListener('dragstart', () => {
