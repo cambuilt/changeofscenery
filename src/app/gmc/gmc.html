@@ -26,7 +26,7 @@
 <div id="google_map"></div>
 <img src="assets/ellipsis-circle.svg" id="appMenuIcon" (click)="openAppMenu()"/>
 <div id="typeSelector" hidden (click)="openTypeList()"></div>
-<div id="gameButton" hidden (click)="startGame()"></div>
+<div id="gameButton" hidden (click)="startGame()">Village Map Game</div>
 <div id="typeList" hidden>
     <p class="typeOption" id="type1" (click)="selectType(1)"><img src="assets/dining.svg" width="16px;"/>&nbsp;Restaurant</p>
     <p class="typeOption" id="type2" (click)="selectType(2)"><img src="assets/shopping.svg" width="18px;"/>&nbsp;Shopping</p>
@@ -58,7 +58,7 @@
     </ul>
     <div style="height:75px;"></div>
 </div>
-<div id="loading">Loading...</div>
+<div id="message">Loading...</div>
 <script>
     $('#splash').show();
 </script>
@@ -78,3 +78,6 @@
     (signInFailure)="errorCallback($event)"
     (uiShown)="uiShownCallback()"></firebase-ui>    
 </div>
+<audio id="bounce">
+    <source src="assets/bounce.m4a" type="audio/m4a">
+</audio>

@@ -5,9 +5,10 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where, orderBy } from "firebase/firestore";
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
 declare function centerChanged(): any;
+declare function playSound(name:any): any;
 
 @Component({
   selector: 'changeofscenery-google-map',
@@ -94,6 +95,8 @@ export class gmc implements OnInit {
   public static infoWindowIsClosing = false;
   public static kioskMode = false;
   public static gotoArea = undefined;
+  public static gameAnswer = undefined;
+  public static gameScore = 0;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -518,7 +521,35 @@ export class gmc implements OnInit {
           gmc.cancelMarkerClick = false;
           return;
         }
-        gmc.hideAppMenu();              
+        gmc.hideAppMenu();
+
+        if (gmc.gameAnswer != undefined) {
+          let audio = new Audio();
+          audio.src = "assets/wrong.mp4";
+
+          if (placeMarker.getTitle() == gmc.gameAnswer) {
+            audio.src = "assets/bounce.m4a";
+          } else if (gmc.gameAnswer.indexOf('|') > -1) {
+            if (gmc.gameAnswer.split('|').find(a => a == placeMarker.getTitle()) != undefined) {
+              audio.src = "assets/bounce.m4a";
+            }
+          }
+
+          if (audio.src.indexOf('assets/bounce.m4a') > -1) {
+            setTimeout(function () { placeMarker.setAnimation(google.maps.Animation.BOUNCE); }, 500);
+            setTimeout(function () { placeMarker.setAnimation(null);}, 1000);  
+            gmc.gameScore++;
+            $('#message').text('THAT\'S RIGHT! Your score is ' + gmc.gameScore + ".");
+          } else {
+            $('#message').text('WRONG! Please try again.');
+          }
+
+          audio.load();
+          audio.play();          
+
+          return;
+        }
+
         gmc.currentPlace = place;
         gmc.lastCenter = gmc.map.getCenter();
         gmc.lastZoomLevel = gmc.map.getZoom();
@@ -564,7 +595,7 @@ export class gmc implements OnInit {
 
       if (gmc.placeCount == gmc.placeTotal) {
         setTimeout(function() {
-         $('#loading').removeClass('show');
+         $('#message').removeClass('show');
         }, 3000);
       }
     }
@@ -659,6 +690,19 @@ export class gmc implements OnInit {
   }
 
   startGame() {
+    $('#message').text('Answer questions by tapping on places.');
+    $('#message').addClass('game');
+    $('#message').removeClass('hide');
+    $('#message').addClass('show');
+    setTimeout(function() {
+      $('#message').addClass('hide');
+      setTimeout(function() {
+        $('#message').text('I need my morning coffee! Where\'s Starbucks?');
+        $('#message').removeClass('hide');
+        $('#message').addClass('show');
+        gmc.gameAnswer = 'Starbucks Friendship Heights';
+      }, 1000);
+    }, 5000);
   }
   
   selectType(typeId) {
@@ -816,7 +860,7 @@ export class gmc implements OnInit {
     }
     gmc.selectedAreaWasClicked = true;
     if (gmc.placeCount == 0) {
-      $('#loading').addClass('show');
+      $('#message').addClass('show');
     }
 
     if (gmc.currentCity == 'washingtondc') {
@@ -841,7 +885,8 @@ export class gmc implements OnInit {
     this.zooming = true;
     if (gmc.kioskMode == true) {
       this.map.setCenter({lat: area.KioskCenter.latitude, lng: area.KioskCenter.longitude});
-      this.map.setZoom(area.ZoomKiosk);    
+      this.map.setZoom(area.ZoomKiosk);
+      $('#gameButton').removeAttr('hidden');
     } else {
       this.map.setCenter({lat: area.AreaCenter.latitude, lng: area.AreaCenter.longitude});
       this.map.setZoom(area.Zoom);    
