@@ -79,24 +79,30 @@ export class gmc implements OnInit {
   public static zoomIntervalFunction;
   public static maxIconSize = 10;
   public static suspendUpdate = false;
-  public static delay = 1; //milliseconds
-  public static animateWaiting = undefined;
+  public static delay = 1;
+  public static animateWaiting;
   public static animateWaitingMoveIndex = 0;
-  public static animateCatchingUp = undefined;
+  public static animateCatchingUp;
   public static animateCatchingUpMoveIndex = 0;
-  public static animateUber = undefined;
+  public static animateUber;
   public static animateRestart = false;
   public static waitUntil = 0;
   public static resumingMovement = false;
   public static lastMoveIndex = -1;
   public static stopAnimation = false;
-  public static polygon1:google.maps.Polygon = undefined;
-  public static polygon2:google.maps.Polygon = undefined;
+  public static polygon1:google.maps.Polygon;
+  public static polygon2:google.maps.Polygon;
   public static infoWindowIsClosing = false;
   public static kioskMode = false;
-  public static gotoArea = undefined;
-  public static gameAnswer = undefined;
-  public static gameScore = 0;
+  public static gotoArea;
+  public static gameAnswer;
+  public static gameCorrectCount;
+  public static gameIncorrectCount;
+  public static gameAnswersToFind;
+  public static gameAnswersFound;
+  public static gameQuestions;
+  public static gameQuestionCounter;
+  public static firestoreDb;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -255,9 +261,7 @@ export class gmc implements OnInit {
   }
 
   async getUser(user: any) {
-    const config = require('./config.js');
-    const app = initializeApp(config);
-    const db = getFirestore(app);
+    const db = gmc.getFirestoreDb();
     const name = user.email == null ? user.displayName : user.email;
     const q = query(collection(db, "User"), where("Name", "==", name));
     var querySnapshot = await getDocs(q);
@@ -313,9 +317,7 @@ export class gmc implements OnInit {
     gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/f_auto,q_auto/';
     gmc.cloudinaryPath += displayName.replace(' ', '%20') + '/';
 
-    const config = require('./config.js');
-    const app = initializeApp(config);
-    const firestoreDb = getFirestore(app);
+    const db = gmc.getFirestoreDb();
 
     if (city == 'boston') {
       icon = {url: 'assets/boston/Cadillac.png',scaledSize: new google.maps.Size(80, 22)};
@@ -334,7 +336,7 @@ export class gmc implements OnInit {
       });
     }
 
-    const querySnapshot = await getDocs(collection(firestoreDb, `${gmc.collectionCity}Area`));
+    const querySnapshot = await getDocs(collection(db, `${gmc.collectionCity}Area`));
     querySnapshot.forEach((doc) => {
         gmc.areas.push(doc.data());
         gmc.areas[gmc.areas.length - 1]['id'] = doc.id;
@@ -346,7 +348,7 @@ export class gmc implements OnInit {
       gmc.streetMarkers[gmc.streetMarkers.length-1].addListener('click', () => { gmc.selectArea(area); });
     });
 
-    const docRef = doc(firestoreDb, "User", gmc.currentUser.id);
+    const docRef = doc(db, "User", gmc.currentUser.id);
     await updateDoc(docRef, { City:  cityName});
 
     if (gmc.currentCity == 'washingtondc') {
@@ -373,10 +375,8 @@ export class gmc implements OnInit {
       if (this.placeMarkers.length == 0) {
         if (this.places.length == 0) {          
           try {
-            const config = require('./config.js');
-            const app = initializeApp(config);
-            const firestoreDb = getFirestore(app);
-            const querySnapshot = await getDocs(collection(firestoreDb, this.collectionCity));
+            const db = gmc.getFirestoreDb();
+            const querySnapshot = await getDocs(collection(db, this.collectionCity));
             querySnapshot.forEach((doc) => {
                 gmc.places.push(doc.data());
                 gmc.places[gmc.places.length - 1]['id'] = doc.id;
@@ -523,31 +523,54 @@ export class gmc implements OnInit {
         }
         gmc.hideAppMenu();
 
-        if (gmc.gameAnswer != undefined) {
-          let audio = new Audio();
-          audio.src = "assets/wrong.mp4";
+        if (gmc.gameQuestions != undefined) {
+          if (gmc.gameQuestionCounter <= gmc.gameQuestions.length) {
+            let audio = new Audio('assets/incorrect.mp3');
+            let answers = gmc.gameQuestions[gmc.gameQuestionCounter - 1].Answers;
+            if (placeMarker.getTitle() == answers) {
+              audio.src = "assets/correct.mp3";
+            } else if (answers.indexOf('|') > -1) {
+              if (answers.split('|').find(a => a == placeMarker.getTitle()) != undefined) {
+                audio.src = "assets/correct.mp3";
+              }
+            }
+            
+            audio.load();
+            audio.play();          
 
-          if (placeMarker.getTitle() == gmc.gameAnswer) {
-            audio.src = "assets/bounce.m4a";
-          } else if (gmc.gameAnswer.indexOf('|') > -1) {
-            if (gmc.gameAnswer.split('|').find(a => a == placeMarker.getTitle()) != undefined) {
-              audio.src = "assets/bounce.m4a";
+            if (audio.src.indexOf('assets/correct.mp3') > -1) {
+              gmc.gameCorrectCount++;
+              gmc.gameAnswersFound++;
+              $('#message').css('height', '35px');
+              $('#message').text('THAT\'S RIGHT!  Score: ' + gmc.gameCorrectCount);
+              if (gmc.gameAnswersFound == gmc.gameAnswersToFind) {
+                setTimeout(function() {
+                  gmc.nextGameQuestion();
+                }, 10000);
+              }
+            } else {
+              gmc.gameIncorrectCount++;
+              setTimeout(function () { placeMarker.setAnimation(google.maps.Animation.BOUNCE); }, 500);
+              setTimeout(function () { placeMarker.setAnimation(null);}, 1000);  
+              setTimeout(function () { 
+                switch (gmc.gameIncorrectCount) {
+                  case 1:
+                    $('#message').text('WRONG! Please try again.');
+                    break;
+                  case 2:
+                    $('#message').text('WRONG AGAIN!');
+                    break;
+                  case 3:
+                    $('#message').text('Wrong again. Now this is just embarrassing!');
+                    break;
+                  default:
+                    $('#message').text('UGH! You must be an Out-of-Towner.');
+                    break;
+                }
+              }, 600);
+              return;
             }
           }
-
-          if (audio.src.indexOf('assets/bounce.m4a') > -1) {
-            setTimeout(function () { placeMarker.setAnimation(google.maps.Animation.BOUNCE); }, 500);
-            setTimeout(function () { placeMarker.setAnimation(null);}, 1000);  
-            gmc.gameScore++;
-            $('#message').text('THAT\'S RIGHT! Your score is ' + gmc.gameScore + ".");
-          } else {
-            $('#message').text('WRONG! Please try again.');
-          }
-
-          audio.load();
-          audio.play();          
-
-          return;
         }
 
         gmc.currentPlace = place;
@@ -689,20 +712,65 @@ export class gmc implements OnInit {
     }
   }
 
-  startGame() {
-    $('#message').text('Answer questions by tapping on places.');
+  async startGame() {
+    $('#gameButton').prop('hidden', true);
+    $('#typeSelector').prop('hidden', true);
+    $('#appMenuIcon').prop('hidden', true);
+    const db = gmc.getFirestoreDb();
+    const entityName = gmc.collectionCity + 'Game';
+    const boundaryRef = collection(db, entityName);
+    const q = query(boundaryRef, where("Area", "==", gmc.currentArea.Name));
+    const querySnapshot = await getDocs(q);
+    gmc.gameCorrectCount = 0, gmc.gameIncorrectCount = 0, gmc.gameQuestionCounter = 0;
+    gmc.gameQuestions = [];
+
+    querySnapshot.forEach((doc) => {
+      gmc.gameQuestions.push(doc.data())
+    });
+
+    $('#message').text('Answer questions by tapping on the icons.');
     $('#message').addClass('game');
     $('#message').removeClass('hide');
     $('#message').addClass('show');
     setTimeout(function() {
       $('#message').addClass('hide');
+      gmc.nextGameQuestion();
+    }, 4000);
+  }
+
+  static nextGameQuestion() {
+    if (gmc.gameQuestionCounter < gmc.gameQuestions.length) {
+      if (this.lastInfoWindow != undefined) {
+        this.lastInfoWindow.close();
+        this.lastInfoWindow = undefined;
+      }   
       setTimeout(function() {
-        $('#message').text('I need my morning coffee! Where\'s Starbucks?');
-        $('#message').removeClass('hide');
-        $('#message').addClass('show');
-        gmc.gameAnswer = 'Starbucks Friendship Heights';
-      }, 1000);
-    }, 5000);
+        let question = gmc.gameQuestions[gmc.gameQuestionCounter];
+        gmc.gameAnswersToFind = question.Answers.split('|').length;
+        gmc.gameAnswersFound = 0;
+        $('#message').text(question.Question);
+        if (gmc.gameQuestionCounter == 0) {
+          $('#message').removeClass('hide');
+          $('#message').addClass('show');
+        }        
+        $('#message').css('height', question.Height);
+        if (question.Height > 35) {
+          $('#message').css('top', '15px');
+        } else {
+          $('#message').css('top', '9px');
+        }
+        gmc.gameQuestionCounter++;
+      }, 2000);
+    } else {
+      $('#message').text('GAME OVER');
+      setTimeout(function() {
+        $('#message').addClass('hide');
+        $('#gameButton').removeAttr('hidden');
+        $('#typeSelector').removeAttr('hidden');
+        $('#appMenuIcon').removeAttr('hidden');          
+        gmc.gameQuestions = undefined;
+      }, 3000);
+    }
   }
   
   selectType(typeId) {
@@ -821,11 +889,9 @@ export class gmc implements OnInit {
       var points1 = [], points2 = []
       var fillOpacity = 0.1
 
-      const config = require('./config.js');
-      const app = initializeApp(config);
-      const firestoreDb = getFirestore(app);
+      const db = gmc.getFirestoreDb();
       const entityName = this.collectionCity + 'Boundary';
-      const boundaryRef = collection(firestoreDb, entityName);
+      const boundaryRef = collection(db, entityName);
       const q = query(boundaryRef, where("Area", "==", area.Name), orderBy("Seq"));
       const querySnapshot = await getDocs(q);
 
@@ -961,9 +1027,7 @@ export class gmc implements OnInit {
   public static async startAnimation() {
     this.stopAnimation = false;
     const zoomFactor = this.getZoomFactor(null);
-    const config = require('./config.js');
-    const app = initializeApp(config);
-    const db = getFirestore(app);
+    const db = gmc.getFirestoreDb();
     const querySnapshot = await getDocs(collection(db, this.collectionCity + 'Animated'));
     const city = gmc.currentCity; 
     
@@ -1515,11 +1579,18 @@ export class gmc implements OnInit {
     return name.replaceAll(' ', '').replaceAll("'", "").replaceAll('.', '').replaceAll('’', '').replaceAll('&', '').replaceAll('-', '').replaceAll(',', '').replaceAll('/', '').replaceAll('è', 'e').replaceAll('é', 'e').replaceAll('+', '').replaceAll('ã', 'a');
   }
 
+  public static getFirestoreDb() {
+    if (gmc.firestoreDb == undefined) {
+      const config = require('./config.js');
+      const app = initializeApp(config);
+      gmc.firestoreDb = getFirestore(app);
+    }
+    return gmc.firestoreDb;
+  }
+
   public like() {
     const place = gmc.currentPlace;
-    const config = require('./config.js');
-    const app = initializeApp(config);
-    const db = getFirestore(app);
+    const db = gmc.getFirestoreDb();
     const placeDoc = doc(db, gmc.collectionCity + '/' + place.id);
     place.Likes++;
     const docData = { Likes: place.Likes };
@@ -1547,9 +1618,7 @@ export class gmc implements OnInit {
 
 public unlike() {
     const place = gmc.currentPlace
-    const config = require('./config.js');;
-    const app = initializeApp(config);
-    const db = getFirestore(app);
+    const db = gmc.getFirestoreDb();
     const placeDoc = doc(db, gmc.collectionCity + '/' + place.id);
     place.Likes--;
     const docData = { Likes: place.Likes };
@@ -1602,14 +1671,8 @@ public toggleType(event) {
 }
 
   async addDocument() {
-    const config = require('./config.js');
-    const app = initializeApp(config);
-    const db = getFirestore(app);          
-
     this.httpClient.get("assets/charleston/charleston.json").subscribe(data =>{
-      const config = require('./config.js');
-      const app = initializeApp(config);
-      const db = getFirestore(app);          
+      const db = gmc.getFirestoreDb();          
       var docs:any = data;
       docs.forEach((doc) => {
         var website = doc.Name.substring(doc.Name.indexOf('href') + 5);
