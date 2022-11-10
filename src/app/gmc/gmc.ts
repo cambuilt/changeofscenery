@@ -102,6 +102,7 @@ export class gmc implements OnInit {
   public static gameAnswersFound;
   public static gameQuestions;
   public static gameQuestionCounter;
+  public static gameSkipQuestion = false;
   public static firestoreDb;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
@@ -548,7 +549,11 @@ export class gmc implements OnInit {
               $('#message').text('That\'s correct!    Your score is: ' + gmc.gameCorrectCount);
               if (gmc.gameAnswersFound == gmc.gameAnswersToFind) {
                 setTimeout(function() {
-                  gmc.nextGameQuestion();
+                  if (gmc.gameSkipQuestion == false) {
+                    gmc.nextGameQuestion();
+                  } else {
+                    gmc.gameSkipQuestion = false;
+                  }
                 }, 10000);
               }
             } else {
@@ -712,7 +717,7 @@ export class gmc implements OnInit {
     const boundaryRef = collection(db, entityName);
     const q = query(boundaryRef, where("Area", "==", gmc.currentArea.Name));
     const querySnapshot = await getDocs(q);
-    gmc.gameCorrectCount = 0, gmc.gameIncorrectCount = 0, gmc.gameQuestionCounter = 0;
+    gmc.gameCorrectCount = 0, gmc.gameIncorrectCount = 0, gmc.gameQuestionCounter = 0, gmc.gameSkipQuestion = false;
     gmc.gameQuestions = [];
 
     querySnapshot.forEach((doc) => {
@@ -748,9 +753,9 @@ export class gmc implements OnInit {
           $('#message').css('top', '20px');
         }
         gmc.gameQuestionCounter++;
-      }, 2000);
+      }, 1000);
     } else {
-      $('#message').text('GAME OVER');
+      $('#message').text('* GAME OVER *');
       setTimeout(function() {
         $('#message').addClass('hide');
         $('#gameButton').removeAttr('hidden');
@@ -1072,6 +1077,7 @@ export class gmc implements OnInit {
         markerInfoWindow.addListener('closeclick', () => {
           gmc.infoWindowClosing();
           if (gmc.gameQuestions != undefined) {
+            gmc.gameSkipQuestion = true;
             gmc.nextGameQuestion();
           }      
         });
