@@ -528,21 +528,21 @@ export class gmc implements OnInit {
             let audio = new Audio('assets/incorrect.mp3');
             let answers = gmc.gameQuestions[gmc.gameQuestionCounter - 1].Answers;
             if (placeMarker.getTitle() == answers) {
-              audio.src = "assets/correct.m4a";
+              audio.src = "assets/correct.mp3";
             } else if (answers.indexOf('|') > -1) {
               if (answers.split('|').find(a => a == placeMarker.getTitle()) != undefined) {
-                audio.src = "assets/correct.m4a";
+                audio.src = "assets/correct.mp3";
               }
             }
             
             audio.load();
             audio.play();          
 
-            if (audio.src.indexOf('assets/correct.m4a') > -1) {
+            if (audio.src.indexOf('assets/correct.mp3') > -1) {
               gmc.gameCorrectCount++;
               gmc.gameAnswersFound++;
               $('#message').css('height', '35px');
-              $('#message').text('THAT\'S RIGHT!  Score: ' + gmc.gameCorrectCount);
+              $('#message').text('That\'s correct!    Your score is: ' + gmc.gameCorrectCount);
               if (gmc.gameAnswersFound == gmc.gameAnswersToFind) {
                 setTimeout(function() {
                   gmc.nextGameQuestion();
@@ -553,20 +553,7 @@ export class gmc implements OnInit {
               setTimeout(function () { placeMarker.setAnimation(google.maps.Animation.BOUNCE); }, 500);
               setTimeout(function () { placeMarker.setAnimation(null);}, 1000);  
               setTimeout(function () { 
-                switch (gmc.gameIncorrectCount) {
-                  case 1:
-                    $('#message').text('WRONG! Please try again.');
-                    break;
-                  case 2:
-                    $('#message').text('WRONG AGAIN!');
-                    break;
-                  case 3:
-                    $('#message').text('Wrong again. Now this is just embarrassing!');
-                    break;
-                  default:
-                    $('#message').text('UGH! You must be an Out-of-Towner.');
-                    break;
-                }
+                $('#message').text('WRONG! Please try again.');
               }, 600);
               return;
             }
