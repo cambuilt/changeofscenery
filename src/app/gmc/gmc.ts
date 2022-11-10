@@ -528,17 +528,17 @@ export class gmc implements OnInit {
             let audio = new Audio('assets/incorrect.mp3');
             let answers = gmc.gameQuestions[gmc.gameQuestionCounter - 1].Answers;
             if (placeMarker.getTitle() == answers) {
-              audio.src = "assets/correct.mp3";
+              audio.src = "assets/correct.m4a";
             } else if (answers.indexOf('|') > -1) {
               if (answers.split('|').find(a => a == placeMarker.getTitle()) != undefined) {
-                audio.src = "assets/correct.mp3";
+                audio.src = "assets/correct.m4a";
               }
             }
             
             audio.load();
             audio.play();          
 
-            if (audio.src.indexOf('assets/correct.mp3') > -1) {
+            if (audio.src.indexOf('assets/correct.m4a') > -1) {
               gmc.gameCorrectCount++;
               gmc.gameAnswersFound++;
               $('#message').css('height', '35px');
@@ -740,11 +740,8 @@ export class gmc implements OnInit {
 
   static nextGameQuestion() {
     if (gmc.gameQuestionCounter < gmc.gameQuestions.length) {
-      if (this.lastInfoWindow != undefined) {
-        this.lastInfoWindow.close();
-        this.lastInfoWindow = undefined;
-      }   
       setTimeout(function() {
+        gmc.closeInfoWindow();
         let question = gmc.gameQuestions[gmc.gameQuestionCounter];
         gmc.gameAnswersToFind = question.Answers.split('|').length;
         gmc.gameAnswersFound = 0;
@@ -768,9 +765,17 @@ export class gmc implements OnInit {
         $('#gameButton').removeAttr('hidden');
         $('#typeSelector').removeAttr('hidden');
         $('#appMenuIcon').removeAttr('hidden');          
+        gmc.closeInfoWindow();
         gmc.gameQuestions = undefined;
       }, 3000);
     }
+  }
+
+  static closeInfoWindow() {
+    if (this.lastInfoWindow != undefined) {
+      this.lastInfoWindow.close();
+      this.lastInfoWindow = undefined;
+    }   
   }
   
   selectType(typeId) {
@@ -949,55 +954,52 @@ export class gmc implements OnInit {
 
     gmc.currentArea = area;
     this.zooming = true;
+
     if (gmc.kioskMode == true) {
-      this.map.setCenter({lat: area.KioskCenter.latitude, lng: area.KioskCenter.longitude});
-      this.map.setZoom(area.ZoomKiosk);
+      gmc.map.setCenter({lat: area.KioskCenter.latitude, lng: area.KioskCenter.longitude});
+      gmc.map.setZoom(area.ZoomKiosk);
       $('#gameButton').removeAttr('hidden');
     } else {
-      this.map.setCenter({lat: area.AreaCenter.latitude, lng: area.AreaCenter.longitude});
-      this.map.setZoom(area.Zoom);    
+      gmc.map.setCenter({lat: area.AreaCenter.latitude, lng: area.AreaCenter.longitude});
+      gmc.map.setZoom(area.Zoom);    
     }
-    this.map.setTilt(area.Tilt);
-    this.map.setHeading(area.Heading);
-    this.zooming = false;       
-  
-    if (this.lastInfoWindow != undefined) {
-      this.lastInfoWindow.close();
-      this.lastInfoWindow = undefined;
-    } 
-    
+
+    gmc.map.setTilt(area.Tilt);
+    gmc.map.setHeading(area.Heading);
+    gmc.zooming = false;       
+    gmc.closeInfoWindow();
     gmc.hideAppMenu();
     
-    if (this.currentCity == 'washingtondc') {
+    if (gmc.currentCity == 'washingtondc') {
       gmc.streetMarkers.forEach(streetMarker => {
         streetMarker.setVisible(false);
       });
     } else {
-      this.streetMarkers.find(x => x.getIcon()['url'].indexOf(area.Name.replace(' ', '')) > -1).setVisible(false);
+      gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(area.Name.replace(' ', '')) > -1).setVisible(false);
     }
     if (area.Name == 'NorthEnd') {
       // setTimeout(function() {
-      //   this.carMarker.setVisible(true);
-      //   this.carDriveInterval = setInterval(function() {
-      //     let pos:google.maps.LatLng = this.carMarker.getPosition();
-      //     let newPos = { lat: pos.lat() + this.carSpeed, lng: pos.lng() +  + this.carSpeed }; 
-      //     this.carMarker.setPosition(newPos);
-      //     this.carCounter++;
-      //     if (this.carCounter == 50) {
-      //       this.carSpeed = 0.000001;
+      //   gmc.carMarker.setVisible(true);
+      //   gmc.carDriveInterval = setInterval(function() {
+      //     let pos:google.maps.LatLng = gmc.carMarker.getPosition();
+      //     let newPos = { lat: pos.lat() + gmc.carSpeed, lng: pos.lng() +  + gmc.carSpeed }; 
+      //     gmc.carMarker.setPosition(newPos);
+      //     gmc.carCounter++;
+      //     if (gmc.carCounter == 50) {
+      //       gmc.carSpeed = 0.000001;
       //     }
-      //     if (this.carCounter > 1500) {
+      //     if (gmc.carCounter > 1500) {
       //       const icon = {url: 'assets/boston/CadillacBack.png',scaledSize: new google.maps.Size(80, 22)};
-      //       this.carMarker.setIcon(icon);
-      //       this.carSpeed = 0.0000005;
-      //       this.carDriveInterval = setInterval(function() {
-      //         let pos:google.maps.LatLng = this.carMarker.getPosition();
-      //         let newPos = { lat: pos.lat() - (this.carSpeed), lng: pos.lng() - (this.carSpeed + 0.00000001) };     
-      //         this.carMarker.setPosition(newPos);
-      //         this.carCounter++;
-      //         if (this.carCounter > 9500) {
-      //           clearInterval(this.carDriveInterval);
-      //           this.carMarker.setVisible(false);
+      //       gmc.carMarker.setIcon(icon);
+      //       gmc.carSpeed = 0.0000005;
+      //       gmc.carDriveInterval = setInterval(function() {
+      //         let pos:google.maps.LatLng = gmc.carMarker.getPosition();
+      //         let newPos = { lat: pos.lat() - (gmc.carSpeed), lng: pos.lng() - (gmc.carSpeed + 0.00000001) };     
+      //         gmc.carMarker.setPosition(newPos);
+      //         gmc.carCounter++;
+      //         if (gmc.carCounter > 9500) {
+      //           clearInterval(gmc.carDriveInterval);
+      //           gmc.carMarker.setVisible(false);
       //         }              
       //       }, 800);
       //     }
@@ -1025,21 +1027,21 @@ export class gmc implements OnInit {
   }
 
   public static async startAnimation() {
-    this.stopAnimation = false;
-    const zoomFactor = this.getZoomFactor(null);
+    gmc.stopAnimation = false;
+    const zoomFactor = gmc.getZoomFactor(null);
     const db = gmc.getFirestoreDb();
-    const querySnapshot = await getDocs(collection(db, this.collectionCity + 'Animated'));
+    const querySnapshot = await getDocs(collection(db, gmc.collectionCity + 'Animated'));
     const city = gmc.currentCity; 
     
     querySnapshot.forEach((doc) => {
       const animation = doc.data();
       if (animation.Area == gmc.currentArea.Name) {
-        this.animations.push(doc.data());
-        this.animations[this.animations.length - 1]['id'] = doc.id;              
+        gmc.animations.push(doc.data());
+        gmc.animations[gmc.animations.length - 1]['id'] = doc.id;              
       }
     });
 
-    this.animations.forEach(animation => {
+    gmc.animations.forEach(animation => {
       var img = new Image();
 
       img.onload = function() {
@@ -1110,16 +1112,16 @@ export class gmc implements OnInit {
       if (animation.Name == 'Uber') {
         const seconds = new Date().getSeconds();
         const carName = seconds % 2 == 0 ? 'RollsRoyceUber' : 'CadillacUber';
-        img.src = this.cloudinaryPath + carName + '.png';
+        img.src = gmc.cloudinaryPath + carName + '.png';
       } else {
-        img.src = this.cloudinaryPath + this.sanitizeName(animation.Name) + '.png';
+        img.src = gmc.cloudinaryPath + gmc.sanitizeName(animation.Name) + '.png';
       }
     });
   }
   
   public static async animateMarker(animate, animationIndex) {    
     const animations = JSON.parse(animate.Route);
-    if (animationIndex > animations.length - 1 || this.stopAnimation == true) {
+    if (animationIndex > animations.length - 1 || gmc.stopAnimation == true) {
       return;
     }
     const animation = animations[animationIndex];
@@ -1136,11 +1138,11 @@ export class gmc implements OnInit {
       }
       if(animate.AnimationCounter != animation.speed){
         animate.AnimationCounter++;
-        setTimeout(function () { gmc.animateMarker(animate, animationIndex) }, this.delay);
+        setTimeout(function () { gmc.animateMarker(animate, animationIndex) }, gmc.delay);
       } else if (animationIndex < animations.length - 1) {
         animationIndex++;
         animate.AnimationCounter = 0;
-        this.animateMarker(animate, animationIndex);
+        gmc.animateMarker(animate, animationIndex);
       }
     } else if (animation.cmd == 'wait') {
       if (animate != undefined) {       
@@ -1154,14 +1156,14 @@ export class gmc implements OnInit {
           } else if (animation.att == 'WellDressedManGlasses' && url.indexOf('WellDressedManGlasses') == -1) {
             url = url.replaceAll('WellDressedMan', 'WellDressedManGlasses');
           } else if (animation.att == "Man" || animation.att == "Woman") {
-            if (this.animateWaiting == undefined) {
-              this.animateWaiting = animate;
-              this.animateWaitingMoveIndex = animationIndex;
-              this.waitUntil =  new Date().getMilliseconds() + animation.dur * 1000;            
+            if (gmc.animateWaiting == undefined) {
+              gmc.animateWaiting = animate;
+              gmc.animateWaitingMoveIndex = animationIndex;
+              gmc.waitUntil =  new Date().getMilliseconds() + animation.dur * 1000;            
             } else {
-              const timeToWait = this.waitUntil - new Date().getMilliseconds();
-              this.animateCatchingUp = animate;
-              this.animateCatchingUpMoveIndex = animationIndex;
+              const timeToWait = gmc.waitUntil - new Date().getMilliseconds();
+              gmc.animateCatchingUp = animate;
+              gmc.animateCatchingUpMoveIndex = animationIndex;
               setTimeout(function() {
                 setTimeout(function() { 
                   gmc.animateWaitingMoveIndex++;
@@ -1187,7 +1189,7 @@ export class gmc implements OnInit {
             gmc.animateMarker(gmc.animateWaiting, gmc.animateWaitingMoveIndex);
             gmc.animateMarker(gmc.animateCatchingUp, gmc.animateCatchingUpMoveIndex);
           } else if (animation.att == 'Restart') {          
-            this.animateRestart = true;
+            gmc.animateRestart = true;
           } else if (animation.att == 'RemoveAttachment') {
             if (url.indexOf('StyleandFlair') > -1) {
               url = gmc.cloudinaryPath + 'StyleandFlair.png';
@@ -1322,14 +1324,14 @@ export class gmc implements OnInit {
 
   public static infoWindowClosing() {
     gmc.infoWindowIsClosing = true;
-    this.map.setCenter({lat: this.lastCenter.lat(), lng: this.lastCenter.lng()});
-    this.map.setZoom(this.lastZoomLevel);
-    this.map.setTilt(this.lastTilt);
-    this.map.setHeading(this.lastHeading);
+    gmc.map.setCenter({lat: gmc.lastCenter.lat(), lng: gmc.lastCenter.lng()});
+    gmc.map.setZoom(gmc.lastZoomLevel);
+    gmc.map.setTilt(gmc.lastTilt);
+    gmc.map.setHeading(gmc.lastHeading);
   }
 
   public static updateIcon(place:any, marker:google.maps.Marker, select:boolean) {
-    let zoomFactor = this.getZoomFactor(place);
+    let zoomFactor = gmc.getZoomFactor(place);
     
     if (select) {
       zoomFactor += 0.1;
@@ -1364,7 +1366,7 @@ export class gmc implements OnInit {
   }
 
   public static updateAnimateIcon(animate:any) {
-    let zoomFactor = this.getZoomFactor(null);
+    let zoomFactor = gmc.getZoomFactor(null);
     const scaledSize = new google.maps.Size(animate.imgWidth * zoomFactor, animate.imgHeight * zoomFactor);
     var newUrl = animate.Marker.getIcon()['url'];
 
@@ -1383,7 +1385,7 @@ export class gmc implements OnInit {
   }
 
   public static getZoomFactor(place: any) {
-    var zoomFactor = Number((this.map.getZoom() * 10).toFixed(0));
+    var zoomFactor = Number((gmc.map.getZoom() * 10).toFixed(0));
     var floorNumber = 210;
     var maxNum = .011;
 
@@ -1413,7 +1415,7 @@ export class gmc implements OnInit {
       maxNum = zoomFactor * 0.00002;
     }
       
-    const city = this.currentCity; 
+    const city = gmc.currentCity; 
     zoomFactor -= (floorNumber - zoomFactor) * 5.5;
     zoomFactor *= .0004;
     zoomFactor = Math.max(0.001, zoomFactor);
