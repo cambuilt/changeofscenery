@@ -554,6 +554,7 @@ export class gmc implements OnInit {
               setTimeout(function () { placeMarker.setAnimation(null);}, 1000);  
               setTimeout(function () { 
                 $('#message').text('WRONG! Please try again.');
+                $('#message').css('height', '35px');
               }, 600);
               return;
             }
@@ -741,7 +742,7 @@ export class gmc implements OnInit {
         if (question.Height > 35) {
           $('#message').css('top', '15px');
         } else {
-          $('#message').css('top', '9px');
+          $('#message').css('top', '20px');
         }
         gmc.gameQuestionCounter++;
       }, 2000);
