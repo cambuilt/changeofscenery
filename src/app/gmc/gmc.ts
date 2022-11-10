@@ -513,6 +513,9 @@ export class gmc implements OnInit {
       
       markerInfoWindow.addListener('closeclick', () => {
         gmc.infoWindowClosing();
+        if (gmc.gameQuestions != undefined) {
+          gmc.nextGameQuestion();
+        }    
       });
       let map = gmc.map;
   
@@ -733,7 +736,7 @@ export class gmc implements OnInit {
         let question = gmc.gameQuestions[gmc.gameQuestionCounter];
         gmc.gameAnswersToFind = question.Answers.split('|').length;
         gmc.gameAnswersFound = 0;
-        $('#message').text(question.Question);
+        $('#message').html(question.Question);
         if (gmc.gameQuestionCounter == 0) {
           $('#message').removeClass('hide');
           $('#message').addClass('show');
@@ -902,11 +905,11 @@ export class gmc implements OnInit {
         $('#typeSelector').prop('hidden', true);
       }
      
-      gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+      gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
       gmc.polygon1.addListener('click', (e) => gmc.clearPopups() );
-       
+      
       if (points2.length > 0) { 
-        gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: fillOpacity, strokeColor: "#DD8888", strokeOpacity: 1, strokeWeight: 3, map: gmc.map});
+        gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: fillOpacity, strokeColor: "#DD8888", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
         gmc.polygon2.addListener('click', (e) => gmc.clearPopups() );
       }
     } else {
@@ -1068,6 +1071,9 @@ export class gmc implements OnInit {
         
         markerInfoWindow.addListener('closeclick', () => {
           gmc.infoWindowClosing();
+          if (gmc.gameQuestions != undefined) {
+            gmc.nextGameQuestion();
+          }      
         });
         let map = gmc.map;
     
