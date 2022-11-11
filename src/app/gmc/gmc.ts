@@ -149,7 +149,7 @@ export class gmc implements OnInit {
         mapId: 'd5860e1d98873021'
     });
 
-    gmc.map.addListener('click', (e) => gmc.clearPopups() );
+    gmc.map.addListener('click', (e) => gmc.clearInfoWindows() );
 
     gmc.map.addListener('mousedown', (e) => {
       // gmc.startTouchTimers(e);
@@ -563,6 +563,7 @@ export class gmc implements OnInit {
               setTimeout(function () { 
                 $('#message').text('WRONG! Please try again.');
                 $('#message').css('height', '35px');
+                gmc.clearInfoWindows();
               }, 600);
               return;
             }
@@ -715,7 +716,7 @@ export class gmc implements OnInit {
     const db = gmc.getFirestoreDb();
     const entityName = gmc.collectionCity + 'Game';
     const boundaryRef = collection(db, entityName);
-    const q = query(boundaryRef, where("Area", "==", gmc.currentArea.Name));
+    const q = query(boundaryRef, where("Area", "==", gmc.currentArea.Name), orderBy("Sequence"));
     const querySnapshot = await getDocs(q);
     gmc.gameCorrectCount = 0, gmc.gameIncorrectCount = 0, gmc.gameQuestionCounter = 0, gmc.gameSkipQuestion = false;
     gmc.gameQuestions = [];
@@ -911,11 +912,11 @@ export class gmc implements OnInit {
       }
      
       gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
-      gmc.polygon1.addListener('click', (e) => gmc.clearPopups() );
+      gmc.polygon1.addListener('click', (e) => gmc.clearInfoWindows() );
       
       if (points2.length > 0) { 
         gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: fillOpacity, strokeColor: "#DD8888", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
-        gmc.polygon2.addListener('click', (e) => gmc.clearPopups() );
+        gmc.polygon2.addListener('click', (e) => gmc.clearInfoWindows() );
       }
     } else {
       gmc.polygon1.setVisible(true);
@@ -1011,10 +1012,14 @@ export class gmc implements OnInit {
     
   }
 
-  public static clearPopups() {
+  public static clearInfoWindows() {
     if (gmc.lastInfoWindow != undefined) {
       gmc.lastInfoWindow.close();
       gmc.infoWindowClosing();
+      if (gmc.gameQuestions != undefined) {
+        gmc.gameSkipQuestion = true;
+        gmc.nextGameQuestion();
+      }
     } 
     gmc.lastInfoWindow = undefined;
     gmc.hideTypeList();
@@ -1305,7 +1310,7 @@ export class gmc implements OnInit {
 
     $('#typeSelector').prop('hidden', true);
 
-    gmc.clearPopups();
+    gmc.clearInfoWindows();
   }
 
   public static gotoAreaHome() {
