@@ -103,6 +103,7 @@ export class gmc implements OnInit {
   public static gameQuestions;
   public static gameQuestionCounter;
   public static gameSkipQuestion = false;
+  public static gameInfoWindowWasClosed = false;
   public static firestoreDb;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
@@ -548,11 +549,12 @@ export class gmc implements OnInit {
               $('#message').css('height', '35px');
               $('#message').text('That\'s correct!    Your score is: ' + gmc.gameCorrectCount);
               if (gmc.gameAnswersFound == gmc.gameAnswersToFind) {
-                setTimeout(function() {
-                  if (gmc.gameSkipQuestion == false) {
+                setTimeout(function() {                  
+                  if (gmc.gameSkipQuestion == false && gmc.gameInfoWindowWasClosed == false) {
                     gmc.nextGameQuestion();
                   } else {
                     gmc.gameSkipQuestion = false;
+                    gmc.gameInfoWindowWasClosed = false;
                   }
                 }, 10000);
               }
@@ -1329,6 +1331,7 @@ export class gmc implements OnInit {
 
   public static infoWindowClosing() {
     gmc.infoWindowIsClosing = true;
+    gmc.gameInfoWindowWasClosed = true;
     gmc.map.setCenter({lat: gmc.lastCenter.lat(), lng: gmc.lastCenter.lng()});
     gmc.map.setZoom(gmc.lastZoomLevel);
     gmc.map.setTilt(gmc.lastTilt);
