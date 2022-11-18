@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { Component, OnInit, NgZone, getModuleFactory } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where, orderBy } from "firebase/firestore";
@@ -103,7 +103,6 @@ export class gmc implements OnInit {
   public static gameQuestions;
   public static gameQuestionCounter;
   public static gameSkipQuestion = false;
-  public static gameInfoWindowWasClosed = false;
   public static firestoreDb;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
@@ -515,9 +514,6 @@ export class gmc implements OnInit {
       
       markerInfoWindow.addListener('closeclick', () => {
         gmc.infoWindowClosing();
-        if (gmc.gameQuestions != undefined) {
-          gmc.nextGameQuestion();
-        }    
       });
       let map = gmc.map;
   
@@ -550,12 +546,7 @@ export class gmc implements OnInit {
               $('#message').text('That\'s correct!    Your score is: ' + gmc.gameCorrectCount);
               if (gmc.gameAnswersFound == gmc.gameAnswersToFind) {
                 setTimeout(function() {                  
-                  if (gmc.gameSkipQuestion == false && gmc.gameInfoWindowWasClosed == false) {
-                    gmc.nextGameQuestion();
-                  } else {
-                    gmc.gameSkipQuestion = false;
-                    gmc.gameInfoWindowWasClosed = false;
-                  }
+                  gmc.nextGameQuestion();
                 }, 10000);
               }
             } else {
@@ -1018,10 +1009,6 @@ export class gmc implements OnInit {
     if (gmc.lastInfoWindow != undefined) {
       gmc.lastInfoWindow.close();
       gmc.infoWindowClosing();
-      if (gmc.gameQuestions != undefined) {
-        gmc.gameSkipQuestion = true;
-        gmc.nextGameQuestion();
-      }
     } 
     gmc.lastInfoWindow = undefined;
     gmc.hideTypeList();
@@ -1083,10 +1070,6 @@ export class gmc implements OnInit {
         
         markerInfoWindow.addListener('closeclick', () => {
           gmc.infoWindowClosing();
-          if (gmc.gameQuestions != undefined) {
-            gmc.gameSkipQuestion = true;
-            gmc.nextGameQuestion();
-          }      
         });
         let map = gmc.map;
     
@@ -1331,7 +1314,6 @@ export class gmc implements OnInit {
 
   public static infoWindowClosing() {
     gmc.infoWindowIsClosing = true;
-    gmc.gameInfoWindowWasClosed = true;
     gmc.map.setCenter({lat: gmc.lastCenter.lat(), lng: gmc.lastCenter.lng()});
     gmc.map.setZoom(gmc.lastZoomLevel);
     gmc.map.setTilt(gmc.lastTilt);
