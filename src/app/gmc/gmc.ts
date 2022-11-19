@@ -314,6 +314,8 @@ export class gmc implements OnInit {
     gmc.polygon1 = undefined;
     gmc.polygon2 = undefined;
     console.log('select city 5');
+    console.log('map', gmc.map);
+    console.log('city', city);
     gmc.map.setCenter(gmc.cities.find(x => x.name == city).center);
     console.log('select city 6');
     gmc.map.setTilt(gmc.cities.find(x => x.name == city).tilt);
