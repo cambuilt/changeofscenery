@@ -292,45 +292,33 @@ export class gmc implements OnInit {
   }
 
   public async selectCity(cityName) {
-    console.log('select city 1');
     $('#splash').addClass('hide');
     $('#google_map').css('height', '100vh');
     setTimeout(function() { $('#splash').css('display', 'none');$('.backButton').addClass('show');}, 1000);
-    console.log('select city 2');
     gmc.currentCity = cityName;
     var icon: google.maps.Icon;
     const city = gmc.currentCity;
-    console.log('select city 3');
     if (gmc.streetMarkers.length > 0) {
       gmc.streetMarkers.forEach(streetMarker => {
         streetMarker.setMap(null);
       });
     }
-    console.log('select city 4');
     gmc.streetMarkers = [];
     gmc.areas = [];
     gmc.places = [];
     gmc.placeMarkers = [];
     gmc.polygon1 = undefined;
     gmc.polygon2 = undefined;
-    console.log('select city 5');
-    console.log('map', gmc.map);
-    console.log('city', city);
     gmc.map.setCenter(gmc.cities.find(x => x.name == city).center);
-    console.log('select city 6');
     gmc.map.setTilt(gmc.cities.find(x => x.name == city).tilt);
-    console.log('select city 7');
     gmc.map.setHeading(gmc.cities.find(x => x.name == city).heading);
-    console.log('select city 8');
     gmc.map.setZoom(gmc.cities.find(x => x.name == city).zoom);
-    console.log('select city 9');
     const displayName = gmc.cities.find(x => x.name == city).displayName;
     gmc.collectionCity = displayName.replace(' ', '');
     gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/f_auto,q_auto/';
     gmc.cloudinaryPath += displayName.replace(' ', '%20') + '/';
-    console.log('select city 10');
     const db = gmc.getFirestoreDb();
-    console.log('select city 11');
+
     if (city == 'boston') {
       icon = {url: 'assets/boston/Cadillac.png',scaledSize: new google.maps.Size(80, 22)};
       gmc.carMarker = new google.maps.Marker({position: gmc.carStartPosition, icon: icon, map: gmc.map, zIndex: 0, title: 'Red 1960 Cadillac', optimized: true, visible: false});
@@ -353,17 +341,15 @@ export class gmc implements OnInit {
         gmc.areas.push(doc.data());
         gmc.areas[gmc.areas.length - 1]['id'] = doc.id;
     });
-    console.log('select city 12');
+
     gmc.areas.forEach(area => {
       icon = {url: 'assets/' + city + '/' + area.Name + '.svg',scaledSize: new google.maps.Size(area.IconWidth, area.IconHeight)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: area.MarkerLocation.latitude, lng: area.MarkerLocation.longitude}, icon: icon, map: gmc.map, zIndex: 100}));
       gmc.streetMarkers[gmc.streetMarkers.length-1].addListener('click', () => { gmc.selectArea(area); });
     });
 
-    console.log('select city 13');
     const docRef = doc(db, "User", gmc.currentUser.id);
     await updateDoc(docRef, { City:  cityName});
-    console.log('select city 14');
 
     if (gmc.currentCity == 'washingtondc') {
       gmc.handleZoom();
