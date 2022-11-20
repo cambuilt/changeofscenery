@@ -7,7 +7,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
-declare function centerChanged(): any;
+// declare function centerChanged(): any;
 declare function playSound(name:any): any;
 
 @Component({
@@ -182,7 +182,7 @@ export class gmc implements OnInit {
       // console.log('tilt', gmc.map.getTilt());
 
       window.scroll(0, -100);
-      centerChanged();     
+      // centerChanged();     
     });
 
     gmc.map.addListener('dragstart', () => {
