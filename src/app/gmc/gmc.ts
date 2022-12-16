@@ -198,7 +198,7 @@ export class gmc implements OnInit {
         setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
       } else {
         if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {          
-          gmc.hidePlaceMarkers();
+          // gmc.hidePlaceMarkers();
           gmc.lastZoomInProgressLevel = gmc.map.getZoom();
           gmc.zoomIntervalFunction = setInterval(function() {
             if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
@@ -640,29 +640,29 @@ export class gmc implements OnInit {
     });    
   }
 
-  public static startTouchTimers(e) {
-    gmc.powerTouchGo = true;      
-    gmc.powerTouchLeave = true;
-    gmc.powerTouchBack = true;
-    setTimeout(function() {
-      if (gmc.powerTouchGo == true && gmc.centerChanged == false) {
-        gmc.map.setCenter(e.latLng);
-        gmc.map.setZoom(18);
-        gmc.cancelMarkerClick = true;
-      }
-    }, 1000);
-    setTimeout(function() {
-      if (gmc.powerTouchLeave == true && gmc.centerChanged == false) {
-        if (gmc.kioskMode == true) {
-          gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.KioskCenter.latitude, gmc.currentArea.KioskCenter.longitude));
-          gmc.map.setZoom(gmc.currentArea.ZoomKiosk);
-        } else {
-          gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.MarkerLocation.latitude, gmc.currentArea.MarkerLocation.longitude));
-          gmc.map.setZoom(gmc.currentArea.Zoom);
-        }
-        gmc.cancelMarkerClick = true;
-      }
-    }, 3000);
+  // public static startTouchTimers(e) {
+  //   gmc.powerTouchGo = true;      
+  //   gmc.powerTouchLeave = true;
+  //   gmc.powerTouchBack = true;
+  //   setTimeout(function() {
+  //     if (gmc.powerTouchGo == true && gmc.centerChanged == false) {
+  //       gmc.map.setCenter(e.latLng);
+  //       gmc.map.setZoom(18);
+  //       gmc.cancelMarkerClick = true;
+  //     }
+  //   }, 1000);
+  //   setTimeout(function() {
+  //     if (gmc.powerTouchLeave == true && gmc.centerChanged == false) {
+  //       if (gmc.kioskMode == true) {
+  //         gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.KioskCenter.latitude, gmc.currentArea.KioskCenter.longitude));
+  //         gmc.map.setZoom(gmc.currentArea.ZoomKiosk);
+  //       } else {
+  //         gmc.map.setCenter(new google.maps.LatLng(gmc.currentArea.MarkerLocation.latitude, gmc.currentArea.MarkerLocation.longitude));
+  //         gmc.map.setZoom(gmc.currentArea.Zoom);
+  //       }
+  //       gmc.cancelMarkerClick = true;
+  //     }
+  //   }, 3000);
     // setTimeout(function() {
     //   if (gmc.powerTouchBack == true) {
     //     gmc.hidePlaceMarkers();
@@ -670,15 +670,15 @@ export class gmc implements OnInit {
     //     gmc.cancelMarkerClick = true;
     //   }
     // }, 5000);
-  }
+  // }
 
-  public static cancelTouchTimers() {
-    gmc.powerTouchGo = false;
-    gmc.powerTouchLeave = false;
-    gmc.powerTouchBack = false;
-    gmc.centerChanged = false;
-    gmc.centerChangeCount = 0;
-  }
+  // public static cancelTouchTimers() {
+  //   gmc.powerTouchGo = false;
+  //   gmc.powerTouchLeave = false;
+  //   gmc.powerTouchBack = false;
+  //   gmc.centerChanged = false;
+  //   gmc.centerChangeCount = 0;
+  // }
 
   openAppMenu() {
     if ($('.appMenu').css('bottom') == '0px') {
