@@ -503,7 +503,7 @@ export class gmc implements OnInit {
       `</td></tr><tr><td></td></tr></table></div>`;
 
       if (place.Popup != undefined) {
-        contentString = place.Popup.replace('bgWidth', bgWidth).replace('popups', gmc.cloudinaryPath + 'popups');
+        contentString = place.Popup.replace('bgWidth', bgWidth).replace('popups', gmc.cloudinaryPath + 'popups').replace('heartIcon', heartIcon).replace('likesText', likesText);
         if (gmc.kioskMode) {
           contentString = contentString.replaceAll('window.open(', 'location.href = ').replaceAll(');', ';');
         }
