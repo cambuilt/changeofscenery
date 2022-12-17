@@ -199,17 +199,17 @@ export class gmc implements OnInit {
       } else {
         if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {          
           // gmc.hidePlaceMarkers();
-          gmc.lastZoomInProgressLevel = gmc.map.getZoom();
-          gmc.zoomIntervalFunction = setInterval(function() {
-            if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
-              clearInterval(gmc.zoomIntervalFunction);
-              gmc.zoomIntervalFunction = undefined;
+          // gmc.lastZoomInProgressLevel = gmc.map.getZoom();
+          // gmc.zoomIntervalFunction = setInterval(function() {
+          //   if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
+          //     clearInterval(gmc.zoomIntervalFunction);
+          //     gmc.zoomIntervalFunction = undefined;
               gmc.showPlaceMarkers();
               gmc.handleZoom();
-            } else {
-              gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
-            }
-          }, 250);
+            // } else {
+            //   gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
+            // }
+          // }, 250);
         } else {
           gmc.infoWindowIsClosing = false;
         }
