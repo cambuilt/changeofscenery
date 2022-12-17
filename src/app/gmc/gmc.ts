@@ -190,7 +190,7 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragend', () => {
-      setTimeout(function () { gmc.showPlaceMarkers(); }, 3000);
+      gmc.showPlaceMarkers();
     });
 
     gmc.map.addListener('zoom_changed', () => {
@@ -204,7 +204,8 @@ export class gmc implements OnInit {
             if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
-              setTimeout(function () { gmc.showPlaceMarkers(); gmc.handleZoom(); }, 3000);              
+              gmc.showPlaceMarkers(); 
+              gmc.handleZoom();
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
             }
@@ -404,11 +405,9 @@ export class gmc implements OnInit {
         const type = String(place.Type);
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
           if (place.Area != undefined && this.currentArea != undefined && place.Area.replaceAll(' ', '') == this.currentArea.Name || gmc.currentCity == 'charleston' || (this.currentArea.Name == 'Marshfield' && place.Area == 'Brant Rock')) {
-            if (marker == undefined) {
-                if (this.placeTotal < 1) {
-                  this.placeTotal++;
-                  this.createMarker(place);      
-                }
+            if (marker == undefined) {              
+                this.placeTotal++;
+                this.createMarker(place);      
             } else {
               if (marker.getVisible() == false) {
                 marker.setVisible(true);
@@ -636,8 +635,10 @@ export class gmc implements OnInit {
   }
 
   public static showPlaceMarkers() {        
+    var waitNumber = 10;
     this.placeMarkers.forEach(marker => {
-      marker.setVisible(true);
+      setTimeout(function() { marker.setVisible(true); }, waitNumber);
+      waitNumber += 20;
     });    
   }
 
