@@ -405,8 +405,10 @@ export class gmc implements OnInit {
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
           if (place.Area != undefined && this.currentArea != undefined && place.Area.replaceAll(' ', '') == this.currentArea.Name || gmc.currentCity == 'charleston' || (this.currentArea.Name == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {
-                this.placeTotal++;
-                this.createMarker(place);      
+                if (this.placeTotal < 1) {
+                  this.placeTotal++;
+                  this.createMarker(place);      
+                }
             } else {
               if (marker.getVisible() == false) {
                 marker.setVisible(true);
