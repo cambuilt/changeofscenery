@@ -186,11 +186,11 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragstart', () => {
-      // gmc.hidePlaceMarkers();
+      gmc.hidePlaceMarkers();
     });
 
     gmc.map.addListener('dragend', () => {
-      // gmc.showPlaceMarkers();
+      gmc.showPlaceMarkers();
     });
 
     gmc.map.addListener('zoom_changed', () => {
