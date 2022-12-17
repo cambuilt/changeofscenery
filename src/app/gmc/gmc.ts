@@ -204,8 +204,7 @@ export class gmc implements OnInit {
             if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
-              gmc.showPlaceMarkers();
-              gmc.handleZoom();
+              setTimeout(function () { gmc.showPlaceMarkers(); gmc.handleZoom(); }, 3000);              
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
             }
