@@ -190,7 +190,7 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragend', () => {
-      setTimeout(function () { gmc.showPlaceMarkers(); }, 500);
+      setTimeout(function () { gmc.showPlaceMarkers(); }, 3000);
     });
 
     gmc.map.addListener('zoom_changed', () => {
