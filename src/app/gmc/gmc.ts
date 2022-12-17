@@ -176,10 +176,10 @@ export class gmc implements OnInit {
       } else {
         // gmc.updateHouseMarkers(false);
       }
-      // console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
-      // console.log('zoomLevel', gmc.map.getZoom());
-      // console.log('heading', gmc.map.getHeading());
-      // console.log('tilt', gmc.map.getTilt());
+      console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
+      console.log('zoomLevel', gmc.map.getZoom());
+      console.log('heading', gmc.map.getHeading());
+      console.log('tilt', gmc.map.getTilt());
 
       // window.scroll(0, -100);
       // centerChanged();     
@@ -190,7 +190,7 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragend', () => {
-      gmc.showPlaceMarkers();
+      setTimeout(function () { gmc.showPlaceMarkers(); }, 500);
     });
 
     gmc.map.addListener('zoom_changed', () => {
