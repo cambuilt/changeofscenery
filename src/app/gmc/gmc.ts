@@ -204,8 +204,7 @@ export class gmc implements OnInit {
             if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
               clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
-              gmc.showPlaceMarkers(); 
-              gmc.handleZoom();
+              setTimeout(function() { gmc.showPlaceMarkers(); gmc.handleZoom(); }, 5000);              
             } else {
               gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
             }
@@ -635,10 +634,8 @@ export class gmc implements OnInit {
   }
 
   public static showPlaceMarkers() {        
-    var waitNumber = 10;
     this.placeMarkers.forEach(marker => {
-      setTimeout(function() { marker.setVisible(true); }, waitNumber);
-      waitNumber += 20;
+      marker.setVisible(true);
     });    
   }
 
