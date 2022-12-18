@@ -60,6 +60,7 @@ export class gmc implements OnInit {
   public static currentPlace: any;  
   public static currentUser: any;  
   public static zooming = false;
+  public static zoomChangedShow = false;
   public static powerTouchGo = false;
   public static powerTouchLeave = false;
   public static powerTouchBack = false;
@@ -190,25 +191,31 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragend', () => {
-      gmc.showPlaceMarkers();
+      if (gmc.zoomChangedShow == false) {
+        gmc.showPlaceMarkers();
+      } else {
+        gmc.zoomChangedShow = false;
+      }
     });
 
     gmc.map.addListener('zoom_changed', () => {
       if (gmc.zooming == true) {
         setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
       } else {
-        if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {          
-          // gmc.hidePlaceMarkers();
+        if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {
+          gmc.zoomChangedShow = true;
+          gmc.hidePlaceMarkers();
           gmc.lastZoomInProgressLevel = gmc.map.getZoom();
-          gmc.zoomIntervalFunction = setInterval(function() {
-            if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
-              clearInterval(gmc.zoomIntervalFunction);
+          // gmc.zoomIntervalFunction = setInterval(function() {
+          //   if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
+          //     clearInterval(gmc.zoomIntervalFunction);
               gmc.zoomIntervalFunction = undefined;
-              setTimeout(function() { gmc.showPlaceMarkers(); gmc.handleZoom(); }, 5000);              
-            } else {
-              gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
-            }
-          }, 250);
+              gmc.showPlaceMarkers(); 
+              gmc.handleZoom();
+          //   } else {
+          //     gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
+          //   }
+          // }, 250);
         } else {
           gmc.infoWindowIsClosing = false;
         }
