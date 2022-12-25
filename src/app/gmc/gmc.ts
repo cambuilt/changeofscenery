@@ -150,6 +150,7 @@ export class gmc implements OnInit {
         mapId: 'd5860e1d98873021'
     });
 
+    $('#googleVersion').html(google.maps.version);
     gmc.map.addListener('click', (e) => gmc.clearInfoWindows() );
 
     gmc.map.addListener('mousedown', (e) => {
