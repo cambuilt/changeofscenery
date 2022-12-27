@@ -21,8 +21,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		{
 			requireDisplayName: false,
 			provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
-		},
-		firebase.auth.TwitterAuthProvider.PROVIDER_ID
+		}
 	],
 	tosUrl: 'https://cambuilt.com/terms-of-service.html',
 	privacyPolicyUrl: 'https://cambuilt.com/privacy-policy.html',

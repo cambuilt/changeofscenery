@@ -684,6 +684,7 @@ export class gmc implements OnInit {
 
   openAppMenu() {
     if ($('.appMenu').css('bottom') == '0px') {
+      console.log('hiding');
       this.hideAppMenu();
     } else {
       $('#mapLogo').hide();
