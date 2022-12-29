@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 14">
   <defs>
       <filter id="shadow">
-        <feDropShadow dx="0.4" dy="0.8" stdDeviation="0.2"/>        
+        <feDropShadow dx="-100" dy="0.8" stdDeviation="0.2"/>        
       </filter>
   </defs>
   <g>
