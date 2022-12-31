@@ -7,6 +7,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
+import { NgLocalization } from '@angular/common';
 // declare function centerChanged(): any;
 declare function playSound(name:any): any;
 
@@ -129,9 +130,10 @@ export class gmc implements OnInit {
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        gmc.currentUser = user;
-        this.getUser(user);
-        $('#splashTable').removeAttr('hidden');
+        window.location.href = 'https://www.changeofscenery.info';
+        // gmc.currentUser = user;
+        // this.getUser(user);
+        // $('#splashTable').removeAttr('hidden');
       } else {
         gmc.currentUser = null;
       }
