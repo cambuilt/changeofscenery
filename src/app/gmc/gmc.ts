@@ -118,9 +118,10 @@ export class gmc implements OnInit {
         $('td[name="charleston"]').show();
         $('firebase-ui').hide();
       } else {
-        $('td[name="coscell"]').css('padding-bottom', '140px'); 
-        $('td[name="washingtondc"]').hide();
-        $('td[name="charleston"]').hide();
+        window.location.href = 'https://www.changeofscenery.info';
+        // $('td[name="coscell"]').css('padding-bottom', '140px'); 
+        // $('td[name="washingtondc"]').hide();
+        // $('td[name="charleston"]').hide();
       }
     });
 
@@ -130,10 +131,9 @@ export class gmc implements OnInit {
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        window.location.href = 'https://www.changeofscenery.info';
-        // gmc.currentUser = user;
-        // this.getUser(user);
-        // $('#splashTable').removeAttr('hidden');
+        gmc.currentUser = user;
+        this.getUser(user);
+        $('#splashTable').removeAttr('hidden');
       } else {
         gmc.currentUser = null;
       }
