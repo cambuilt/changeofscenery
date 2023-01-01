@@ -219,7 +219,6 @@ export class gmc implements OnInit {
                 gmc.zoomIntervalFunction = undefined;
                 gmc.showPlaceMarkers(); 
                 gmc.handleZoom();
-                gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
               } else {
                 gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
               }
@@ -443,6 +442,8 @@ export class gmc implements OnInit {
     this.animations.forEach(animate => {
       gmc.updateAnimateIcon(animate);      
     });
+
+    gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
   }
 
   public static createMarker(place: any) {    
