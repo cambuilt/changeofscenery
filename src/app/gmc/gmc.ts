@@ -117,11 +117,14 @@ export class gmc implements OnInit {
         $('td[name="washingtondc"]').show();
         $('td[name="charleston"]').show();
         $('firebase-ui').hide();
+        if (localStorage.getItem('authenticated') == undefined) {
+          localStorage.setItem('authenticated', 'true');
+          window.location.href = 'https://www.changeofscenery.info';
+        }
       } else {
-        window.location.href = 'https://www.changeofscenery.info';
-        // $('td[name="coscell"]').css('padding-bottom', '140px'); 
-        // $('td[name="washingtondc"]').hide();
-        // $('td[name="charleston"]').hide();
+        $('td[name="coscell"]').css('padding-bottom', '140px'); 
+        $('td[name="washingtondc"]').hide();
+        $('td[name="charleston"]').hide();
       }
     });
 
@@ -180,10 +183,10 @@ export class gmc implements OnInit {
       } else {
         // gmc.updateHouseMarkers(false);
       }
-      console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
-      console.log('zoomLevel', gmc.map.getZoom());
-      console.log('heading', gmc.map.getHeading());
-      console.log('tilt', gmc.map.getTilt());
+      // console.log(`center: {lat: ${gmc.map.getCenter().lat()}, lng: ${gmc.map.getCenter().lng()}},`);
+      // console.log('zoomLevel', gmc.map.getZoom());
+      // console.log('heading', gmc.map.getHeading());
+      // console.log('tilt', gmc.map.getTilt());
 
       // window.scroll(0, -100);
       // centerChanged();     
