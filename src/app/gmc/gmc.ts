@@ -898,6 +898,7 @@ export class gmc implements OnInit {
   }
 
   public static async selectArea(area) {
+    gmc.isSmallScreen = false;
     if (gmc.polygon1 == undefined) {
       var points1 = [], points2 = []
       var fillOpacity = 0.1
