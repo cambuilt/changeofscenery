@@ -444,6 +444,10 @@ export class gmc implements OnInit {
     });
 
     gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
+
+    if (gmc.isSmallScreen == true) {
+      gmc.map.setZoom(gmc.cities.find(x => x.name == gmc.currentCity).zoom + 1);
+    }
   }
 
   public static createMarker(place: any) {    
@@ -593,10 +597,12 @@ export class gmc implements OnInit {
         let latDelta = city == 'boston' ? 0.000 : 0.004;
         let lngDelta = city == 'boston' ? 0.000 : -0.003;
         anchor.set('position', {lat: placeMarker.getPosition().lat() + (latDelta / gmc.map.getZoom()), lng: placeMarker.getPosition().lng() + (lngDelta / gmc.map.getZoom())});
-        gmc.updatePlaceMarkers(false);
-        gmc.suspendUpdate = true;
-        var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown' || n == 'Penn Quarter';
-        gmc.updateIcon(place, placeMarker, selectIcon);
+        if (gmc.isSmallScreen == false) {
+          gmc.updatePlaceMarkers(false);
+          gmc.suspendUpdate = true;
+          var selectIcon = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' || n == 'Chinatown' || n == 'Penn Quarter';
+          gmc.updateIcon(place, placeMarker, selectIcon);
+        }
         markerInfoWindow.open({anchor: anchor, map, shouldFocus: false});        
         setTimeout(function () {
           const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);  
