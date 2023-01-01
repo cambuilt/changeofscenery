@@ -444,10 +444,6 @@ export class gmc implements OnInit {
     });
 
     gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
-
-    if (gmc.isSmallScreen == true) {
-      gmc.map.setZoom(gmc.cities.find(x => x.name == gmc.currentCity).zoom + 1);
-    }
   }
 
   public static createMarker(place: any) {    
