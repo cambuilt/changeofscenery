@@ -1,12 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 16">
-  <defs>
-      <filter id="shadow">
-        <feDropShadow dx="0.8" dy="0.8" stdDeviation="0.2"/>        
-      </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg">
   <g>
-    <rect width="180" height="120" style="fill:#f8f4af;filter:url(#shadow);" stroke="black"></rect>
-    <text font-size="14" font-family="Futura-Medium, Futura" font-weight="500"><tspan x="5" y="16">Friendship Heights DC</tspan></text>
+    <rect width="154" height="22" style="fill:#f8f4af;" stroke="black"></rect>
+    <text font-size="14" font-family="Futura-Medium, Futura" font-weight="500"><tspan x="7" y="16">Friendship Heights DC</tspan></text>
   </g>
 </svg>
 

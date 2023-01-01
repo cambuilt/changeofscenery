@@ -227,6 +227,9 @@ export class gmc implements OnInit {
             gmc.infoWindowIsClosing = false;
           }
         }
+      } else {
+        console.log('showing place markers...');
+        gmc.showPlaceMarkers(); 
       }
     });
 
@@ -242,7 +245,7 @@ export class gmc implements OnInit {
     }    
 
     setTimeout(function () {
-      $("td[name='boston']").text('Boston');
+      $("td[name='boston']").text('Boston MA');
       $("td[name='charleston']").text('Charleston SC');
       $("td[name='washingtondc']").text('Washington DC');
       $("img[name='instalogo']").attr('src', 'assets/Instagram-Logo.wine.svg');
@@ -898,7 +901,6 @@ export class gmc implements OnInit {
   }
 
   public static async selectArea(area) {
-    gmc.isSmallScreen = false;
     if (gmc.polygon1 == undefined) {
       var points1 = [], points2 = []
       var fillOpacity = 0.1
