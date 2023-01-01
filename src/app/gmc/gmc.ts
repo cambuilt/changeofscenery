@@ -128,8 +128,7 @@ export class gmc implements OnInit {
         $('td[name="charleston"]').hide();
       }
     });
-
-    gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
+    
     const auth = getAuth();
     gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
     gmc.gotoArea = this.route.snapshot.queryParamMap.get('area');
@@ -228,6 +227,7 @@ export class gmc implements OnInit {
             gmc.infoWindowIsClosing = false;
           }
         }
+        gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
       }
     });
 
