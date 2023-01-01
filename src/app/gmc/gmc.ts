@@ -219,6 +219,7 @@ export class gmc implements OnInit {
                 gmc.zoomIntervalFunction = undefined;
                 gmc.showPlaceMarkers(); 
                 gmc.handleZoom();
+                gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
               } else {
                 gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
               }
@@ -227,7 +228,6 @@ export class gmc implements OnInit {
             gmc.infoWindowIsClosing = false;
           }
         }
-        gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
       }
     });
 
