@@ -106,6 +106,7 @@ export class gmc implements OnInit {
   public static gameQuestionCounter;
   public static gameSkipQuestion = false;
   public static firestoreDb;
+  public static isSmallScreen = false;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -128,6 +129,7 @@ export class gmc implements OnInit {
       }
     });
 
+    gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
     const auth = getAuth();
     gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
     gmc.gotoArea = this.route.snapshot.queryParamMap.get('area');
@@ -193,32 +195,38 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragstart', () => {
-      gmc.hidePlaceMarkers();
+      if (gmc.isSmallScreen == false) {
+        gmc.hidePlaceMarkers();
+      }
     });
 
     gmc.map.addListener('dragend', () => {
-      gmc.showPlaceMarkers();
+      if (gmc.isSmallScreen == false) {
+        gmc.showPlaceMarkers();
+      }
     });
 
     gmc.map.addListener('zoom_changed', () => {
-      if (gmc.zooming == true) {
-        setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
-      } else {
-        if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {          
-          gmc.hidePlaceMarkers();
-          gmc.lastZoomInProgressLevel = gmc.map.getZoom();
-          gmc.zoomIntervalFunction = setInterval(function() {
-            if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
-              clearInterval(gmc.zoomIntervalFunction);
-              gmc.zoomIntervalFunction = undefined;
-              gmc.showPlaceMarkers(); 
-              gmc.handleZoom();
-            } else {
-              gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
-            }
-          }, 250);
+      if (gmc.isSmallScreen == false) {
+        if (gmc.zooming == true) {
+          setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
         } else {
-          gmc.infoWindowIsClosing = false;
+          if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {
+            gmc.hidePlaceMarkers();
+            gmc.lastZoomInProgressLevel = gmc.map.getZoom();
+            gmc.zoomIntervalFunction = setInterval(function() {
+              if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
+                clearInterval(gmc.zoomIntervalFunction);
+                gmc.zoomIntervalFunction = undefined;
+                gmc.showPlaceMarkers(); 
+                gmc.handleZoom();
+              } else {
+                gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
+              }
+            }, 250);
+          } else {
+            gmc.infoWindowIsClosing = false;
+          }
         }
       }
     });
@@ -496,8 +504,8 @@ export class gmc implements OnInit {
       const newTab = gmc.kioskMode ? "" : "target='_blank'"
       const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' ${newTab}>${place.Name}</a>`;
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
-      const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
-      const bgWidth = document.body.clientWidth || document.body.clientHeight < 400 ? "320px" : "520px";
+      const width = gmc.isSmallScreen ? "300px" : "490px";
+      const bgWidth = gmc.isSmallScreen ? "320px" : "520px";
       const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
       var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
       `<table><tr style='height:20%;'><td><img id='${iconId}' src='${popupImage}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
@@ -1063,7 +1071,7 @@ export class gmc implements OnInit {
           zIndex: zIndex
         });
 
-        const width = document.body.clientWidth || document.body.clientHeight < 400 ? "300px" : "490px";
+        const width = gmc.isSmallScreen ? "300px" : "490px";
         const contentString = `<div style='padding:7px;'><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
         `<table><tr style='height:20%;'><td><img id='${iconId}' src='${gmc.cloudinaryPath + iconId}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
         `width='180px' height='180px' onclick='scrollImage("${gmc.cloudinaryPath}","${iconId}",1)'/></td>` + 
