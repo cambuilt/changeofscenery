@@ -279,6 +279,7 @@ export class gmc implements OnInit {
   }
 
   async getUser(user: any) {
+    console.log('got user');
     const db = gmc.getFirestoreDb();
     const name = user.email == null ? user.displayName : user.email;
     const q = query(collection(db, "User"), where("Name", "==", name));
@@ -508,8 +509,8 @@ export class gmc implements OnInit {
       const newTab = gmc.kioskMode ? "" : "target='_blank'"
       const infoWindowTitle = place.Website == '' ? place.Name : `<a href='${place.Website}' ${newTab}>${place.Name}</a>`;
       const startingImageIndex = city.indexOf('washington') > -1 ? "1" : "";
-      const width = gmc.isSmallScreen ? "300px" : "490px";
-      const bgWidth = gmc.isSmallScreen ? "320px" : "520px";
+      const width = "300px";
+      const bgWidth = "320px";
       const imageCount = place.ImageCount > 1 ? '1/' + place.ImageCount : '';
       var contentString = `<div style='padding:7px;'><div id='imageCount'>${imageCount}</div><table style='width:${width};padding-right:0px;background-color:white;'><tr><td class='photo' style='padding:0px;margin:0px;vertical-align:top'>` + 
       `<table><tr style='height:20%;'><td><img id='${iconId}' src='${popupImage}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
@@ -901,6 +902,7 @@ export class gmc implements OnInit {
   }
 
   public static async selectArea(area) {
+    gmc.isSmallScreen = false;
     if (gmc.polygon1 == undefined) {
       var points1 = [], points2 = []
       var fillOpacity = 0.1
