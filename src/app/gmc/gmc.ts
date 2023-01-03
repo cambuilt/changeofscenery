@@ -29,6 +29,7 @@ export class gmc implements OnInit {
   public static placeCount = 0;
   public static mouseDownStartSeconds = 0;
   userLocationMarker: google.maps.Marker;
+  public static cities: any = [];
   public static places: any = [];
   public static areas: any = [];
   public static animations: any = [];
@@ -73,10 +74,6 @@ export class gmc implements OnInit {
   public static caching = false;
   public static browseMode = false;
   public static sizeMultiple = 76;
-  public static cities = [{name:'charleston', displayName: 'Charleston', center:{lat: 32.77600, lng: -79.92900}, heading:-15, zoom:16, tilt:45},
-                          {name:'boston', displayName: 'Boston', center:{lat: 42.300, lng: -70.90}, heading:0, zoom:10, tilt:0},
-                          {name:'washingtondc',  displayName: 'Washington DC', center:{lat: 38.95380, lng: -77.08622}, heading:0, zoom:14, tilt:0}];  // {lat: 38.88500, lng: -77.01900}, heading:0, zoom:14, tilt:0
-                          
   public static lastZoom = 0;
   public static zoomIntervalFunction;
   public static maxIconSize = 10;
@@ -279,7 +276,6 @@ export class gmc implements OnInit {
   }
 
   async getUser(user: any) {
-    console.log('got user');
     const db = gmc.getFirestoreDb();
     const name = user.email == null ? user.displayName : user.email;
     const q = query(collection(db, "User"), where("Name", "==", name));
@@ -321,17 +317,28 @@ export class gmc implements OnInit {
         streetMarker.setMap(null);
       });
     }
+
+    if (gmc.cities.length == 0) {
+      const db = gmc.getFirestoreDb();
+      const querySnapshot = await getDocs(collection(db, 'Cities'));
+      querySnapshot.forEach((doc) => {
+          gmc.cities.push(doc.data());
+          gmc.cities[gmc.cities.length - 1]['id'] = doc.id;
+      });  
+    }
+
     gmc.streetMarkers = [];
     gmc.areas = [];
     gmc.places = [];
     gmc.placeMarkers = [];
     gmc.polygon1 = undefined;
     gmc.polygon2 = undefined;
-    gmc.map.setCenter(gmc.cities.find(x => x.name == city).center);
-    gmc.map.setTilt(gmc.cities.find(x => x.name == city).tilt);
-    gmc.map.setHeading(gmc.cities.find(x => x.name == city).heading);
-    gmc.map.setZoom(gmc.cities.find(x => x.name == city).zoom);
-    const displayName = gmc.cities.find(x => x.name == city).displayName;
+    let center = gmc.cities.find(x => x.Name == city).Center;
+    gmc.map.setCenter({lat: center._lat, lng: center._long});
+    gmc.map.setTilt(gmc.cities.find(x => x.Name == city).Tilt);
+    gmc.map.setHeading(gmc.cities.find(x => x.Name == city).Heading);
+    gmc.map.setZoom(gmc.cities.find(x => x.Name == city).Zoom);
+    const displayName = gmc.cities.find(x => x.Name == city).DisplayName;
     gmc.collectionCity = displayName.replace(' ', '');
     gmc.cloudinaryPath = 'https://res.cloudinary.com/backyardhiddengems-com/image/upload/f_auto,q_auto/';
     gmc.cloudinaryPath += displayName.replace(' ', '%20') + '/';
@@ -1296,10 +1303,11 @@ export class gmc implements OnInit {
           gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.Name.replace(' ', '')) > -1).setVisible(true);
         }
         gmc.zooming = true;
-        gmc.map.setCenter(gmc.cities.find(x => x.name == gmc.currentCity).center);
-        gmc.map.setZoom(gmc.cities.find(x => x.name == gmc.currentCity).zoom);
-        gmc.map.setHeading(gmc.cities.find(x => x.name == gmc.currentCity).heading);
-        gmc.map.setTilt(gmc.cities.find(x => x.name == gmc.currentCity).tilt);
+        let center = gmc.cities.find(x => x.Name == gmc.currentCity).Center;
+        gmc.map.setCenter({lat: center._lat, lng: center._long});
+        gmc.map.setZoom(gmc.cities.find(x => x.Name == gmc.currentCity).Zoom);
+        gmc.map.setHeading(gmc.cities.find(x => x.Name == gmc.currentCity).Heading);
+        gmc.map.setTilt(gmc.cities.find(x => x.Name == gmc.currentCity).Tilt);
         gmc.hidePlaceMarkers();
         gmc.streetMarkers.forEach(streetMarker => {
           streetMarker.setVisible(true);
