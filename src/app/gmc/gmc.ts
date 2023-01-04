@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where, orderBy } from "firebase/firestore";
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes } from "firebase/auth";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes, getMultiFactorResolver } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
 import { NgLocalization } from '@angular/common';
 // declare function centerChanged(): any;
@@ -909,44 +909,46 @@ export class gmc implements OnInit {
   }
 
   public static async selectArea(area) {
-    gmc.isSmallScreen = false;
-    if (gmc.polygon1 == undefined) {
-      var points1 = [], points2 = []
-      var fillOpacity = 0.1
+    gmc.isSmallScreen = false;    
+    if (area.Name == 'FriendshipHeights') {
+      if (gmc.polygon1 == undefined) {
+        var points1 = [], points2 = []
+        var fillOpacity = 0.1
 
-      const db = gmc.getFirestoreDb();
-      const entityName = this.collectionCity + 'Boundary';
-      const boundaryRef = collection(db, entityName);
-      const q = query(boundaryRef, where("Area", "==", area.Name), orderBy("Seq"));
-      const querySnapshot = await getDocs(q);
+        const db = gmc.getFirestoreDb();
+        const entityName = this.collectionCity + 'Boundary';
+        const boundaryRef = collection(db, entityName);
+        const q = query(boundaryRef, where("Area", "==", area.Name), orderBy("Seq"));
+        const querySnapshot = await getDocs(q);
 
-      querySnapshot.forEach((doc) => {
-          if (area.Name == 'FriendshipHeights' && doc.data().Seq > 11) {
-            points2.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
-          } else {
-            points1.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
-          }
-      });
+        querySnapshot.forEach((doc) => {
+            if (area.Name == 'FriendshipHeights' && doc.data().Seq > 11) {
+              points2.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
+            } else {
+              points1.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
+            }
+        });
 
-      gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,21];
+        gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,21];
 
-      if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
-        $('#typeSelector').prop('hidden', true);
-      }
-     
-      gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
-      gmc.polygon1.addListener('click', (e) => gmc.clearInfoWindows() );
+        if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
+          $('#typeSelector').prop('hidden', true);
+        }
       
-      if (points2.length > 0) { 
-        gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: fillOpacity, strokeColor: "#DD8888", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
-        gmc.polygon2.addListener('click', (e) => gmc.clearInfoWindows() );
+        gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
+        gmc.polygon1.addListener('click', (e) => gmc.clearInfoWindows() );
+        
+        if (points2.length > 0) { 
+          gmc.polygon2 = new google.maps.Polygon({paths: points2, fillColor: "#DD8888", fillOpacity: fillOpacity, strokeColor: "#DD8888", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
+          gmc.polygon2.addListener('click', (e) => gmc.clearInfoWindows() );
+        }
+      } else {
+        gmc.polygon1.setVisible(true);
+        if (gmc.polygon2 != undefined) gmc.polygon2.setVisible(true);
       }
-    } else {
-      gmc.polygon1.setVisible(true);
-      if (gmc.polygon2 != undefined) gmc.polygon2.setVisible(true);
     }
 
-    if (area.Name == 'FriendshipHeights') {
+    if (area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') {
       $('#typeSelector').removeAttr('hidden');
     }
     gmc.selectedAreaWasClicked = true;
@@ -955,7 +957,7 @@ export class gmc implements OnInit {
     }
 
     if (gmc.currentCity == 'washingtondc') {
-      if (area.Name == 'FriendshipHeights') {
+      if (area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') {
         $('#type4').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>&nbsp;Medical");
         $('[data-typeid=4]').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>Medical");
         $('#type5').html("<img src=\"assets/education.svg\" width=\"18px;\"/>&nbsp;Education");
@@ -973,7 +975,7 @@ export class gmc implements OnInit {
     }
 
     gmc.currentArea = area;
-    this.zooming = true;
+    // this.zooming = true;
 
     if (gmc.kioskMode == true) {
       gmc.map.setCenter({lat: area.KioskCenter.latitude, lng: area.KioskCenter.longitude});
@@ -1031,8 +1033,7 @@ export class gmc implements OnInit {
         gmc.startAnimation();
       }, 2000);
     }
-    gmc.atAreaHome = true;
-    
+    gmc.atAreaHome = true;    
   }
 
   public static clearInfoWindows() {
@@ -1295,29 +1296,21 @@ export class gmc implements OnInit {
     });
     gmc.animations = [];
 
-    if (gmc.polygon1 != undefined) {
+    if (gmc.polygon1 != undefined && gmc.currentArea.Name.indexOf('FriendshipHeights') > -1) {
       if (gmc.polygon1.getVisible() == true) {
         gmc.polygon1.setVisible(false);
         if (gmc.polygon2 != undefined) { gmc.polygon2.setVisible(false); }
         if (gmc.currentArea != undefined) {
           gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.Name.replace(' ', '')) > -1).setVisible(true);
         }
-        gmc.zooming = true;
-        let center = gmc.cities.find(x => x.Name == gmc.currentCity).Center;
-        gmc.map.setCenter({lat: center._lat, lng: center._long});
-        gmc.map.setZoom(gmc.cities.find(x => x.Name == gmc.currentCity).Zoom);
-        gmc.map.setHeading(gmc.cities.find(x => x.Name == gmc.currentCity).Heading);
-        gmc.map.setTilt(gmc.cities.find(x => x.Name == gmc.currentCity).Tilt);
-        gmc.hidePlaceMarkers();
-        gmc.streetMarkers.forEach(streetMarker => {
-          streetMarker.setVisible(true);
-        });
-        gmc.currentArea = undefined;
+        this.goCityCenter();
       } else {
         $('#splash').removeClass('hide');
         $('#splash').css('display', 'flex');
         $('.backButton').removeClass('show');
       }
+    } else if (gmc.currentArea != undefined) {
+      this.goCityCenter();
     } else {
       $('#splash').removeClass('hide');
       $('#splash').css('display', 'flex');
@@ -1327,6 +1320,20 @@ export class gmc implements OnInit {
     $('#typeSelector').prop('hidden', true);
 
     gmc.clearInfoWindows();
+  }
+
+  public goCityCenter() {
+    gmc.zooming = true;
+    let center = gmc.cities.find(x => x.Name == gmc.currentCity).Center;
+    gmc.map.setCenter({lat: center._lat, lng: center._long});
+    gmc.map.setZoom(gmc.cities.find(x => x.Name == gmc.currentCity).Zoom);
+    gmc.map.setHeading(gmc.cities.find(x => x.Name == gmc.currentCity).Heading);
+    gmc.map.setTilt(gmc.cities.find(x => x.Name == gmc.currentCity).Tilt);
+    gmc.hidePlaceMarkers();
+    gmc.streetMarkers.forEach(streetMarker => {
+      streetMarker.setVisible(true);
+    });
+    gmc.currentArea = undefined;
   }
 
   public static gotoAreaHome() {
