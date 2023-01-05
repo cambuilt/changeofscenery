@@ -658,6 +658,7 @@ export class gmc implements OnInit {
   }
 
   public static hidePlaceMarkers() {
+    console.log('number of placemarkers', this.placeMarkers.length);
     this.placeMarkers.forEach(marker => {
       marker.setVisible(false);
     });
@@ -910,6 +911,7 @@ export class gmc implements OnInit {
 
   public static async selectArea(area) {
     gmc.isSmallScreen = false;    
+    gmc.placeMarkers = [];
     if (area.Name == 'FriendshipHeights') {
       if (gmc.polygon1 == undefined) {
         var points1 = [], points2 = []
@@ -1285,24 +1287,29 @@ export class gmc implements OnInit {
   }
 
   public goBack() {
+    console.log('current area', gmc.currentArea);
     // if (gmc.atAreaHome == false && gmc.currentArea != undefined) {
     //   gmc.gotoAreaHome();
     //   $('#typeSelector').prop('hidden', true);
     //   return;
     // }    
-    gmc.stopAnimation = true;
-    gmc.animations.forEach(animation => {
-      animation.Marker.setMap(null);
-    });
-    gmc.animations = [];
+    if (gmc.animations.length > 0) {
+      gmc.stopAnimation = true;
+      gmc.animations.forEach(animation => {
+        animation.Marker.setMap(null);
+      });
+      gmc.animations = [];
+    }
 
-    if (gmc.polygon1 != undefined && gmc.currentArea.Name.indexOf('FriendshipHeights') > -1) {
+    if (gmc.polygon1 != undefined) {
       if (gmc.polygon1.getVisible() == true) {
         gmc.polygon1.setVisible(false);
         if (gmc.polygon2 != undefined) { gmc.polygon2.setVisible(false); }
         if (gmc.currentArea != undefined) {
           gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.Name.replace(' ', '')) > -1).setVisible(true);
         }
+        console.log('going to city center with polygon1 visible');
+        gmc.polygon1 = undefined;
         this.goCityCenter();
       } else {
         $('#splash').removeClass('hide');
@@ -1310,6 +1317,7 @@ export class gmc implements OnInit {
         $('.backButton').removeClass('show');
       }
     } else if (gmc.currentArea != undefined) {
+      console.log('going to city center with currentArea defined');
       this.goCityCenter();
     } else {
       $('#splash').removeClass('hide');
@@ -1322,7 +1330,7 @@ export class gmc implements OnInit {
     gmc.clearInfoWindows();
   }
 
-  public goCityCenter() {
+  public goCityCenter() {    
     gmc.zooming = true;
     let center = gmc.cities.find(x => x.Name == gmc.currentCity).Center;
     gmc.map.setCenter({lat: center._lat, lng: center._long});
