@@ -104,6 +104,8 @@ export class gmc implements OnInit {
   public static gameSkipQuestion = false;
   public static firestoreDb;
   public static isSmallScreen = false;
+  public static pulseCounter = 0;
+  public static pulseMarker: google.maps.Marker;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -1035,7 +1037,46 @@ export class gmc implements OnInit {
         gmc.startAnimation();
       }, 2000);
     }
-    gmc.atAreaHome = true;    
+    gmc.atAreaHome = true;
+
+    if (area.Name == 'FriendshipHeights') {
+      setTimeout(function() {
+        gmc.pulseCounter = 0;
+        gmc.pulseMarker = gmc.placeMarkers.find(m => m.getTitle() == 'The Pink House');
+        var index = 1;
+        while(index++<5)
+        {
+        }        
+      }, 5000);
+    }
+  }
+
+  public static pulse(direction) {
+    setTimeout(function() {
+      var scaledSize: google.maps.Size = gmc.pulseMarker.getIcon()['scaledSize'];
+      var url = gmc.pulseMarker.getIcon()['url'];
+      var width = scaledSize.width;
+      var height = scaledSize.height;
+      if (direction == 'up') {
+        width += 2;
+        height += 2;
+      } else {
+        width -= 2;
+        height -= 2;
+      }
+      scaledSize = new google.maps.Size(width, height);
+      var icon = { url: url, scaledSize: scaledSize };  
+      gmc.pulseMarker.setIcon(icon);
+      gmc.pulseCounter++;
+      if (direction == 'up') {
+        if (gmc.pulseCounter == 25) {
+          gmc.pulse('down');
+        } else {
+          gmc.pulse(direction);
+        }
+      } else {
+      }
+    }, 250);
   }
 
   public static clearInfoWindows() {
