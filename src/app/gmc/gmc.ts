@@ -197,7 +197,7 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('dragend', () => {
-      if (gmc.isSmallScreen == false) {
+      if (gmc.isSmallScreen == false && gmc.currentArea != undefined) {
         gmc.showPlaceMarkers();
       }
     });
