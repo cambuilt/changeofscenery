@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg">
   <g>
     <rect width="74" height="21" style="fill:#f8f4af" stroke="black"></rect>
-    <text font-size="14" font-family="Futura-Medium, Futura, ebrima" font-weight="600"><tspan x="5" y="16">Kenwood</tspan></text>
+    <text font-size="14" font-family="Futura-Medium, Futura, ebrima" font-weight="500"><tspan x="5" y="16">Kenwood</tspan></text>
   </g>
 </svg>
 
