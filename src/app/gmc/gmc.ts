@@ -623,6 +623,18 @@ export class gmc implements OnInit {
             $('#likeCount' + iconId).text(gmc.currentPlace.Likes + ' like' + plural);
           }
         }, 50);
+
+        if (place.Name == 'Brooks Brothers') {
+          setTimeout(function() {
+            gmc.pulseCounter = 0;
+            gmc.pulseMarker = gmc.placeMarkers.find(m => m.getTitle() == 'Friendship Gourmet Market');
+            gmc.pulseMarker.setZIndex(200);
+            gmc.pulse('up');
+          }, 5000);
+          setTimeout(function() {
+            gmc.pulse('up');
+          }, 7000);
+        }
       });
 
       placeMarker.addListener('mousedown', (e) => {
@@ -1038,17 +1050,6 @@ export class gmc implements OnInit {
       }, 2000);
     }
     gmc.atAreaHome = true;
-
-    if (area.Name == 'FriendshipHeights') {
-      setTimeout(function() {
-        gmc.pulseCounter = 0;
-        gmc.pulseMarker = gmc.placeMarkers.find(m => m.getTitle() == 'The Pink House');
-        var index = 1;
-        while(index++<5)
-        {
-        }        
-      }, 5000);
-    }
   }
 
   public static pulse(direction) {
@@ -1058,25 +1059,31 @@ export class gmc implements OnInit {
       var width = scaledSize.width;
       var height = scaledSize.height;
       if (direction == 'up') {
-        width += 2;
-        height += 2;
+        width += 3;
+        height += 3;
       } else {
-        width -= 2;
-        height -= 2;
+        width -= 3;
+        height -= 3;
       }
       scaledSize = new google.maps.Size(width, height);
       var icon = { url: url, scaledSize: scaledSize };  
       gmc.pulseMarker.setIcon(icon);
       gmc.pulseCounter++;
       if (direction == 'up') {
-        if (gmc.pulseCounter == 25) {
+        if (gmc.pulseCounter == 20) {
+          gmc.pulseCounter = 0;
           gmc.pulse('down');
         } else {
           gmc.pulse(direction);
         }
       } else {
+        if (gmc.pulseCounter == 20) {
+          gmc.pulseCounter = 0;
+        } else {
+          gmc.pulse(direction);
+        }
       }
-    }, 250);
+    }, 15);
   }
 
   public static clearInfoWindows() {
