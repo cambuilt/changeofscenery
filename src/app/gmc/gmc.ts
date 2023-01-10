@@ -463,7 +463,7 @@ export class gmc implements OnInit {
     const zoomFactor = this.getZoomFactor(place);
     const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
     var img = new Image();
-
+    
     img.onload = function() {
       const city = gmc.currentCity; 
       place['imgWidth'] = img.width;
@@ -551,6 +551,10 @@ export class gmc implements OnInit {
           return;
         }
         gmc.hideAppMenu();
+        if (gmc.pulseMarker != undefined) {
+          gmc.pulseMarker.setAnimation(null);
+          gmc.pulseMarker = undefined;
+        }
 
         if (gmc.gameQuestions != undefined) {
           if (gmc.gameQuestionCounter <= gmc.gameQuestions.length) {
@@ -626,13 +630,14 @@ export class gmc implements OnInit {
 
         if (place.Name == 'Brooks Brothers') {
           setTimeout(function() {
-            gmc.pulseCounter = 0;
+            // gmc.pulseCounter = 0;
             gmc.pulseMarker = gmc.placeMarkers.find(m => m.getTitle() == 'Friendship Gourmet Market');
             gmc.pulseMarker.setZIndex(200);
-            gmc.pulse('up');
+            gmc.pulseMarker.setAnimation(google.maps.Animation.BOUNCE);
+            // gmc.pulse('up');
           }, 5000);
           setTimeout(function() {
-            gmc.pulse('up');
+            // gmc.pulse('up');
           }, 7000);
         }
       });
@@ -1052,39 +1057,39 @@ export class gmc implements OnInit {
     gmc.atAreaHome = true;
   }
 
-  public static pulse(direction) {
-    setTimeout(function() {
-      var scaledSize: google.maps.Size = gmc.pulseMarker.getIcon()['scaledSize'];
-      var url = gmc.pulseMarker.getIcon()['url'];
-      var width = scaledSize.width;
-      var height = scaledSize.height;
-      if (direction == 'up') {
-        width += 3;
-        height += 3;
-      } else {
-        width -= 3;
-        height -= 3;
-      }
-      scaledSize = new google.maps.Size(width, height);
-      var icon = { url: url, scaledSize: scaledSize };  
-      gmc.pulseMarker.setIcon(icon);
-      gmc.pulseCounter++;
-      if (direction == 'up') {
-        if (gmc.pulseCounter == 20) {
-          gmc.pulseCounter = 0;
-          gmc.pulse('down');
-        } else {
-          gmc.pulse(direction);
-        }
-      } else {
-        if (gmc.pulseCounter == 20) {
-          gmc.pulseCounter = 0;
-        } else {
-          gmc.pulse(direction);
-        }
-      }
-    }, 15);
-  }
+  // public static pulse(direction) {
+  //   setTimeout(function() {
+  //     var scaledSize: google.maps.Size = gmc.pulseMarker.getIcon()['scaledSize'];
+  //     var url = gmc.pulseMarker.getIcon()['url'];
+  //     var width = scaledSize.width;
+  //     var height = scaledSize.height;
+  //     if (direction == 'up') {
+  //       width += 3;
+  //       height += 3;
+  //     } else {
+  //       width -= 3;
+  //       height -= 3;
+  //     }
+  //     scaledSize = new google.maps.Size(width, height);
+  //     var icon = { url: url, scaledSize: scaledSize };  
+  //     gmc.pulseMarker.setIcon(icon);
+  //     gmc.pulseCounter++;
+  //     if (direction == 'up') {
+  //       if (gmc.pulseCounter == 20) {
+  //         gmc.pulseCounter = 0;
+  //         gmc.pulse('down');
+  //       } else {
+  //         gmc.pulse(direction);
+  //       }
+  //     } else {
+  //       if (gmc.pulseCounter == 20) {
+  //         gmc.pulseCounter = 0;
+  //       } else {
+  //         gmc.pulse(direction);
+  //       }
+  //     }
+  //   }, 15);
+  // }
 
   public static clearInfoWindows() {
     if (gmc.lastInfoWindow != undefined) {
