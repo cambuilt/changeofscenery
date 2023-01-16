@@ -227,7 +227,6 @@ export class gmc implements OnInit {
           }
         }
       } else {
-        console.log('showing place markers...');
         gmc.showPlaceMarkers(); 
       }
     });
@@ -677,7 +676,6 @@ export class gmc implements OnInit {
   }
 
   public static hidePlaceMarkers() {
-    console.log('number of placemarkers', this.placeMarkers.length);
     this.placeMarkers.forEach(marker => {
       marker.setVisible(false);
     });
@@ -731,7 +729,6 @@ export class gmc implements OnInit {
 
   openAppMenu() {
     if ($('.appMenu').css('bottom') == '0px') {
-      console.log('hiding');
       this.hideAppMenu();
     } else {
       $('#mapLogo').hide();
@@ -884,6 +881,9 @@ export class gmc implements OnInit {
           $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> Office`);
         }
         break;
+      case 16:
+          $('#typeSelector').html("<img src=\"assets/womenminorityownedWhite.svg\" width=\"36px;\" style=\"color:white;padding-bottom:1px;\"/> <span style=\"line-height:27px;\">Women/Minority Owned</span>");
+          break;
       case 20:
         $('#typeSelector').html(`<img src=\"assets/allWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">All</span>`);
         gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
@@ -915,7 +915,7 @@ export class gmc implements OnInit {
   }
 
   public static unselectTypes() {
-    var index = 1
+    var index = 0
     while(index++<13)
     {
       $('[data-typeid=' + index + ']').removeClass('typeSelected');
@@ -1340,7 +1340,6 @@ export class gmc implements OnInit {
   }
 
   public goBack() {
-    console.log('current area', gmc.currentArea);
     // if (gmc.atAreaHome == false && gmc.currentArea != undefined) {
     //   gmc.gotoAreaHome();
     //   $('#typeSelector').prop('hidden', true);
@@ -1361,7 +1360,6 @@ export class gmc implements OnInit {
         if (gmc.currentArea != undefined) {
           gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.Name.replace(' ', '')) > -1).setVisible(true);
         }
-        console.log('going to city center with polygon1 visible');
         gmc.polygon1 = undefined;
         this.goCityCenter();
       } else {
@@ -1370,7 +1368,6 @@ export class gmc implements OnInit {
         $('.backButton').removeClass('show');
       }
     } else if (gmc.currentArea != undefined) {
-      console.log('going to city center with currentArea defined');
       this.goCityCenter();
     } else {
       $('#splash').removeClass('hide');
@@ -1739,7 +1736,12 @@ public unlike() {
 public toggleType(event) {  
   var typeId = Number(event.srcElement.dataset.typeid);
   var typeClasses = event.srcElement.classList;
-  if (typeClasses['1'] == 'typeSelected') {
+  if (typeId == 16) {
+    gmc.unselectTypes();
+    typeClasses.remove('typeUnselected');
+    typeClasses.add('typeSelected');
+    gmc.markerFilter = [16];
+  } else if (typeClasses['1'] == 'typeSelected') {
     typeClasses.remove('typeSelected');
     typeClasses.add('typeUnselected');
     if (typeId == 15) {
