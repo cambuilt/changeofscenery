@@ -121,6 +121,7 @@ export class gmc implements OnInit {
           localStorage.setItem('authenticated', 'true');
           window.location.href = 'https://www.changeofscenery.info';
         }
+        gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
       } else {
         $('td[name="coscell"]').css('padding-bottom', '140px'); 
         $('td[name="washingtondc"]').hide();
@@ -205,29 +206,25 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('zoom_changed', () => {
-      if (gmc.isSmallScreen == false) {
-        if (gmc.zooming == true) {
-          setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
-        } else {
-          if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {
-            gmc.hidePlaceMarkers();
-            gmc.lastZoomInProgressLevel = gmc.map.getZoom();
-            gmc.zoomIntervalFunction = setInterval(function() {
-              if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
-                clearInterval(gmc.zoomIntervalFunction);
-                gmc.zoomIntervalFunction = undefined;
-                gmc.showPlaceMarkers(); 
-                gmc.handleZoom();
-              } else {
-                gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
-              }
-            }, 250);
-          } else {
-            gmc.infoWindowIsClosing = false;
-          }
-        }
+      if (gmc.zooming == true) {
+        setTimeout(function() { gmc.zooming = false; gmc.handleZoom(); }, 500);
       } else {
-        gmc.showPlaceMarkers(); 
+        if (gmc.zoomIntervalFunction == undefined && gmc.infoWindowIsClosing == false) {
+          gmc.hidePlaceMarkers();
+          gmc.lastZoomInProgressLevel = gmc.map.getZoom();
+          gmc.zoomIntervalFunction = setInterval(function() {
+            if (gmc.lastZoomInProgressLevel == gmc.map.getZoom()) {
+              clearInterval(gmc.zoomIntervalFunction);
+              gmc.zoomIntervalFunction = undefined;
+              gmc.showPlaceMarkers(); 
+              gmc.handleZoom();
+            } else {
+              gmc.lastZoomInProgressLevel = gmc.map.getZoom();              
+            }
+          }, 250);
+        } else {
+          gmc.infoWindowIsClosing = false;
+        }
       }
     });
 
@@ -253,6 +250,7 @@ export class gmc implements OnInit {
     }, 100);
 
     $('#typeSelector').html("<img src=\"assets/filterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:28px;\">Filter</span>");
+    $('#typeSelector').hide();
   }
 
   public logout() {
@@ -388,12 +386,13 @@ export class gmc implements OnInit {
   }
 
   public static async handleZoom() {
+    console.log('handling zoom');
     if (this.currentArea == undefined || gmc.infoWindowIsClosing == true) {
       gmc.infoWindowIsClosing = false;
       return;
     }
     const zoom = this.map.getZoom();
-
+ 
     if (zoom > 4 || (this.currentArea != undefined && this.currentArea.Name == 'Marshfield' && zoom > 14)) {
       if ($('.backButton').hasClass('show') == false) {
         setTimeout(function () {$('.backButton').addClass('show');}, 1000);
@@ -454,8 +453,6 @@ export class gmc implements OnInit {
     this.animations.forEach(animate => {
       gmc.updateAnimateIcon(animate);      
     });
-
-    gmc.isSmallScreen = document.body.clientWidth < 400 || document.body.clientHeight < 400;
   }
 
   public static createMarker(place: any) {    
@@ -749,9 +746,9 @@ export class gmc implements OnInit {
   }
 
   async startGame() {
-    $('#gameButton').prop('hidden', true);
-    $('#typeSelector').prop('hidden', true);
-    $('#appMenuIcon').prop('hidden', true);
+    $('#gameButton').hide();
+    $('#typeSelector').hide();
+    $('#appMenuIcon').hide();
     const db = gmc.getFirestoreDb();
     const entityName = gmc.collectionCity + 'Game';
     const boundaryRef = collection(db, entityName);
@@ -799,7 +796,9 @@ export class gmc implements OnInit {
       setTimeout(function() {
         $('#message').addClass('hide');
         $('#gameButton').removeAttr('hidden');
-        $('#typeSelector').removeAttr('hidden');
+        if (gmc.isSmallScreen == false) {
+          $('#typeSelector').show();
+        }
         $('#appMenuIcon').removeAttr('hidden');          
         gmc.closeInfoWindow();
         gmc.gameQuestions = undefined;
@@ -929,7 +928,6 @@ export class gmc implements OnInit {
   }
 
   public static async selectArea(area) {
-    gmc.isSmallScreen = false;    
     gmc.placeMarkers = [];
     if (area.Name == 'FriendshipHeights') {
       if (gmc.polygon1 == undefined) {
@@ -953,7 +951,7 @@ export class gmc implements OnInit {
         gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,21];
 
         if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
-          $('#typeSelector').prop('hidden', true);
+          $('#typeSelector').hide();
         }
       
         gmc.polygon1 = new google.maps.Polygon({paths: points1, fillColor: "#8888DD", fillOpacity: fillOpacity, strokeColor: "#8888DD", strokeOpacity: 0, strokeWeight: 3, map: gmc.map});
@@ -969,10 +967,12 @@ export class gmc implements OnInit {
       }
     }
 
-    if (area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') {
-      $('#typeSelector').removeAttr('hidden');
+    if ((area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') && gmc.isSmallScreen == false) {
+      $('#typeSelector').show();
     }
+
     gmc.selectedAreaWasClicked = true;
+
     if (gmc.placeCount == 0) {
       $('#message').addClass('show');
     }
@@ -996,14 +996,14 @@ export class gmc implements OnInit {
     }
 
     gmc.currentArea = area;
-    // this.zooming = true;
-
+    
     if (gmc.kioskMode == true) {
       gmc.map.setCenter({lat: area.KioskCenter.latitude, lng: area.KioskCenter.longitude});
       gmc.map.setZoom(area.ZoomKiosk);
       $('#gameButton').removeAttr('hidden');
-    } else {
+    } else {      
       gmc.map.setCenter({lat: area.AreaCenter.latitude, lng: area.AreaCenter.longitude});
+      console.log('setting zoom to', area.Zoom);
       gmc.map.setZoom(area.Zoom);    
     }
 
@@ -1020,36 +1020,8 @@ export class gmc implements OnInit {
     } else {
       gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(area.Name.replace(' ', '')) > -1).setVisible(false);
     }
-    if (area.Name == 'NorthEnd') {
-      // setTimeout(function() {
-      //   gmc.carMarker.setVisible(true);
-      //   gmc.carDriveInterval = setInterval(function() {
-      //     let pos:google.maps.LatLng = gmc.carMarker.getPosition();
-      //     let newPos = { lat: pos.lat() + gmc.carSpeed, lng: pos.lng() +  + gmc.carSpeed }; 
-      //     gmc.carMarker.setPosition(newPos);
-      //     gmc.carCounter++;
-      //     if (gmc.carCounter == 50) {
-      //       gmc.carSpeed = 0.000001;
-      //     }
-      //     if (gmc.carCounter > 1500) {
-      //       const icon = {url: 'assets/boston/CadillacBack.png',scaledSize: new google.maps.Size(80, 22)};
-      //       gmc.carMarker.setIcon(icon);
-      //       gmc.carSpeed = 0.0000005;
-      //       gmc.carDriveInterval = setInterval(function() {
-      //         let pos:google.maps.LatLng = gmc.carMarker.getPosition();
-      //         let newPos = { lat: pos.lat() - (gmc.carSpeed), lng: pos.lng() - (gmc.carSpeed + 0.00000001) };     
-      //         gmc.carMarker.setPosition(newPos);
-      //         gmc.carCounter++;
-      //         if (gmc.carCounter > 9500) {
-      //           clearInterval(gmc.carDriveInterval);
-      //           gmc.carMarker.setVisible(false);
-      //         }              
-      //       }, 800);
-      //     }
-      //   }, 1);
 
-      // }, 5000);
-    } else if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
+    if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
       setTimeout(function() {
         gmc.startAnimation();
       }, 2000);
@@ -1340,11 +1312,6 @@ export class gmc implements OnInit {
   }
 
   public goBack() {
-    // if (gmc.atAreaHome == false && gmc.currentArea != undefined) {
-    //   gmc.gotoAreaHome();
-    //   $('#typeSelector').prop('hidden', true);
-    //   return;
-    // }    
     if (gmc.animations.length > 0) {
       gmc.stopAnimation = true;
       gmc.animations.forEach(animation => {
@@ -1375,7 +1342,7 @@ export class gmc implements OnInit {
       $('.backButton').removeClass('show');
     }
 
-    $('#typeSelector').prop('hidden', true);
+    $('#typeSelector').hide();
 
     gmc.clearInfoWindows();
   }
