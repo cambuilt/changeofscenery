@@ -1,0 +1,362 @@
+@font-face {
+  font-family: Trattatello;
+  src: url("../../assets/Trattatello.ttf");
+}
+
+firebase-ui {
+  background-color: #CFBF9E;
+  position: fixed;
+  top: 235px;
+  width: 250px;
+  height: 187px;
+}
+
+.appTitle {
+  display: none;
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 10px;
+  opacity: 0.5;
+}
+
+#mapLogo {
+  position: absolute;
+  bottom: 28px;
+  left: 24px;
+  width: 30px;
+  z-index: 1;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+#message {
+  background-color: white;
+  color: black;
+  display: block;
+  position: absolute;
+  width: 92px;
+  bottom: 45vh;
+  left: 40vw;
+  font-family: Futura, 'Calisto MT', Arial, Helvetica, sans-serif;
+  opacity: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 15px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+#message.show {
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-name: showElement;
+          animation-name: showElement;
+  opacity: 1;
+}
+
+#message.hide {
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-name: hideElement;
+          animation-name: hideElement;
+  opacity: 0;
+}
+
+#message.game {
+  text-align: center;
+  width: 500px;
+  bottom: 95.5vh;
+  left: 35vw;
+  height: 35px;
+  padding-top: 5px;
+}
+
+#about {
+  position: absolute;
+  border-radius: 5px;
+  width: 80vw;
+  bottom: 20vh;
+  left: 10vw;
+  padding: 10px;
+  font-family: Futura, 'Calisto MT', Arial, Helvetica, sans-serif;
+  background-color: #EFDFBF;
+  opacity: 0;
+}
+
+#about.show {
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-name: showElement;
+          animation-name: showElement;
+  opacity: 1;
+}
+
+.backButton {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 32px;
+  z-index: 1;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.backButton.show {
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-name: showBackButton;
+          animation-name: showBackButton;
+  opacity: 1;
+}
+
+@-webkit-keyframes showBackButton {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes showBackButton {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#mapTitle, #mapCharleston {
+  font-family: Trattatello;
+  font-size: 28px;
+  position: absolute;
+  top: -2px;
+  right: 125px;
+  width: 250px;
+  text-align: center;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+#mapCharleston {
+  top: 20px;
+  font-size: 32px;
+}
+
+.panToUserLocation {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+}
+
+#appMenuIcon {
+  position: absolute;
+  top: 18px;
+  right: 72px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+#typeSelector, #gameButton {
+  background-color: black;
+  font-family: Futura, ebrima, 'Calisto MT', Arial, Helvetica, sans-serif;
+  color: white;
+  display: block;
+  position: absolute;
+  top: 14px;
+  right: 142px;
+  width: 135px;
+  height: 28px;
+  padding-left: 17px;
+  border-radius: 15px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+#gameButton {
+  width: 163px;
+  right: 303px;
+  padding-top: 1px;
+}
+
+#typeList {
+  display: none;
+  font-family: Futura, 'Calisto MT', Arial, Helvetica, sans-serif;
+  background-color: white;
+  color: black;
+  display: block;
+  position: absolute;
+  top: 50px;
+  right: 143px;
+  padding-left: 17px;
+  z-index: 2;
+  opacity: 0;
+}
+
+#typeList.open {
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
+  -webkit-animation-name: openTypeList;
+          animation-name: openTypeList;
+  opacity: 1;
+}
+
+#typeList.close {
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
+  -webkit-animation-name: closeTypeList;
+          animation-name: closeTypeList;
+  opacity: 0;
+}
+
+.typeOption {
+  background-color: white;
+  height: 40px;
+  margin: 0px;
+  width: 115px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.walkingMan {
+  width: 32px;
+  position: absolute;
+  top: 18px;
+  right: 72px;
+  z-index: 1;
+}
+
+.appMenu {
+  position: absolute;
+  bottom: -330px;
+  width: 100%;
+  background-color: white;
+  font-family: Futura, 'Calisto MT', Arial, Helvetica, sans-serif;
+  -webkit-box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.26);
+          box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.26);
+  display: none;
+}
+
+.appMenuItem {
+  list-style-type: none;
+  margin: 20px 25px 0 -10px;
+  cursor: pointer;
+}
+
+.appMenu.open {
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
+  -webkit-animation-name: openMenu;
+          animation-name: openMenu;
+  bottom: 0px;
+}
+
+.appMenu.close {
+  -webkit-animation-duration: 0.25s;
+          animation-duration: 0.25s;
+  -webkit-animation-name: closeMenu;
+          animation-name: closeMenu;
+  bottom: -330px;
+  display: none;
+}
+
+@-webkit-keyframes openMenu {
+  0% {
+    bottom: -330px;
+  }
+  100% {
+    bottom: 0px;
+  }
+}
+
+@keyframes openMenu {
+  0% {
+    bottom: -330px;
+  }
+  100% {
+    bottom: 0px;
+  }
+}
+
+@-webkit-keyframes closeMenu {
+  0% {
+    bottom: 0px;
+  }
+  100% {
+    bottom: -330px;
+    display: none;
+  }
+}
+
+@keyframes closeMenu {
+  0% {
+    bottom: 0px;
+  }
+  100% {
+    bottom: -330px;
+    display: none;
+  }
+}
+
+@-webkit-keyframes openTypeList {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes openTypeList {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes closeTypeList {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes closeTypeList {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#hcf {
+  font-family: Futura, 'Calisto MT', Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  position: absolute;
+  text-align: center;
+  bottom: 35px;
+  left: 180px;
+  z-index: 1;
+  opacity: 0.8;
+  display: none;
+}
+
+.typeSelected, .typeUnselected {
+  color: black;
+  font-size: 15px;
+}
+
+.typeUnselected {
+  -webkit-filter: invert(60%);
+          filter: invert(60%);
+}
+/*# sourceMappingURL=gmc.css.map */

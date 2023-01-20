@@ -151,7 +151,7 @@ export class gmc implements OnInit {
         streetViewControl: false,
         keyboardShortcuts: false,
         gestureHandling: 'greedy',
-        zoomControl: true,
+        zoomControl: false,
         fullscreenControl: false,
         mapId: 'd5860e1d98873021'
     });
