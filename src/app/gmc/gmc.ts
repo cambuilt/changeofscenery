@@ -429,7 +429,7 @@ export class gmc implements OnInit {
       if (place.Type != undefined) {
         const type = String(place.Type);
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
-          if (place.Area != undefined && this.currentArea != undefined && place.Area.replaceAll(' ', '') == this.currentArea.Name || gmc.currentCity == 'charleston' || (this.currentArea.Name == 'Marshfield' && place.Area == 'Brant Rock')) {
+          if (place.Area != undefined && this.currentArea != undefined && place.Area == this.currentArea.Name || gmc.currentCity == 'charleston' || (this.currentArea.Name == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {              
                 this.placeTotal++;
                 this.createMarker(place);      
@@ -455,7 +455,7 @@ export class gmc implements OnInit {
     });
   }
 
-  public static createMarker(place: any) {    
+  public static createMarker(place: any) {
     const zoomFactor = this.getZoomFactor(place);
     const iconId = gmc.currentCity == 'charleston' ? gmc.sanitizeName(place.Address) : gmc.sanitizeName(place.Name);
     var img = new Image();
@@ -831,21 +831,21 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:25px;\">Hotel</span>");
         break;
       case 4:
-        if (gmc.currentArea.Name == 'FriendshipHeights') {
+        if (gmc.currentArea.Name == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/medicalWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Medical</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/historyWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:26px;\">History</span>");
         }
         break;
       case 5:
-        if (gmc.currentArea.Name == 'FriendshipHeights') {
+        if (gmc.currentArea.Name == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/educationWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Education</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Museum</span>");
         }
         break;
       case 6:
-        if (gmc.currentArea.Name == 'FriendshipHeights') {
+        if (gmc.currentArea.Name == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/petWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Pet</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Theatre</span>");
@@ -867,14 +867,14 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:1px;\"/> <span style=\"line-height:27px;\">Park/Metro</span>");
         break;
       case 13:
-        if (gmc.currentArea.Name == 'FriendshipHeights') {
+        if (gmc.currentArea.Name == 'Friendship Heights') {
           $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Condo</span>`);
         } else {
           $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Residential</span>`);
         }
         break;
       case 14:
-        if (gmc.currentArea.Name == 'FriendshipHeights') {
+        if (gmc.currentArea.Name == 'Friendship Heights') {
           $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:0px;\"/> Apartment`);
         } else {
           $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> Office`);
@@ -929,7 +929,7 @@ export class gmc implements OnInit {
 
   public static async selectArea(area) {
     gmc.placeMarkers = [];
-    if (area.Name == 'FriendshipHeights') {
+    if (area.Name == 'Friendship Heights') {
       if (gmc.polygon1 == undefined) {
         var points1 = [], points2 = []
         var fillOpacity = 0.1
@@ -941,7 +941,7 @@ export class gmc implements OnInit {
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
-            if (area.Name == 'FriendshipHeights' && doc.data().Seq > 11) {
+            if (area.Name == 'Friendship Heights' && doc.data().Seq > 11) {
               points2.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
             } else {
               points1.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
@@ -967,7 +967,7 @@ export class gmc implements OnInit {
       }
     }
 
-    if ((area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') && gmc.isSmallScreen == false) {
+    if ((area.Name == 'Friendship Heights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') && gmc.isSmallScreen == false) {
       $('#typeSelector').show();
     }
 
@@ -978,7 +978,7 @@ export class gmc implements OnInit {
     }
 
     if (gmc.currentCity == 'washingtondc') {
-      if (area.Name == 'FriendshipHeights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') {
+      if (area.Name == 'Friendship Heights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') {
         $('#type4').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>&nbsp;Medical");
         $('[data-typeid=4]').html("<img src=\"assets/medical.svg\" width=\"24px;\"/>Medical");
         $('#type5').html("<img src=\"assets/education.svg\" width=\"18px;\"/>&nbsp;Education");
