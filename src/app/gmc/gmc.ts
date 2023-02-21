@@ -164,7 +164,6 @@ export class gmc implements OnInit {
     });
 
     gmc.map.addListener('mouseup', (e) => {
-      // gmc.cancelTouchTimers();
     });
 
     gmc.map.addListener('center_changed', () => {
@@ -393,7 +392,7 @@ export class gmc implements OnInit {
     }
     const zoom = this.map.getZoom();
  
-    if (zoom > 4 || (this.currentArea != undefined && this.currentArea.Name == 'Marshfield' && zoom > 14)) {
+    if (zoom > 4 || (this.currentArea != undefined && this.currentArea.DisplayName == 'Marshfield' && zoom > 14)) {
       if ($('.backButton').hasClass('show') == false) {
         setTimeout(function () {$('.backButton').addClass('show');}, 1000);
       }
@@ -402,9 +401,27 @@ export class gmc implements OnInit {
           try {
             const db = gmc.getFirestoreDb();
             const querySnapshot = await getDocs(collection(db, this.collectionCity));
-            querySnapshot.forEach((doc) => {
-                gmc.places.push(doc.data());
-                gmc.places[gmc.places.length - 1]['id'] = doc.id;
+            querySnapshot.forEach((placeDoc) => {
+                gmc.places.push(placeDoc.data());
+                gmc.places[gmc.places.length - 1]['id'] = placeDoc.id;
+
+                if (gmc.places[gmc.places.length - 1]['GooglePlaceId'] == undefined) {
+                  const request = {
+                    query: `${gmc.places[gmc.places.length - 1]['Name']} ${gmc.places[gmc.places.length - 1]['Address']}`,
+                    fields: ["place_id"],
+                  };            
+                  let service = new google.maps.places.PlacesService(gmc.map);
+                  service.findPlaceFromQuery(request, (results, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                      const placeId = results[0].place_id; 
+                      const docData = { GooglePlaceId: placeId };
+                      const placeDocRef = doc(db, gmc.collectionCity + '/' + placeDoc.id);
+                      updateDoc(placeDocRef, docData);      
+                    } else {
+                      console.log('error status:', status);
+                    }
+                  });
+                }          
             });
           } catch (e) {
             console.error("Error loading places: ", e);
@@ -429,7 +446,7 @@ export class gmc implements OnInit {
       if (place.Type != undefined) {
         const type = String(place.Type);
         if (gmc.markerFilter.find(m => type == String(m) || (type.indexOf(',') > -1 && type.split(',').indexOf(String(m)) > -1)) || type == '21') { 
-          if (place.Area != undefined && this.currentArea != undefined && place.Area == this.currentArea.Name || gmc.currentCity == 'charleston' || (this.currentArea.Name == 'Marshfield' && place.Area == 'Brant Rock')) {
+          if (place.Area != undefined && this.currentArea != undefined && place.Area == this.currentArea.DisplayName || gmc.currentCity == 'charleston' || (this.currentArea.DisplayName == 'Marshfield' && place.Area == 'Brant Rock')) {
             if (marker == undefined) {              
                 this.placeTotal++;
                 this.createMarker(place);      
@@ -521,7 +538,7 @@ export class gmc implements OnInit {
       `<table><tr style='height:20%;'><td><img id='${iconId}' src='${popupImage}${startingImageIndex}.png' style='box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);margin-right:0.5em;' ` + 
       `width='180px' height='180px' onclick='scrollImage("${gmc.cloudinaryPath}","${iconId}",${place.ImageCount})'/></td>` + 
       `<td style='vertical-align:top;'><table><tr><td style='height:20px;margin:0px;'><h3>${infoWindowTitle}</h3></td><td></td></tr>` + 
-      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + gmc.currentArea.Name, '')}</span></td><td></td></tr>` + 
+      `<tr><td><span style='font-weight:700;font-size:12px;'>${place.Address.replace(', ' + gmc.currentArea.DisplayName, '')}</span></td><td></td></tr>` + 
       `<tr><td class='descriptionInfoWindow'><img id='likedHeart${iconId}' src='assets/${heartIcon}.png' style="width:24px;margin-bottom:6px;cursor:pointer;" onclick='toggleLike("${iconId}", "${place.id}");'/><span id='likeCount${iconId}' style="position:relative;bottom:4px;left:4px;">${likesText}</span><br style="margin-bottom:32px;"/>${place.Description}</td></tr>` + 
       `<tr><td style='height:10px;'></td></tr><tr><td class='zillow'>&nbsp;</td></tr><tr><td>&nbsp;</td></tr></table></td></tr></table>` +
       `<tr colspan="2" style="height:80%;"><td class="notes">${place.Notes}</td></tr></table>` + 
@@ -752,7 +769,7 @@ export class gmc implements OnInit {
     const db = gmc.getFirestoreDb();
     const entityName = gmc.collectionCity + 'Game';
     const boundaryRef = collection(db, entityName);
-    const q = query(boundaryRef, where("Area", "==", gmc.currentArea.Name), orderBy("Sequence"));
+    const q = query(boundaryRef, where("Area", "==", gmc.currentArea.DisplayName), orderBy("Sequence"));
     const querySnapshot = await getDocs(q);
     gmc.gameCorrectCount = 0, gmc.gameIncorrectCount = 0, gmc.gameQuestionCounter = 0, gmc.gameSkipQuestion = false;
     gmc.gameQuestions = [];
@@ -831,21 +848,21 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/hotelWhite.svg\" width=\"18px;\" style=\"color:white;\"/> <span style=\"line-height:25px;\">Hotel</span>");
         break;
       case 4:
-        if (gmc.currentArea.Name == 'Friendship Heights') {
+        if (gmc.currentArea.DisplayName == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/medicalWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Medical</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/historyWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:26px;\">History</span>");
         }
         break;
       case 5:
-        if (gmc.currentArea.Name == 'Friendship Heights') {
+        if (gmc.currentArea.DisplayName == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/educationWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Education</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/museumWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Museum</span>");
         }
         break;
       case 6:
-        if (gmc.currentArea.Name == 'Friendship Heights') {
+        if (gmc.currentArea.DisplayName == 'Friendship Heights') {
           $('#typeSelector').html("<img src=\"assets/petWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Pet</span>");
         } else {
           $('#typeSelector').html("<img src=\"assets/theaterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Theatre</span>");
@@ -867,14 +884,14 @@ export class gmc implements OnInit {
         $('#typeSelector').html("<img src=\"assets/parkingWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:1px;\"/> <span style=\"line-height:27px;\">Park/Metro</span>");
         break;
       case 13:
-        if (gmc.currentArea.Name == 'Friendship Heights') {
+        if (gmc.currentArea.DisplayName == 'Friendship Heights') {
           $('#typeSelector').html(`<img src=\"assets/condoWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Condo</span>`);
         } else {
           $('#typeSelector').html(`<img src=\"assets/buildingWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:27px;\">Residential</span>`);
         }
         break;
       case 14:
-        if (gmc.currentArea.Name == 'Friendship Heights') {
+        if (gmc.currentArea.DisplayName == 'Friendship Heights') {
           $('#typeSelector').html(`<img src=\"assets/apartmentWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:0px;\"/> Apartment`);
         } else {
           $('#typeSelector').html(`<img src=\"assets/officeWhite.svg\" width=\"24px;\" style=\"color:white;padding-bottom:4px;\"/> Office`);
@@ -929,7 +946,7 @@ export class gmc implements OnInit {
 
   public static async selectArea(area) {
     gmc.placeMarkers = [];
-    if (area.Name == 'Friendship Heights') {
+    if (area.DisplayName == 'Friendship Heights') {
       if (gmc.polygon1 == undefined) {
         var points1 = [], points2 = []
         var fillOpacity = 0.1
@@ -941,7 +958,7 @@ export class gmc implements OnInit {
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
-            if (area.Name == 'Friendship Heights' && doc.data().Seq > 11) {
+            if (area.DisplayName == 'Friendship Heights' && doc.data().Seq > 11) {
               points2.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
             } else {
               points1.push(new google.maps.LatLng(doc.data().Lat, doc.data().Lng));
@@ -950,7 +967,7 @@ export class gmc implements OnInit {
 
         gmc.markerFilter = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,21];
 
-        if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
+        if (area.DisplayName == 'City Center' || area.DisplayName == 'Chinatown' || area.DisplayName == 'Penn Quarter') {
           $('#typeSelector').hide();
         }
       
@@ -967,7 +984,7 @@ export class gmc implements OnInit {
       }
     }
 
-    if ((area.Name == 'Friendship Heights' || area.Name == 'Kenwood' || area.Name == 'WestbardSquare') && gmc.isSmallScreen == false) {
+    if ((area.DisplayName == 'Friendship Heights' || area.DisplayName == 'Kenwood' || area.DisplayName == 'Westbard Square') && gmc.isSmallScreen == false) {
       $('#typeSelector').show();
     }
 
@@ -1021,7 +1038,7 @@ export class gmc implements OnInit {
       gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(area.Name.replace(' ', '')) > -1).setVisible(false);
     }
 
-    if (area.Name == 'CityCenter' || area.Name == 'Chinatown' || area.Name == 'PennQuarter') {
+    if (area.DisplayName == 'City Center' || area.DisplayName == 'Chinatown' || area.DisplayName == 'Penn Quarter') {
       setTimeout(function() {
         gmc.startAnimation();
       }, 2000);
@@ -1083,7 +1100,7 @@ export class gmc implements OnInit {
     
     querySnapshot.forEach((doc) => {
       const animation = doc.data();
-      if (animation.Area == gmc.currentArea.Name) {
+      if (animation.Area == gmc.currentArea.DisplayName) {
         gmc.animations.push(doc.data());
         gmc.animations[gmc.animations.length - 1]['id'] = doc.id;              
       }
@@ -1325,7 +1342,7 @@ export class gmc implements OnInit {
         gmc.polygon1.setVisible(false);
         if (gmc.polygon2 != undefined) { gmc.polygon2.setVisible(false); }
         if (gmc.currentArea != undefined) {
-          gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.Name.replace(' ', '')) > -1).setVisible(true);
+          gmc.streetMarkers.find(x => x.getIcon()['url'].indexOf(gmc.currentArea.DisplayName.replace(' ', '')) > -1).setVisible(true);
         }
         gmc.polygon1 = undefined;
         this.goCityCenter();
@@ -1470,7 +1487,7 @@ export class gmc implements OnInit {
       
     const city = gmc.currentCity; 
     zoomFactor -= (floorNumber - zoomFactor) * 5.5;
-    zoomFactor *= .0004;
+    zoomFactor *= .0003;
     zoomFactor = Math.max(0.001, zoomFactor);
     zoomFactor = Math.max(maxNum, zoomFactor);
 
