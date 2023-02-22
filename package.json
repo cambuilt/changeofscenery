@@ -32,6 +32,7 @@
     "@types/google.maps": "^3.49.2",
     "ajv": "^8.11.0",
     "angular": "^1.8.2",
+    "api": "^5.0.7",
     "bufferutil": "^4.0.6",
     "depcheck": "^1.4.3",
     "eslint-scope": "^7.1.1",
@@ -41,7 +42,6 @@
     "firebaseui": "^6.0.1",
     "firebaseui-angular": "^6.1.2",
     "firestore-export-import": "^0.2.9",
-    "fs": "0.0.1-security",
     "google-maps": "^4.3.3",
     "html-webpack-plugin": "^5.0.0-beta.1",
     "jquery": "^3.6.0",
@@ -56,7 +56,17 @@
     "zone.js": "~0.11.4"
   },
   "browser": {
-    "crypto": false
+    "crypto": false,
+    "fs": false,
+    "path": false,
+    "os": false,
+    "http": false,
+    "https": false,
+    "util": false,
+    "stream": false,
+    "url": false,
+    "querystring": false,
+    "assert": false
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",

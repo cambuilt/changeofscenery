@@ -6,7 +6,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, qu
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes, getMultiFactorResolver } from "firebase/auth";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from "@angular/common/http";
 import { NgLocalization } from '@angular/common';
 // declare function centerChanged(): any;
 declare function playSound(name:any): any;
@@ -106,6 +106,8 @@ export class gmc implements OnInit {
   public static isSmallScreen = false;
   public static pulseCounter = 0;
   public static pulseMarker: google.maps.Marker;
+  public static apiKey = "R1HReRli7m0yJRIHAyRr01T4VyoSC9gEjDvqXRi5AF5PP211i1hquyncvcI2gvhb3eiFjmtFrqJKBiPGKeHBDHK7K4Oh0VHyRiv0Me49DDbZUqmJehw3QAhaz2r2Y3Y";
+  public static httpClient:HttpClient;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
   }
@@ -132,6 +134,7 @@ export class gmc implements OnInit {
     const auth = getAuth();
     gmc.kioskMode = this.route.routeConfig.path.endsWith('kiosk');
     gmc.gotoArea = this.route.snapshot.queryParamMap.get('area');
+    gmc.httpClient = this.httpClient;
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -384,8 +387,7 @@ export class gmc implements OnInit {
     }
   }
 
-  public static async handleZoom() {
-    console.log('handling zoom');
+  public static async handleZoom() {    
     if (this.currentArea == undefined || gmc.infoWindowIsClosing == true) {
       gmc.infoWindowIsClosing = false;
       return;
@@ -403,11 +405,12 @@ export class gmc implements OnInit {
             const querySnapshot = await getDocs(collection(db, this.collectionCity));
             querySnapshot.forEach((placeDoc) => {
                 gmc.places.push(placeDoc.data());
-                gmc.places[gmc.places.length - 1]['id'] = placeDoc.id;
+                let place = gmc.places[gmc.places.length - 1];
+                place['id'] = placeDoc.id;
 
-                if (gmc.places[gmc.places.length - 1]['GooglePlaceId'] == undefined) {
+                if (place.GooglePlaceId == undefined) {
                   const request = {
-                    query: `${gmc.places[gmc.places.length - 1]['Name']} ${gmc.places[gmc.places.length - 1]['Address']}`,
+                    query: `${place.Name} ${place.Address}`,
                     fields: ["place_id"],
                   };            
                   let service = new google.maps.places.PlacesService(gmc.map);
@@ -421,7 +424,23 @@ export class gmc implements OnInit {
                       console.log('error status:', status);
                     }
                   });
-                }          
+                }
+
+                if (place.YelpBusinessId == undefined && place.Name != undefined) {
+                  let url = "https://api.yelp.com/v3/businesses/matches";
+                  $.ajax({
+                    dataType: 'jsonp',
+                    data: {'name': place.Name, 'city': 'Bethesda', 'state': 'MD', 'country': 'US'},
+                    url: url,
+                    headers: {'Access-Control-Allow-Origin': '*', 'accept': 'application/json', 'Authorization': `Bearer ${gmc.apiKey}`, 'Content-Type': 'application/json'},
+                    success: function (data) {
+                      console.log(data);
+                    },
+                    error: function (err) {
+                      console.log('Error:', err);
+                    }
+                  });
+                }
             });
           } catch (e) {
             console.error("Error loading places: ", e);
