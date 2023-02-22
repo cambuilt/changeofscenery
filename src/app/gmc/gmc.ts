@@ -429,12 +429,12 @@ export class gmc implements OnInit {
                 if (place.YelpBusinessId == undefined && place.Name != undefined) {
                   let url = "https://api.yelp.com/v3/businesses/matches";
                   $.ajax({
-                    dataType: 'jsonp',
+                    dataType: 'json',
                     data: {'name': place.Name, 'city': 'Bethesda', 'state': 'MD', 'country': 'US'},
                     url: url,
-                    headers: {'Access-Control-Allow-Origin': '*', 'accept': 'application/json', 'Authorization': `Bearer ${gmc.apiKey}`, 'Content-Type': 'application/json'},
+                    headers: {'accept': 'application/json', 'Authorization': `Bearer ${gmc.apiKey}`, 'Content-Type': 'application/json'},
                     success: function (data) {
-                      console.log(data);
+                      console.log('Success:', data);
                     },
                     error: function (err) {
                       console.log('Error:', err);
