@@ -427,7 +427,7 @@ export class gmc implements OnInit {
                 }
 
                 if (place.YelpBusinessId == undefined && place.Name != undefined) {
-                  let url = "https://api.yelp.com/v3/businesses/matches";
+                  let url = "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/matches";
                   $.ajax({
                     url: url,
                     dataType: 'json',
