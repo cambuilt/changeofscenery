@@ -56,17 +56,7 @@
     "zone.js": "~0.11.4"
   },
   "browser": {
-    "crypto": false,
-    "fs": false,
-    "path": false,
-    "os": false,
-    "http": false,
-    "https": false,
-    "util": false,
-    "stream": false,
-    "url": false,
-    "querystring": false,
-    "assert": false
+    "crypto": false
   },
   "devDependencies": {
     "@types/jquery": "^3.5.14",
