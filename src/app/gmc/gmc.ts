@@ -436,6 +436,9 @@ export class gmc implements OnInit {
                     beforeSend: function(xhr) {
                       xhr.setRequestHeader('accept', 'application/json');
                       xhr.setRequestHeader('Authorization', `Bearer ${gmc.apiKey}`);
+                      xhr.setRequestHeader('Access-Control-Allow-Origin','https://www.changeofscenery.info');
+                      xhr.setRequestHeader('Access-Control-Allow-Methods','GET,PUT,POST,DELETE');
+                      xhr.setRequestHeader('Access-Control-Allow-Headers','Content-Type');
                     },                    
                     success: function (data) {
                       console.log('Success:', data);
