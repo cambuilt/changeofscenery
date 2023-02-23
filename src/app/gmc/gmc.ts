@@ -6,8 +6,7 @@ import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, qu
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes, getMultiFactorResolver } from "firebase/auth";
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from "@angular/common/http";
-import { NgLocalization } from '@angular/common';
+import { HttpClient } from "@angular/common/http";
 // declare function centerChanged(): any;
 declare function playSound(name:any): any;
 
@@ -106,7 +105,7 @@ export class gmc implements OnInit {
   public static isSmallScreen = false;
   public static pulseCounter = 0;
   public static pulseMarker: google.maps.Marker;
-  public static apiKey = "R1HReRli7m0yJRIHAyRr01T4VyoSC9gEjDvqXRi5AF5PP211i1hquyncvcI2gvhb3eiFjmtFrqJKBiPGKeHBDHK7K4Oh0VHyRiv0Me49DDbZUqmJehw3QAhaz2r2Y3Y";
+  public static apiKey = "iQQOaKrSKp4-7jORkK8tYfQiUxHIn78-HefSRafOvFG-AvvoNRwjQhj4_Kb0mqX3IOM__qcUBApaUcTY-YZQLHWY2THQxsiZjKV5zoSD0tcZP5GCCCfFJclGTX33Y3Yx";
   public static httpClient:HttpClient;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
@@ -422,29 +421,6 @@ export class gmc implements OnInit {
                       updateDoc(placeDocRef, docData);      
                     } else {
                       console.log('error status:', status);
-                    }
-                  });
-                }
-
-                if (place.YelpBusinessId == undefined && place.Name != undefined) {
-                  let url = "https://api.yelp.com/v3/businesses/matches";
-                  $.ajax({
-                    url: url,
-                    dataType: 'json',
-                    data: {'name': place.Name, 'city': 'Bethesda', 'state': 'MD', 'country': 'US'},
-                    type: "GET",
-                    beforeSend: function(xhr) {
-                      xhr.setRequestHeader('accept', 'application/json');
-                      xhr.setRequestHeader('Authorization', `Bearer ${gmc.apiKey}`);
-                      xhr.setRequestHeader('Access-Control-Allow-Origin','*');
-                      xhr.setRequestHeader('Access-Control-Allow-Methods','GET,PUT,POST,DELETE');
-                      xhr.setRequestHeader('Access-Control-Allow-Headers','Content-Type');
-                    },                    
-                    success: function (data) {
-                      console.log('Success:', data);
-                    },
-                    error: function (err) {
-                      console.log('Error:', err);
                     }
                   });
                 }
