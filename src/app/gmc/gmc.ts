@@ -367,7 +367,8 @@ export class gmc implements OnInit {
     });
 
     gmc.areas.forEach(area => {
-      icon = {url: 'assets/' + city + '/' + area.Name + '.svg',scaledSize: new google.maps.Size(area.IconWidth, area.IconHeight)};
+      let name = area.Name.replace(' ', '');
+      icon = {url: 'assets/' + city + '/' + name + '.svg',scaledSize: new google.maps.Size(area.IconWidth, area.IconHeight)};
       gmc.streetMarkers.push(new google.maps.Marker({position: {lat: area.MarkerLocation.latitude, lng: area.MarkerLocation.longitude}, icon: icon, map: gmc.map, zIndex: 100}));
       gmc.streetMarkers[gmc.streetMarkers.length-1].addListener('click', () => { gmc.selectArea(area); });
     });
