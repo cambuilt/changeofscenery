@@ -105,7 +105,6 @@ export class gmc implements OnInit {
   public static isSmallScreen = false;
   public static pulseCounter = 0;
   public static pulseMarker: google.maps.Marker;
-  public static apiKey = "iQQOaKrSKp4-7jORkK8tYfQiUxHIn78-HefSRafOvFG-AvvoNRwjQhj4_Kb0mqX3IOM__qcUBApaUcTY-YZQLHWY2THQxsiZjKV5zoSD0tcZP5GCCCfFJclGTX33Y3Yx";
   public static httpClient:HttpClient;
   
   constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
