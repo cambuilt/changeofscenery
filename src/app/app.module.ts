@@ -15,7 +15,14 @@ import { environment } from '../environments/environment';
 import { MenuOptionComponent } from './menu-option/menu-option.component';
 import { WelcomeComponent } from './welcome.component';
 import { RouterModule } from '@angular/router';
-import { PlaceModule } from './places/place.module';
+import { PlaceListComponent } from './places/place-list.component';
+import { PlaceDetailComponent } from './places/place-detail.component';
+import { ConvertToSpacesPipe } from './pipes/convertToSpaces.pipe';
+import { StarComponent } from './helpers/star.component';
+import { FormsModule } from '@angular/forms';
+import { PlaceDetailGuard } from './places/place-detail.guard';
+import * as $ from 'jquery';
+import { ajax, css } from "jquery";
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
 	signInFlow: 'popup',
@@ -41,10 +48,15 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		PanoramaComponent,
   		gmc,
   		MenuOptionComponent,
-     	WelcomeComponent
+     	WelcomeComponent,
+		PlaceListComponent,
+		PlaceDetailComponent, 
+		ConvertToSpacesPipe,
+		StarComponent
 	],
 	imports: [
 		CommonModule,
+		FormsModule,
 		BrowserModule,
 		BrowserAnimationsModule,
 		AppRoutingModule,		
@@ -57,7 +69,14 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 			{ path: '', redirectTo: 'welcome', pathMatch: 'full' }, 
 			{ path: '**', redirectTo: 'welcome', pathMatch: 'full' }
 		]),
-  		PlaceModule	
+		RouterModule.forChild([
+			{ path: 'places', component: PlaceListComponent },
+				  { 
+					  path: 'places/:id',
+					  canActivate: [PlaceDetailGuard],
+					  component: PlaceDetailComponent 
+				  }
+		])
 	],
 	providers: [],
 	bootstrap: [AppComponent]
