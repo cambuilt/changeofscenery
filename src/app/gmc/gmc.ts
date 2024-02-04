@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnChanges, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, GeoPoint, query, where, orderBy } from "firebase/firestore";
@@ -7,6 +7,9 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, AuthErrorCodes, getMultiFactorResolver } from "firebase/auth";
 import { HttpClient } from "@angular/common/http";
+import { PlacesService } from '../services/places.service';
+import { Subscription } from 'rxjs';
+import { IPlace } from '../services/iplace';
 // declare function centerChanged(): any;
 declare function playSound(name:any): any;
 
@@ -16,7 +19,7 @@ declare function playSound(name:any): any;
   styleUrls: ['./gmc.scss']
 })
 
-export class gmc implements OnInit {
+export class gmc implements OnInit, OnChanges {
   public static map: google.maps.Map;
   messageInfoWindow: google.maps.InfoWindow;  
   public static lastInfoWindow: google.maps.InfoWindow;
@@ -55,6 +58,7 @@ export class gmc implements OnInit {
   public static carMarkerInfoWindow: google.maps.InfoWindow = new google.maps.InfoWindow({ content: gmc.carinfoWindowContent, minWidth: 320 });
   streetFilter = 'Bay';
   firstTime = true;
+  public titleCity: string = 'Chevy Chase MD';
   public static collectionCity = 'Washington DC';
   public static currentCity = "washingtondc";  
   public static currentArea;  
@@ -106,8 +110,24 @@ export class gmc implements OnInit {
   public static pulseCounter = 0;
   public static pulseMarker: google.maps.Marker;
   public static httpClient:HttpClient;
+  private _selectedPlace: string = ''
+  private sub: Subscription;
+  private places: IPlace[] = [];
+  private filteredPlaces: IPlace[] = [];
+  private errorMessage: string = '';
   
-  constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient) {    
+  constructor(private route: ActivatedRoute, private ngZone: NgZone, private afAuth: AngularFireAuth, private httpClient: HttpClient, private placesService: PlacesService) {    
+  }
+
+  get SelectedPlace(): string {
+    return this._selectedPlace;
+  }
+  set SelectedPlace(value: string) {
+    this._selectedPlace = value;
+  } 
+
+  onSelected(cityName: string): void {
+    gmc.currentCity = cityName;
   }
 
   ngOnInit(): void {
@@ -127,6 +147,14 @@ export class gmc implements OnInit {
         $('td[name="washingtondc"]').hide();
         $('td[name="charleston"]').hide();
       }
+    });
+
+    this.placesService.getPlaces().subscribe({
+      next: places => { 
+        this.places = places;
+        this.filteredPlaces = this.places;
+      },
+      error: err => this.errorMessage
     });
     
     const auth = getAuth();
@@ -251,6 +279,14 @@ export class gmc implements OnInit {
 
     $('#typeSelector').html("<img src=\"assets/filterWhite.svg\" width=\"18px;\" style=\"color:white;padding-bottom:4px;\"/> <span style=\"line-height:28px;\">Filter</span>");
     $('#typeSelector').hide();
+  }
+
+  ngOnChanges(): void {
+    console.log("changes")
+  }
+
+  onDestroy() {
+
   }
 
   public logout() {
@@ -514,7 +550,7 @@ export class gmc implements OnInit {
       } 
 
       var n = gmc.currentCity == 'charleston' ? place.Address : place.Name;
-      const popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_").replaceAll('_E_', '_East_') : gmc.cloudinaryPath + iconId;      
+      const popupImage = gmc.currentCity == 'charleston' ? gmc.cloudinaryPath + place.Address.replaceAll(' ', "_") : gmc.cloudinaryPath + iconId;      
       var animated = n == 'Boston North End' || n == 'Hingham MA' || n == 'Cohasset MA' || n == 'Scituate MA' || n == 'Boston Beacon Hill' || n == 'Hull MA' || n == 'Marshfield MA' || n == 'Norwell MA' || n == 'City Center' ? google.maps.Animation.DROP : null;
       var zIndex = place.ZIndex == undefined ? 0 : place.ZIndex;
       var visible = gmc.selectedAreaWasClicked;

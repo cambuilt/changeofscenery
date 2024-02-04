@@ -1,0 +1,29 @@
+<table>
+    <tbody>
+    <tr *ngFor="let place of places">
+        <td>
+            <img *ngIf="showImage"
+                [src]="place.imageUrl"
+                [title]="place.placeName"
+                [style.width.px]="imageWidth"
+                [style.margin.px]="imageMargin">
+        </td>
+        <td>
+            <a [routerLink]="['/places', place.placeId]">
+                {{place.placeName}}
+            </a>
+        </td>
+        <td>{{place.placeCode | lowercase | convertToSpaces:'-'}}</td>
+        <td>{{place.placeAddDate }}</td>
+        <td>{{place.placeAverageCost | currency:'USD':'symbol':'1.2-2' }}</td>
+        <td>
+            <changeofscenery-star [rating]="place.placeStarRating"
+                (clickedStars)="onClickedStars($event)">
+            </changeofscenery-star>
+            <a [routerLink]="['/places', selectedPlace.placeId]">
+                {{selectedPlace.placeName}}
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>

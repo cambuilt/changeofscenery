@@ -12,7 +12,10 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { firebase, firebaseui, FirebaseUIModule } from 'firebaseui-angular';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { environment } from '../environments/environment';
-import * as $ from 'jquery';
+import { MenuOptionComponent } from './menu-option/menu-option.component';
+import { WelcomeComponent } from './welcome.component';
+import { RouterModule } from '@angular/router';
+import { PlaceModule } from './places/place.module';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
 	signInFlow: 'popup',
@@ -36,17 +39,25 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 		AppComponent,
 		RouteErrorComponent,
 		PanoramaComponent,
-  		gmc
+  		gmc,
+  		MenuOptionComponent,
+     	WelcomeComponent
 	],
 	imports: [
 		CommonModule,
 		BrowserModule,
 		BrowserAnimationsModule,
-		AppRoutingModule,
+		AppRoutingModule,		
 		HttpClientModule,
 		AngularFireModule.initializeApp(environment.firebaseConfig),
 		AngularFireAuthModule,
-		FirebaseUIModule.forRoot(firebaseUiAuthConfig)
+		FirebaseUIModule.forRoot(firebaseUiAuthConfig),
+		RouterModule.forRoot([
+			{ path: 'welcome', component: WelcomeComponent },
+			{ path: '', redirectTo: 'welcome', pathMatch: 'full' }, 
+			{ path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+		]),
+  		PlaceModule	
 	],
 	providers: [],
 	bootstrap: [AppComponent]
